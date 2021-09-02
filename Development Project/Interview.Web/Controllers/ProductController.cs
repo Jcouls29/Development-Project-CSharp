@@ -25,7 +25,7 @@ namespace Interview.Web.Controllers
             return Task.FromResult((IActionResult)Ok(products));
         }
         [HttpPost]
-        public Task<IActionResult> AddProduct(Product product)
+        public Task<IActionResult> AddProduct([FromBody] Product product)
         {
             _productRepo.Insert(product);
             return Task.FromResult((IActionResult)Ok());
