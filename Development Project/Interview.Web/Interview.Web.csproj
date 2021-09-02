@@ -4,4 +4,18 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="5.0.9" />
+    <PackageReference Include="Unity" Version="5.11.10" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Views\Transaction\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\ITI Interview\Development Project\Interview.Data\Interview.Data.csproj" />
+    <ProjectReference Include="..\..\..\ITI Interview\Development Project\Interview.Models\Interview.Models.csproj" />
+  </ItemGroup>
+
 </Project>
