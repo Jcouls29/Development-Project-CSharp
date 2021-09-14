@@ -4,4 +4,18 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Compile Remove="Repository\GenericRepository.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Dapper" Version="2.0.78" />
+    <PackageReference Include="Dapper.Contrib" Version="2.0.35" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Sparcpoint.Core\Sparcpoint.Core.csproj" />
+    <ProjectReference Include="..\Sparcpoint.SqlServer.Abstractions\Sparcpoint.SqlServer.Abstractions.csproj" />
+  </ItemGroup>
+
 </Project>
