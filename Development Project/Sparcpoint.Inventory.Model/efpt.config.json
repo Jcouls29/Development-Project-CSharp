@@ -1,0 +1,61 @@
+﻿{
+   "CodeGenerationMode": 0,
+   "ContextClassName": "SparcpointInventoryDatabaseContext",
+   "ContextNamespace": null,
+   "DefaultDacpacSchema": null,
+   "FilterSchemas": false,
+   "IncludeConnectionString": false,
+   "ModelNamespace": null,
+   "OutputContextPath": null,
+   "OutputPath": null,
+   "ProjectRootNamespace": "Sparcpoint.Inventory.Model",
+   "Schemas": null,
+   "SelectedHandlebarsLanguage": 0,
+   "SelectedToBeGenerated": 0,
+   "Tables": [
+      {
+         "Name": "[Instances].[Categories]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[Instances].[CategoryAttributes]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[Instances].[CategoryCategories]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[Instances].[ProductAttributes]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[Instances].[ProductCategories]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[Instances].[Products]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[Transactions].[InventoryTransactions]",
+         "ObjectType": 0
+      }
+   ],
+   "UiHint": "201045cg9264xmp.Sparcpoint.Inventory.Database.dbo",
+   "UseBoolPropertiesWithoutDefaultSql": false,
+   "UseDatabaseNames": false,
+   "UseDbContextSplitting": false,
+   "UseFluentApiOnly": true,
+   "UseHandleBars": false,
+   "UseInflector": false,
+   "UseLegacyPluralizer": false,
+   "UseNoConstructor": false,
+   "UseNoDefaultConstructor": false,
+   "UseNoNavigations": false,
+   "UseNoObjectFilter": false,
+   "UseNodaTime": false,
+   "UseNullableReferences": false,
+   "UseSchemaFolders": false,
+   "UseSpatial": false
+}
