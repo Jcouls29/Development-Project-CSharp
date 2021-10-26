@@ -1,13 +1,13 @@
+using AutoMapper;
+using Interview.Web.Mappings;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Sparcpoint.SqlServer.Abstractions;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace Interview.Web
 {
@@ -24,6 +24,14 @@ namespace Interview.Web
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+            services.AddSingleton<ISqlExecutor, SqlServerExecutor>();
+            var mapperConfig = new MapperConfiguration(mc =>
+            {
+                mc.AddProfile(new ProductProfile());
+            });
+            IMapper mapper = mapperConfig.CreateMapper();
+            services.AddSingleton(mapper);
+            services.AddAutoMapper(typeof(ProductProfile)).Reverse();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

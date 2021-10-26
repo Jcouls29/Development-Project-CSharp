@@ -1,19 +1,35 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using Interview.Data.ViewModels;
+using Interview.Web.Repository;
+using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
+using System.Web.Http;
 
 namespace Interview.Web.Controllers
 {
-    [Route("api/v1/products")]
+    [RoutePrefix("api/v1/products")]
     public class ProductController : Controller
     {
-        // NOTE: Sample Action
-        [HttpGet]
-        public Task<IActionResult> GetAllProducts()
+        private readonly IGenericRepository<ProductViewModel> _genericRepository;
+
+        public ProductController(IGenericRepository<ProductViewModel> genericRepository)
         {
-            return Task.FromResult((IActionResult)Ok(new object[] { }));
+            _genericRepository = genericRepository;
+        }
+        
+        [System.Web.Http.HttpGet]
+        [System.Web.Http.Route("getAllProducts")]
+        public async Task<IActionResult> GetAllProducts()
+        {
+            var products = await _genericRepository.GetAll();
+            return await Task.FromResult((IActionResult)Ok(products));
+        }
+
+        [System.Web.Http.HttpPost]
+        [System.Web.Http.Route("addProduct")]
+        public async Task<IActionResult> AddProduct([System.Web.Http.FromBody] ProductViewModel productViewModel)
+        {
+            var records = await _genericRepository.Add(productViewModel);
+            return await Task.FromResult((IActionResult)Ok());
         }
     }
 }

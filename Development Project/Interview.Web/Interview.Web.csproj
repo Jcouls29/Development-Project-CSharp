@@ -4,4 +4,16 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="8.1.1" />
+    <PackageReference Include="Microsoft.AspNet.WebApi.Core" Version="5.2.7" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Interview.Data\Interview.Data.csproj" />
+    <ProjectReference Include="..\Sparcpoint.Core\Sparcpoint.Core.csproj" />
+    <ProjectReference Include="..\Sparcpoint.Inventory.Database\Sparcpoint.Inventory.Database.sqlproj" />
+    <ProjectReference Include="..\Sparcpoint.SqlServer.Abstractions\Sparcpoint.SqlServer.Abstractions.csproj" />
+  </ItemGroup>
+
 </Project>
