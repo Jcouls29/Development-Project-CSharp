@@ -8,6 +8,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+using Interview.Web.DataServices.Repositories;
+using Interview.Web.Core.Repositories;
+using Interview.Web.DataServices.Services.Product;
+using Interview.Web.Core.Services;
+using Interview.Web.Entities;
 
 namespace Interview.Web
 {
@@ -24,6 +30,10 @@ namespace Interview.Web
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+            services.AddDbContext<SparcpointContext>();
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
+            services.AddScoped<IProduct, DataServices.Services.Product.Product>();
+            services.AddSwaggerGen();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -32,6 +42,8 @@ namespace Interview.Web
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+                app.UseSwagger();
+                app.UseSwaggerUI();
             }
             else
             {
