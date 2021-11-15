@@ -1,0 +1,75 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Interview.Web</name>
+    </assembly>
+    <members>
+        <member name="M:Interview.Web.Controllers.InventoryController.AddProductsToInventory(System.Collections.Generic.Dictionary{System.Int32,System.Int32})">
+            <summary>
+            Adds new product(s) to the inventory
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Interview.Web.Controllers.ProductController.Create(Interview.Web.Requests.ProductRequestDto)">
+            <summary>
+            Creates a New Product.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:Interview.Web.Mappers.ProductRequestMapper">
+            <summary>
+            Mapper class to map product related requests to commands
+            </summary>
+        </member>
+        <member name="M:Interview.Web.Mappers.ProductRequestMapper.MapProductRequestToCommand(Interview.Web.Requests.ProductRequestDto)">
+            <summary>
+            Maps the incoming request to new product command
+            </summary>
+            <param name="newProduct"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Interview.Web.Mappers.ProductRequestMapper.MapInventoryRequestToCommand(System.Collections.Generic.Dictionary{System.Int32,System.Int32})">
+            <summary>
+            Maps in the incoming product and quantity to inventory command
+            </summary>
+            <param name="product_quantity"></param>
+            <returns></returns>
+        </member>
+        <member name="T:Interview.Web.Requests.InventoryAddProductsRequestDto">
+            <summary>
+            Represents list of products to be added to the inventory with Quantity
+            </summary>
+        </member>
+        <member name="T:Interview.Web.Requests.ProductRequestDto">
+            <summary>
+            Represents the new Product Request
+            </summary>
+        </member>
+        <member name="P:Interview.Web.Requests.ProductRequestDto.Name">
+            <summary>
+            Name of Product
+            </summary>
+        </member>
+        <member name="P:Interview.Web.Requests.ProductRequestDto.Description">
+            <summary>
+            Descibes the product
+            </summary>
+        </member>
+        <member name="P:Interview.Web.Requests.ProductRequestDto.StockKeepUnitCode">
+            <summary>
+            Describes the bar code id
+            </summary>
+        </member>
+        <member name="P:Interview.Web.Requests.ProductRequestDto.CategoryId">
+            <summary>
+            Identity of Product Category
+            </summary>
+        </member>
+        <member name="M:Interview.Web.Requests.ProductRequestDto.#ctor">
+            <summary>
+            Default Constructor 
+            </summary>
+            <returns></returns>
+        </member>
+    </members>
+</doc>
