@@ -114,7 +114,7 @@
     <RefactorLog Include="Sparcpoint.Inventory.Database.refactorlog" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Sparcpoint.Inventory.Database.publish %28Local).xml" />
+    <None Include="Sparcpoint.Inventory.Database. _local_ .publish.xml" />
     <None Include="Sparcpoint.Inventory.Database.publish.xml" />
   </ItemGroup>
 </Project>
