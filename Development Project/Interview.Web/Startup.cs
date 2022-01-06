@@ -27,15 +27,20 @@ namespace Interview.Web
         public void ConfigureServices(IServiceCollection services)
         {
             var servicesProvider = services.BuildServiceProvider();
+            var configuration = servicesProvider.GetService<IConfiguration>();
 
             services.AddControllers();
             services.AddSwaggerGen();
 
             services.AddSingleton<IProductService, ProductService>();
+            services.AddSingleton<ICategoryService, CategoryService>();
             services.AddSingleton<IProductDataService>(ds => {
-                var configuration = servicesProvider.GetService<IConfiguration>();
                 var connString = configuration.GetValue<string>("ProductDBConn");
                 return new ProductDataService(connString);
+            });
+            services.AddSingleton<ICategoryDataService>(ds => {
+                var connString = configuration.GetValue<string>("ProductDBConn");
+                return new CategoryDataService(connString);
             });
         }
 

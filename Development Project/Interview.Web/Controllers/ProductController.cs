@@ -30,8 +30,8 @@ namespace Interview.Web.Controllers
         public async Task<IActionResult> CreateProduct(CreateProductRequest req)
         {
             //if there is a validation step for skus it should be here
-            var product = await _productService.CreateProductAsync(req);
-            return Ok(product);
+            await _productService.CreateProductAsync(req);
+            return Ok();
         }
     }
 }

@@ -44,8 +44,8 @@ namespace Sparcpoint.Test
 
             Assert.AreEqual(productRequest.Name, calledWith.Name);
             Assert.AreEqual(productRequest.Description, calledWith.Description);
-            Assert.AreEqual(String.Join(String.Empty, productRequest.ProductImageUris.ToArray()), calledWith.ProductImageUris);
-            Assert.AreEqual(String.Join(String.Empty, productRequest.ValidSkus.ToArray()), calledWith.ValidSkus);
+            Assert.AreEqual(String.Join(",", productRequest.ProductImageUris.ToArray()), calledWith.ProductImageUris);
+            Assert.AreEqual(String.Join(",", productRequest.ValidSkus.ToArray()), calledWith.ValidSkus);
 
         }
     }

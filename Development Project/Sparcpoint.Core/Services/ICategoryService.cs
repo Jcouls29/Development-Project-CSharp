@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace Sparcpoint.Services
 {
-    public interface IProductService
+    public interface ICategoryService
     {
-        Task CreateProductAsync(CreateProductRequest req);
-        Task<List<Product>> GetProducts();
+        Task<List<Category>> GetCategories();
+        Task CreateCategoryAsync(CreateCategoryRequest req);
     }
 }

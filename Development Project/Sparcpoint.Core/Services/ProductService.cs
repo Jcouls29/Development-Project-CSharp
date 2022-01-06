@@ -21,7 +21,7 @@ namespace Sparcpoint.Services
             return await _productDataService.GetProducts();
         }
 
-        public Task<Product> CreateProductAsync(CreateProductRequest req)
+        public async Task CreateProductAsync(CreateProductRequest req)
         {
             //eventually want to use a mapper here but start simple
 
@@ -35,7 +35,7 @@ namespace Sparcpoint.Services
             };
 
             //will also want to add steps here for attributes and categories
-            return _productDataService.CreateProductAsync(product);
+            await _productDataService.CreateProductAsync(product);
         }
     }
 }

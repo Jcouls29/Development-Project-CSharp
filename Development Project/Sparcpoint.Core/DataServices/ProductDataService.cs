@@ -50,7 +50,7 @@ namespace Sparcpoint.DataServices
             return productList;
         }
 
-        public async Task<Product> CreateProductAsync(Product newProduct)
+        public async Task CreateProductAsync(Product newProduct)
         {
             var productList = new List<Product>();
 
@@ -80,7 +80,6 @@ namespace Sparcpoint.DataServices
                     conn.Close();
                 }
             }
-            return new Product();
         }
 
         //private Task<List<Product>> GetProductData(IDbConnection connection, IDbTransaction trans)
