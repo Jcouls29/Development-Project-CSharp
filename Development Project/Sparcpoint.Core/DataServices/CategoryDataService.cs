@@ -53,7 +53,7 @@ namespace Sparcpoint.DataServices
             var categoryList = new List<Category>();
             int createdId;
 
-            String commandText = "INSERT [Instances].[Categories] (Name, Description, CreatedTimestamp) OUTPUT Inserted.InstanceId VALUES (@Name, @Description, @CreatedTimestamp)";
+            string commandText = "INSERT [Instances].[Categories] (Name, Description, CreatedTimestamp) OUTPUT Inserted.InstanceId VALUES (@Name, @Description, @CreatedTimestamp)";
 
             SqlParameter parameterName = new SqlParameter("@Name", newCategory.Name);
             SqlParameter parameterDescription = new SqlParameter("@Description", newCategory.Description);
@@ -81,7 +81,7 @@ namespace Sparcpoint.DataServices
 
         public async Task AddAttributeToCategory(int categoryId, KeyValuePair<string, string> attribute)
         {
-            String commandText = "INSERT [Instances].[CategoryAttributes] (InstanceId, Key, Value) VALUES (@InstanceId, @Key, @Value)";
+            string commandText = "INSERT [Instances].[CategoryAttributes] (InstanceId, Key, Value) VALUES (@InstanceId, @Key, @Value)";
 
             SqlParameter parameterCategoryId = new SqlParameter("@InstanceId", categoryId);
             SqlParameter parameterKey = new SqlParameter("@Key", attribute.Key);
@@ -107,7 +107,7 @@ namespace Sparcpoint.DataServices
 
         public async Task AddCategoryToCategory(int categoryId, int parentCategoryId)
         {
-            String commandText = "INSERT [Instances].[CategoryCategories] (InstanceId, CategoryInstanceId) VALUES (@InstanceId, @CategoryInstanceId)";
+            string commandText = "INSERT [Instances].[CategoryCategories] (InstanceId, CategoryInstanceId) VALUES (@InstanceId, @CategoryInstanceId)";
 
             SqlParameter parameterCategoryId = new SqlParameter("@InstanceId", categoryId);
             SqlParameter parameterParentCategoryId = new SqlParameter("@CategoryInstanceId", parentCategoryId);

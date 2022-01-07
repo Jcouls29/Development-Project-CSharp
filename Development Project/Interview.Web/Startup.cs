@@ -39,6 +39,7 @@ namespace Interview.Web
 
             services.AddSingleton<IProductService, ProductService>();
             services.AddSingleton<ICategoryService, CategoryService>();
+            services.AddSingleton<IInventoryService, InventoryService>();
             services.AddSingleton<IProductDataService>(ds => {
                 var connString = configuration.GetValue<string>("ProductDBConn");
                 return new ProductDataService(connString);
@@ -46,6 +47,10 @@ namespace Interview.Web
             services.AddSingleton<ICategoryDataService>(ds => {
                 var connString = configuration.GetValue<string>("ProductDBConn");
                 return new CategoryDataService(connString);
+            });
+            services.AddSingleton<IInventoryDataService>(ds => {
+                var connString = configuration.GetValue<string>("ProductDBConn");
+                return new InventoryDataService(connString);
             });
         }
 

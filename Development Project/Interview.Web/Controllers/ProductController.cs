@@ -34,21 +34,21 @@ namespace Interview.Web.Controllers
             return Ok();
         }
 
-        [HttpPost("/search")]
+        [HttpPost("search")]
         public async Task<IActionResult> SearchProducts(ProductSearchRequest req)
         {
             var results = _productService.SearchProducts(req);
             return Ok(results);
         }
 
-        [HttpPost("/{productId}/attributes")]
+        [HttpPost("{productId}/attributes")]
         public async Task<IActionResult> AddAttributesToProduct(int productId, List<KeyValuePair<string, string>> attributes)
         {
             await _productService.AddAttributesToProduct(productId, attributes);
             return Ok();
         }
 
-        [HttpPost("/{productId}/categories")]
+        [HttpPost("{productId}/categories")]
         public async Task<IActionResult> AddProductToCategories(int productId, List<int> categories)
         {
             await _productService.AddProductToCategories(productId, categories);

@@ -32,14 +32,14 @@ namespace Interview.Web.Controllers
             return Ok();
         }
 
-        [HttpPost("/{categoryId}/attributes")]
+        [HttpPost("{categoryId}/attributes")]
         public async Task<IActionResult> AddAttributesToCategory(int categoryId, List<KeyValuePair<string, string>> attributes)
         {
             await _categoryService.AddAttributesToCategory(categoryId, attributes);
             return Ok();
         }
 
-        [HttpPost("/{categoryId}/categories")]
+        [HttpPost("{categoryId}/categories")]
         public async Task<IActionResult> AddProductToCategory(int categoryId, List<int> categories)
         {
             await _categoryService.AddCategoryToCategories(categoryId, categories);
