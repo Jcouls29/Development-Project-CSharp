@@ -50,7 +50,6 @@ namespace Sparcpoint.DataServices
 
         public async Task<int> CreateCategoryAsync(Category newCategory)
         {
-            var categoryList = new List<Category>();
             int createdId;
 
             string commandText = "INSERT [Instances].[Categories] (Name, Description, CreatedTimestamp) OUTPUT Inserted.InstanceId VALUES (@Name, @Description, @CreatedTimestamp)";
