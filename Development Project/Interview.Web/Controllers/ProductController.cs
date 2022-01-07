@@ -33,5 +33,12 @@ namespace Interview.Web.Controllers
             await _productService.CreateProductAsync(req);
             return Ok();
         }
+
+        [HttpPost("/search")]
+        public async Task<IActionResult> SearchProducts(ProductSearchRequest req)
+        {
+            var results = _productService.SearchProducts(req);
+            return Ok(results);
+        }
     }
 }

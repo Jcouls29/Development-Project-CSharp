@@ -34,8 +34,23 @@ namespace Sparcpoint.Services
                 CreatedTimestamp = DateTime.UtcNow
             };
 
-            //will also want to add steps here for attributes and categories
-            await _productDataService.CreateProductAsync(product);
+            var createdId = await _productDataService.CreateProductAsync(product);
+
+            if (req.ProductAttributes != null && req.ProductAttributes.Count > 0)
+            {
+                foreach (var attr in req.ProductAttributes)
+                {
+                    await _productDataService.AddAttributeToProduct(createdId, attr);
+                }
+            }
+
+            if (req.CategoryIds != null && req.CategoryIds.Count > 0)
+            {
+                foreach (var cat in req.CategoryIds)
+                {
+                    await _productDataService.AddProductToCategory(createdId, cat);
+                }
+            }
         }
     }
 }

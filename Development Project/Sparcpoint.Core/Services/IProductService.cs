@@ -10,5 +10,6 @@ namespace Sparcpoint.Services
     {
         Task CreateProductAsync(CreateProductRequest req);
         Task<List<Product>> GetProducts();
+        Task<List<Product>> SearchProducts(ProductSearchRequest req);
     }
 }

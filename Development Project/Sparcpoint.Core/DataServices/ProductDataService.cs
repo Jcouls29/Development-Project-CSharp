@@ -50,9 +50,10 @@ namespace Sparcpoint.DataServices
             return productList;
         }
 
-        public async Task CreateProductAsync(Product newProduct)
+        public async Task<int> CreateProductAsync(Product newProduct)
         {
             var productList = new List<Product>();
+            int createdId;
 
             String commandText = "INSERT [Instances].[Products] (Name, Description, ProductImageUris, ValidSkus, CreatedTimestamp) VALUES (@Name, @Description, @ProductImageUris, @ValidSkus, @CreatedTimestamp)";
 
@@ -75,6 +76,34 @@ namespace Sparcpoint.DataServices
                     command.Parameters.Add(parameterCreatedOn);
 
                     conn.Open();
+                    createdId = (int)command.ExecuteScalar();
+
+                    conn.Close();
+                }
+            }
+
+            return createdId;
+        }
+
+        public async Task AddAttributeToProduct(int productId, KeyValuePair<string,string> attribute)
+        {
+            String commandText = "INSERT [Instances].[ProductAttributes] (InstanceId, Key, Value) VALUES (@InstanceId, @Key, @Value)";
+
+            SqlParameter parameterProductId = new SqlParameter("@InstanceId", productId);
+            SqlParameter parameterKey = new SqlParameter("@Key", attribute.Key);
+            SqlParameter parameterValue = new SqlParameter("@Value", attribute.Value);
+
+            using (SqlConnection conn = new SqlConnection(_dbConn))
+            {
+                using (SqlCommand cmd = new SqlCommand(commandText, (SqlConnection)conn))
+                {
+                    SqlCommand command = new SqlCommand(commandText, conn);
+
+                    command.Parameters.Add(parameterProductId);
+                    command.Parameters.Add(parameterKey);
+                    command.Parameters.Add(parameterValue);
+
+                    conn.Open();
                     command.ExecuteNonQuery();
 
                     conn.Close();
@@ -82,17 +111,28 @@ namespace Sparcpoint.DataServices
             }
         }
 
-        //private Task<List<Product>> GetProductData(IDbConnection connection, IDbTransaction trans)
-        //{
+        public async Task AddProductToCategory(int categoryId, int productId)
+        {
+            String commandText = "INSERT [Instances].[CategoryAttributes] (InstanceId, CategoryInstanceId) VALUES (@InstanceId, @CategoryInstanceId)";
 
-        //}
+            SqlParameter parameterProductId = new SqlParameter("@InstanceId", productId);
+            SqlParameter parameterCategoryId = new SqlParameter("@CategoryInstanceId", categoryId);
 
-        //private Task CreateNewProduct(IDbConnection connection, IDbTransaction trans, Product product)
-        //{
+            using (SqlConnection conn = new SqlConnection(_dbConn))
+            {
+                using (SqlCommand cmd = new SqlCommand(commandText, (SqlConnection)conn))
+                {
+                    SqlCommand command = new SqlCommand(commandText, conn);
 
-        //    using ()
-        //    {
-        //    }
-        //}
+                    command.Parameters.Add(parameterProductId);
+                    command.Parameters.Add(parameterCategoryId);
+
+                    conn.Open();
+                    command.ExecuteNonQuery();
+
+                    conn.Close();
+                }
+            }
+        }
     }
 }

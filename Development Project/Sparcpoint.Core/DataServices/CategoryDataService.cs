@@ -48,11 +48,12 @@ namespace Sparcpoint.DataServices
             return categoryList;
         }
 
-        public async Task CreateCategoryAsync(Category newCategory)
+        public async Task<int> CreateCategoryAsync(Category newCategory)
         {
             var categoryList = new List<Category>();
+            int createdId;
 
-            String commandText = "INSERT [Instances].[Categories] (Name, Description, CreatedTimestamp) VALUES (@Name, @Description, @CreatedTimestamp)";
+            String commandText = "INSERT [Instances].[Categories] (Name, Description, CreatedTimestamp) OUTPUT Inserted.InstanceId VALUES (@Name, @Description, @CreatedTimestamp)";
 
             SqlParameter parameterName = new SqlParameter("@Name", newCategory.Name);
             SqlParameter parameterDescription = new SqlParameter("@Description", newCategory.Description);
@@ -67,6 +68,58 @@ namespace Sparcpoint.DataServices
                     command.Parameters.Add(parameterName);
                     command.Parameters.Add(parameterDescription);
                     command.Parameters.Add(parameterCreatedOn);
+
+                    conn.Open();
+                    createdId = (int)command.ExecuteScalar();
+
+                    conn.Close();
+                }
+            }
+
+            return createdId;
+        }
+
+        public async Task AddAttributeToCategory(int categoryId, KeyValuePair<string, string> attribute)
+        {
+            String commandText = "INSERT [Instances].[CategoryAttributes] (InstanceId, Key, Value) VALUES (@InstanceId, @Key, @Value)";
+
+            SqlParameter parameterCategoryId = new SqlParameter("@InstanceId", categoryId);
+            SqlParameter parameterKey = new SqlParameter("@Key", attribute.Key);
+            SqlParameter parameterValue = new SqlParameter("@Value", attribute.Value);
+
+            using (SqlConnection conn = new SqlConnection(_dbConn))
+            {
+                using (SqlCommand cmd = new SqlCommand(commandText, (SqlConnection)conn))
+                {
+                    SqlCommand command = new SqlCommand(commandText, conn);
+
+                    command.Parameters.Add(parameterCategoryId);
+                    command.Parameters.Add(parameterKey);
+                    command.Parameters.Add(parameterValue);
+
+                    conn.Open();
+                    command.ExecuteNonQuery();
+
+                    conn.Close();
+                }
+            }
+        }
+
+        public async Task AddCategoryToCategory(int categoryId, int parentCategoryId)
+        {
+            String commandText = "INSERT [Instances].[CategoryCategories] (InstanceId, CategoryInstanceId) VALUES (@InstanceId, @CategoryInstanceId)";
+
+            SqlParameter parameterCategoryId = new SqlParameter("@InstanceId", categoryId);
+            SqlParameter parameterParentCategoryId = new SqlParameter("@CategoryInstanceId", parentCategoryId);
+
+            using (SqlConnection conn = new SqlConnection(_dbConn))
+            {
+                using (SqlCommand cmd = new SqlCommand(commandText, (SqlConnection)conn))
+                {
+                    SqlCommand command = new SqlCommand(commandText, conn);
+
+                    command.Parameters.Add(parameterCategoryId);
+                    command.Parameters.Add(parameterParentCategoryId);
 
                     conn.Open();
                     command.ExecuteNonQuery();

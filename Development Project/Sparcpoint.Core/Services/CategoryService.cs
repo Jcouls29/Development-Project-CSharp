@@ -30,7 +30,23 @@ namespace Sparcpoint.Services
                 CreatedTimestamp = DateTime.UtcNow
             };
 
-            await _categoryDataService.CreateCategoryAsync(category);
+            var createdId = await _categoryDataService.CreateCategoryAsync(category);
+
+            if(req.CategoryAttributes != null && req.CategoryAttributes.Count > 0)
+            {
+                foreach (var attr in req.CategoryAttributes)
+                {
+                    await _categoryDataService.AddAttributeToCategory(createdId, attr);
+                }
+            }
+
+            if(req.CategoryIds != null && req.CategoryIds.Count > 0)
+            {
+                foreach (var cat in req.CategoryIds)
+                {
+                    await _categoryDataService.AddCategoryToCategory(createdId, cat);
+                }
+            }
         }
     }
 }

@@ -9,6 +9,8 @@ namespace Sparcpoint.DataServices
     public interface ICategoryDataService
     {
         Task<List<Category>> GetCategories();
-        Task CreateCategoryAsync(Category newProduct);
+        Task<int> CreateCategoryAsync(Category newProduct);
+        Task AddCategoryToCategory(int categoryId, int parentCategoryId);
+        Task AddAttributeToCategory(int categoryId, KeyValuePair<string, string> attribute);
     }
 }
