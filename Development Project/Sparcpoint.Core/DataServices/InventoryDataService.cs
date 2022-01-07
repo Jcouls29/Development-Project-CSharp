@@ -32,12 +32,13 @@ namespace Sparcpoint.DataServices
                     {
                         var startedTimestamp = DateTime.Parse(reader["StartedTimestamp"].ToString());
                         var completedTimestamp = DateTime.Parse(reader["CompletedTimestamp"].ToString());
+                        var quantity = Convert.ToDecimal(reader["Quantity"].ToString());
 
                         var transaction = new InventoryTransactions()
                         {
                             TransactionId = Convert.ToInt32(reader["TransactionId"].ToString()),
                             ProductInstanceId = Convert.ToInt32(reader["ProductInstanceId"].ToString()),
-                            Quantity = Convert.ToInt32(reader["Quantity"].ToString()),
+                            Quantity = decimal.ToInt32(quantity),
                             StartedTimestamp = startedTimestamp,
                             CompletedTimestamp = completedTimestamp,
                             TypeCategory = reader["TypeCategory"].ToString()
@@ -69,7 +70,8 @@ namespace Sparcpoint.DataServices
                 {
                     while (reader.Read())
                     {
-                        productQuantity = Convert.ToInt32(reader["Quantity"].ToString());
+                        var quantity = Convert.ToDecimal(reader["Quantity"].ToString());
+                        productQuantity = decimal.ToInt32(quantity);
                     }
                 }
 
@@ -96,7 +98,8 @@ namespace Sparcpoint.DataServices
                 {
                     while (reader.Read())
                     {
-                        metadataQuantity += Convert.ToInt32(reader["Quantity"].ToString());
+                        var quantity = Convert.ToDecimal(reader["Quantity"].ToString());
+                        metadataQuantity += decimal.ToInt32(quantity);
                     }
                 }
 

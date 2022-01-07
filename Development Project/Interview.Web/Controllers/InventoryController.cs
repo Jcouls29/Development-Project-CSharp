@@ -24,14 +24,14 @@ namespace Interview.Web.Controllers
             return Ok(result);
         }
 
-        [HttpGet("{productId}")]
+        [HttpGet("{productId}/quantity")]
         public async Task<IActionResult> GetInventoryForProduct(int productId)
         {
             var quantity = await  _inventoryService.GetInventoryForProduct(productId);
             return Ok(quantity);
         }
 
-        [HttpGet]
+        [HttpGet("metadata/quantity")]
         public async Task<IActionResult> GetInventoryByMetadata(KeyValuePair<string, string> metadata)
         {
             var quantity = await _inventoryService.GetInventoryByMetadata(metadata);

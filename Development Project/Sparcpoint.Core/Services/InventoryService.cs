@@ -38,6 +38,8 @@ namespace Sparcpoint.Services
             transaction.ProductInstanceId = productId;
             transaction.Quantity = newInventoryCount;
             transaction.StartedTimestamp = DateTime.UtcNow;
+            transaction.CompletedTimestamp = DateTime.UtcNow;
+            transaction.TypeCategory = string.Empty;
 
             await _inventoryDataService.AddNewInventoryTransaction(transaction);
         }
