@@ -134,5 +134,10 @@ namespace Sparcpoint.DataServices
                 }
             }
         }
+
+        public async Task<List<Product>> SearchProducts(string keyword, List<string> searchBy, string orderBy, string orderDirection, int page, int pageCount)
+        {
+            return new List<Product>();
+        }
     }
 }

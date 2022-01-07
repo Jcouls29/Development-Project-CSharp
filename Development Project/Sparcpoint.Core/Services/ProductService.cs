@@ -48,8 +48,30 @@ namespace Sparcpoint.Services
             {
                 foreach (var cat in req.CategoryIds)
                 {
-                    await _productDataService.AddProductToCategory(createdId, cat);
+                    await _productDataService.AddProductToCategory(cat, createdId);
                 }
+            }
+        }
+
+        public async Task<List<Product>> SearchProducts(ProductSearchRequest req)
+        {
+            return new List<Product>();
+        }
+
+
+        public async Task AddAttributesToProduct(int productId, List<KeyValuePair<string, string>> attributes)
+        {
+            foreach (var attr in attributes)
+            {
+                await _productDataService.AddAttributeToProduct(productId, attr);
+            }
+        }
+
+        public async Task AddProductToCategories(int productId, List<int> categories)
+        {
+            foreach (var cat in categories)
+            {
+                await _productDataService.AddProductToCategory(cat, productId);
             }
         }
     }

@@ -48,5 +48,22 @@ namespace Sparcpoint.Services
                 }
             }
         }
+
+
+        public async Task AddAttributesToCategory(int categoryId, List<KeyValuePair<string, string>> attributes)
+        {
+            foreach (var attr in attributes)
+            {
+                await _categoryDataService.AddAttributeToCategory(categoryId, attr);
+            }
+        }
+
+        public async Task AddCategoryToCategories(int categoryId, List<int> categories)
+        {
+            foreach (var cat in categories)
+            {
+                await _categoryDataService.AddCategoryToCategory(categoryId, cat);
+            }
+        }
     }
 }

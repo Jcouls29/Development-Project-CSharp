@@ -9,6 +9,7 @@ using Sparcpoint.Services;
 using Sparcpoint.SqlServer.Abstractions;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -30,7 +31,11 @@ namespace Interview.Web
             var configuration = servicesProvider.GetService<IConfiguration>();
 
             services.AddControllers();
-            services.AddSwaggerGen();
+            services.AddSwaggerGen(g =>
+            {
+                var filePath = Path.Combine(AppContext.BaseDirectory, "Interview.Web.xml");
+                g.IncludeXmlComments(filePath);
+            });
 
             services.AddSingleton<IProductService, ProductService>();
             services.AddSingleton<ICategoryService, CategoryService>();

@@ -6,11 +6,12 @@ namespace Sparcpoint.Models
 {
     public class ProductSearchRequest
     {
+        public string Keyword { get; set; }
+
         /// <summary>
-        /// 
+        /// Possible options Metadata, Categories, Name, Description, All
         /// </summary>
         /// <example></example>
-        public string Keyword { get; set; }
         public List<string> SearchBy { get; set; }
         public string OrderBy { get; set; }
         public string OrderDirection { get; set; }

@@ -56,13 +56,13 @@ namespace Sparcpoint.Test
             public class GivenTheModelContainsAttributes
             {
                 [TestMethod]
-                public async Task CallsToAddTheAttributesToTheCategory()
+                public async Task CallsToAddTheAttributesToTheProduct()
                 {
                     List<KeyValuePair<string, string>> calledWith = new List<KeyValuePair<string, string>>();
                     Mock<IProductDataService> mockDataService = new Mock<IProductDataService>();
                     mockDataService.Setup(p => p.CreateProductAsync(It.IsAny<Product>())).Returns(Task.FromResult(5));
                     mockDataService.Setup(p => p.AddAttributeToProduct(It.IsAny<int>(), It.IsAny<KeyValuePair<string, string>>())).Callback<int, KeyValuePair<string, string>>((id, attribute) => calledWith.Add(attribute));
-                    var categoryService = new ProductService(mockDataService.Object);
+                    var productService = new ProductService(mockDataService.Object);
 
                     var productRequest = new CreateProductRequest()
                     {
@@ -77,7 +77,7 @@ namespace Sparcpoint.Test
                         }
                     };
 
-                    await categoryService.CreateProductAsync(productRequest);
+                    await productService.CreateProductAsync(productRequest);
 
                     mockDataService.Verify(d => d.AddAttributeToProduct(5, It.IsAny<KeyValuePair<string, string>>()), Times.Exactly(3));
                     Assert.AreEqual(productRequest.ProductAttributes.ElementAt(0).Key, calledWith.ElementAt(0).Key);
@@ -93,12 +93,12 @@ namespace Sparcpoint.Test
             public class GivenTheModelDoesNotContainAttributes
             {
                 [TestMethod]
-                public async Task DoesNotCallToAddTheAttributesToTheCategory()
+                public async Task DoesNotCallToAddTheAttributesToTheProduct()
                 {
                     Mock<IProductDataService> mockDataService = new Mock<IProductDataService>();
                     mockDataService.Setup(p => p.CreateProductAsync(It.IsAny<Product>())).Returns(Task.FromResult(5));
                     mockDataService.Setup(p => p.AddAttributeToProduct(It.IsAny<int>(), It.IsAny<KeyValuePair<string, string>>())).Verifiable();
-                    var categoryService = new ProductService(mockDataService.Object);
+                    var productService = new ProductService(mockDataService.Object);
 
                     var productRequest = new CreateProductRequest()
                     {
@@ -108,7 +108,7 @@ namespace Sparcpoint.Test
                         ValidSkus = new List<string>() { "1234", "5678" }
                     };
 
-                    await categoryService.CreateProductAsync(productRequest);
+                    await productService.CreateProductAsync(productRequest);
 
                     mockDataService.Verify(d => d.AddAttributeToProduct(It.IsAny<int>(), It.IsAny<KeyValuePair<string, string>>()), Times.Never());
                 }
@@ -117,12 +117,12 @@ namespace Sparcpoint.Test
             public class GivenTheModelContainsCategories
             {
                 [TestMethod]
-                public async Task CallsToAddCateogiresToCategory()
+                public async Task CallsToAddCateogiresToProduct()
                 {
                     Mock<IProductDataService> mockDataService = new Mock<IProductDataService>();
                     mockDataService.Setup(p => p.CreateProductAsync(It.IsAny<Product>())).Returns(Task.FromResult(4));
                     mockDataService.Setup(p => p.AddProductToCategory(It.IsAny<int>(), It.IsAny<int>())).Verifiable();
-                    var categoryService = new ProductService(mockDataService.Object);
+                    var productService = new ProductService(mockDataService.Object);
 
                     var productRequest = new CreateProductRequest()
                     {
@@ -133,11 +133,11 @@ namespace Sparcpoint.Test
                         CategoryIds = new List<int>() {4, 7, 8 }
                     };
 
-                    await categoryService.CreateProductAsync(productRequest);
+                    await productService.CreateProductAsync(productRequest);
 
                     mockDataService.Verify(d => d.AddProductToCategory(4, 4), Times.Once());
-                    mockDataService.Verify(d => d.AddProductToCategory(4, 7), Times.Once());
-                    mockDataService.Verify(d => d.AddProductToCategory(4, 8), Times.Once());
+                    mockDataService.Verify(d => d.AddProductToCategory(7, 4), Times.Once());
+                    mockDataService.Verify(d => d.AddProductToCategory(8, 4), Times.Once());
 
                 }
             }
@@ -146,12 +146,12 @@ namespace Sparcpoint.Test
             public class GivenTheModelDoesNotContainCategories
             {
                 [TestMethod]
-                public async Task DoesNotCallToAddTheAttributesToTheCategory()
+                public async Task DoesNotCallToAddTheCategoriesToTheProduct()
                 {
                     Mock<IProductDataService> mockDataService = new Mock<IProductDataService>();
                     mockDataService.Setup(p => p.CreateProductAsync(It.IsAny<Product>())).Returns(Task.FromResult(4));
                     mockDataService.Setup(p => p.AddProductToCategory(It.IsAny<int>(), It.IsAny<int>())).Verifiable();
-                    var categoryService = new ProductService(mockDataService.Object);
+                    var productService = new ProductService(mockDataService.Object);
 
                     var productRequest = new CreateProductRequest()
                     {
@@ -161,10 +161,61 @@ namespace Sparcpoint.Test
                         ValidSkus = new List<string>() { "1234", "5678" }
                     };
 
-                    await categoryService.CreateProductAsync(productRequest);
+                    await productService.CreateProductAsync(productRequest);
 
                     mockDataService.Verify(d => d.AddProductToCategory(It.IsAny<int>(), It.IsAny<int>()), Times.Never());
                 }
+            }
+        }
+
+        [TestClass]
+        public class WhenAddingAttributesToProduct
+        {
+            [TestMethod]
+            public async Task DoesNotCallToAddTheAttributesToTheProduct()
+            {
+                List<KeyValuePair<string, string>> calledWith = new List<KeyValuePair<string, string>>();
+
+                Mock<IProductDataService> mockDataService = new Mock<IProductDataService>();
+                mockDataService.Setup(p => p.CreateProductAsync(It.IsAny<Product>())).Returns(Task.FromResult(5));
+                mockDataService.Setup(p => p.AddAttributeToProduct(It.IsAny<int>(), It.IsAny<KeyValuePair<string, string>>())).Callback<int, KeyValuePair<string, string>>((id, attribute) => calledWith.Add(attribute));
+                var productService = new ProductService(mockDataService.Object);
+
+                var attributesToAdd = new List<KeyValuePair<string, string>>() {
+                    new KeyValuePair<string, string>("Stuff", "Things"),
+                    new KeyValuePair<string, string>("Neat", "Property"),
+                    new KeyValuePair<string, string>("Shipping", "Standard")
+                };
+                await productService.AddAttributesToProduct(3, attributesToAdd);
+
+                mockDataService.Verify(d => d.AddAttributeToProduct(3, It.IsAny<KeyValuePair<string, string>>()), Times.Exactly(3));
+                Assert.AreEqual(attributesToAdd.ElementAt(0).Key, calledWith.ElementAt(0).Key);
+                Assert.AreEqual(attributesToAdd.ElementAt(0).Value, calledWith.ElementAt(0).Value);
+                Assert.AreEqual(attributesToAdd.ElementAt(1).Key, calledWith.ElementAt(1).Key);
+                Assert.AreEqual(attributesToAdd.ElementAt(1).Value, calledWith.ElementAt(1).Value);
+                Assert.AreEqual(attributesToAdd.ElementAt(2).Key, calledWith.ElementAt(2).Key);
+                Assert.AreEqual(attributesToAdd.ElementAt(2).Value, calledWith.ElementAt(2).Value);
+            }
+        }
+
+        [TestClass]
+        public class WhenAddingProductToCategories
+        {
+            [TestMethod]
+            public async Task CallsToAddCateogiresToProduct()
+            {
+                Mock<IProductDataService> mockDataService = new Mock<IProductDataService>();
+                mockDataService.Setup(p => p.CreateProductAsync(It.IsAny<Product>())).Returns(Task.FromResult(4));
+                mockDataService.Setup(p => p.AddProductToCategory(It.IsAny<int>(), It.IsAny<int>())).Verifiable();
+                var productService = new ProductService(mockDataService.Object);
+
+
+                await productService.AddProductToCategories(4, new List<int> { 7, 10, 13});
+
+                mockDataService.Verify(d => d.AddProductToCategory(7, 4), Times.Once());
+                mockDataService.Verify(d => d.AddProductToCategory(10, 4), Times.Once());
+                mockDataService.Verify(d => d.AddProductToCategory(13, 4), Times.Once());
+
             }
         }
 

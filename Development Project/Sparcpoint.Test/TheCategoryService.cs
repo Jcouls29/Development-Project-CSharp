@@ -136,7 +136,7 @@ namespace Sparcpoint.Test
             public class GivenTheModelDoesNotContainCategories
             {
                 [TestMethod]
-                public async Task DoesNotCallToAddTheAttributesToTheCategory()
+                public async Task DoesNotCallToAddTheCategoriesToTheCategory()
                 {
                     Mock<ICategoryDataService> mockDataService = new Mock<ICategoryDataService>();
                     mockDataService.Setup(p => p.CreateCategoryAsync(It.IsAny<Category>())).Returns(Task.FromResult(5));
@@ -155,6 +155,55 @@ namespace Sparcpoint.Test
                 }
             }
 
+        }
+
+        [TestClass]
+        public class WhenAddingAttributesToCategory
+        {
+            [TestMethod]
+            public async Task DoesNotCallToAddTheAttributesToTheProduct()
+            {
+                List<KeyValuePair<string, string>> calledWith = new List<KeyValuePair<string, string>>();
+
+                Mock<ICategoryDataService> mockDataService = new Mock<ICategoryDataService>();
+                mockDataService.Setup(p => p.AddAttributeToCategory(It.IsAny<int>(), It.IsAny<KeyValuePair<string, string>>())).Callback<int, KeyValuePair<string, string>>((id, attribute) => calledWith.Add(attribute));
+                var categoryService = new CategoryService(mockDataService.Object);
+
+                var attributesToAdd = new List<KeyValuePair<string, string>>() {
+                    new KeyValuePair<string, string>("Stuff", "Things"),
+                    new KeyValuePair<string, string>("Neat", "Property"),
+                    new KeyValuePair<string, string>("Shipping", "Standard")
+                };
+                await categoryService.AddAttributesToCategory(3, attributesToAdd);
+
+                mockDataService.Verify(d => d.AddAttributeToCategory(3, It.IsAny<KeyValuePair<string, string>>()), Times.Exactly(3));
+                Assert.AreEqual(attributesToAdd.ElementAt(0).Key, calledWith.ElementAt(0).Key);
+                Assert.AreEqual(attributesToAdd.ElementAt(0).Value, calledWith.ElementAt(0).Value);
+                Assert.AreEqual(attributesToAdd.ElementAt(1).Key, calledWith.ElementAt(1).Key);
+                Assert.AreEqual(attributesToAdd.ElementAt(1).Value, calledWith.ElementAt(1).Value);
+                Assert.AreEqual(attributesToAdd.ElementAt(2).Key, calledWith.ElementAt(2).Key);
+                Assert.AreEqual(attributesToAdd.ElementAt(2).Value, calledWith.ElementAt(2).Value);
+            }
+        }
+
+        [TestClass]
+        public class WhenAddingCategoryToCategories
+        {
+            [TestMethod]
+            public async Task CallsToAddCateogiresToProduct()
+            {
+                Mock<ICategoryDataService> mockDataService = new Mock<ICategoryDataService>();
+                mockDataService.Setup(p => p.AddCategoryToCategory(It.IsAny<int>(), It.IsAny<int>())).Returns(Task.FromResult(4));
+                var categoryService = new CategoryService(mockDataService.Object);
+
+
+                await categoryService.AddCategoryToCategories(4, new List<int> { 7, 10, 13 });
+
+                mockDataService.Verify(d => d.AddCategoryToCategory(4, 7), Times.Once());
+                mockDataService.Verify(d => d.AddCategoryToCategory(4, 10), Times.Once());
+                mockDataService.Verify(d => d.AddCategoryToCategory(4, 13), Times.Once());
+
+            }
         }
     }
 }

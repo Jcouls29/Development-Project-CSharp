@@ -10,5 +10,7 @@ namespace Sparcpoint.Services
     {
         Task<List<Category>> GetCategories();
         Task CreateCategoryAsync(CreateCategoryRequest req);
+        Task AddAttributesToCategory(int categoryId, List<KeyValuePair<string, string>> attributes);
+        Task AddCategoryToCategories(int categoryId, List<int> categories);
     }
 }

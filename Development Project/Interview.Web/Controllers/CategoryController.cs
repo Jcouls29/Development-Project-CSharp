@@ -31,6 +31,20 @@ namespace Interview.Web.Controllers
             await _categoryService.CreateCategoryAsync(request);
             return Ok();
         }
+
+        [HttpPost("/{categoryId}/attributes")]
+        public async Task<IActionResult> AddAttributesToCategory(int categoryId, List<KeyValuePair<string, string>> attributes)
+        {
+            await _categoryService.AddAttributesToCategory(categoryId, attributes);
+            return Ok();
+        }
+
+        [HttpPost("/{categoryId}/categories")]
+        public async Task<IActionResult> AddProductToCategory(int categoryId, List<int> categories)
+        {
+            await _categoryService.AddCategoryToCategories(categoryId, categories);
+            return Ok();
+        }
     }
 
 }
