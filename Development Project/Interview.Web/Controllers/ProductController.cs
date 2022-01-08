@@ -12,13 +12,17 @@ namespace Interview.Web.Controllers
     public class ProductController : Controller
     {
         private IProductService _productService;
+        private IValidationService _validationService;
 
-        public ProductController(IProductService productService)
+        public ProductController(IProductService productService, IValidationService validationService)
         {
             _productService = productService;
+            _validationService = validationService;
         }
 
-        // NOTE: Sample Action
+        /// <summary>
+        /// Gets all products
+        /// </summary>
         [HttpGet]
         public async Task<IActionResult> GetAllProducts()
         {
@@ -26,31 +30,66 @@ namespace Interview.Web.Controllers
             return Ok(products);
         }
 
+        /// <summary>
+        /// Creates a new product
+        /// </summary>
         [HttpPost]
         public async Task<IActionResult> CreateProduct(CreateProductRequest req)
         {
-            //if there is a validation step for skus it should be here
+            var prodValidation = _validationService.ProductIsValid(req);
+
+            if (!prodValidation.IsValid)
+            {
+                return BadRequest($"{prodValidation.InvalidMessage}");
+            }
+
             await _productService.CreateProductAsync(req);
             return Ok();
         }
 
+        /// <summary>
+        /// Searches products
+        /// </summary>
         [HttpPost("search")]
         public async Task<IActionResult> SearchProducts(ProductSearchRequest req)
         {
-            var results = _productService.SearchProducts(req);
+            var searchalidation = _validationService.SearchIsValid(req);
+
+            if (!searchalidation.IsValid)
+            {
+                return BadRequest($"{searchalidation.InvalidMessage}");
+            }
+
+            var results = await _productService.SearchProducts(req);
             return Ok(results);
         }
 
+        /// <summary>
+        /// Adds a new attribute to a product
+        /// </summary>
         [HttpPost("{productId}/attributes")]
         public async Task<IActionResult> AddAttributesToProduct(int productId, [FromBody] Dictionary<string, string> attributes)
         {
+            if (attributes == null)
+            {
+                return BadRequest("You must include at least one attribute");
+            }
+
             await _productService.AddAttributesToProduct(productId, attributes.ToList());
             return Ok();
         }
 
+        /// <summary>
+        /// Adds product to a category
+        /// </summary>
         [HttpPost("{productId}/categories")]
         public async Task<IActionResult> AddProductToCategories(int productId, List<int> categories)
         {
+            if (!categories.Any())
+            {
+                return BadRequest("You must include at least one category");
+            }
+
             await _productService.AddProductToCategories(productId, categories);
             return Ok();
         }

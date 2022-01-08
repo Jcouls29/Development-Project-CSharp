@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 namespace Sparcpoint.DataServices
 {
+    //EVAL: with more time I'd want to refactor this to use the ISQLExecutor and pull out repeated code to lesson repition
     public class InventoryDataService: IInventoryDataService
     {
         private readonly string _connString;
@@ -58,7 +59,7 @@ namespace Sparcpoint.DataServices
         {
             int productQuantity = 0;
 
-            string queryString = "SELECT TOP 1 Quantity FROM [Transactions].[InventoryTransactions] WHERE ProductInstanceId = @ProductInstanceId ORDER BY CompletedTimestamp;";
+            string queryString = "SELECT TOP 1 Quantity FROM [Transactions].[InventoryTransactions] WHERE ProductInstanceId = @ProductInstanceId ORDER BY CompletedTimestamp DESC;";
             SqlParameter parameterProductId = new SqlParameter("@ProductInstanceId", productId);
 
             using (SqlConnection conn = new SqlConnection(_connString))
@@ -81,34 +82,7 @@ namespace Sparcpoint.DataServices
             return productQuantity;
         }
 
-        public async Task<int> GetInventoryByMetadata(KeyValuePair<string, string> metadata)
-        {
-            int metadataQuantity = 0;
-
-            string queryString = "SELECT i.Quantity FROM [Transactions].[InventoryTransactions] INNER JOIN [Instances].[ProductAttributes] p ON i.ProductInstanceId=p.InstanceId AND p.Key LIKE '%' + @MetaKey + '%' AND p.Value LIKE '%' + @MetaValue + '%' ORDER BY CompletedTimestamp;";
-            SqlParameter parameterKey = new SqlParameter("@MetaKey", metadata.Key);
-            SqlParameter parameterValue = new SqlParameter("@MetaValue", metadata.Value);
-            using (SqlConnection conn = new SqlConnection(_connString))
-            {
-                SqlCommand command = new SqlCommand(queryString, conn);
-                command.Parameters.Add(parameterKey);
-                command.Parameters.Add(parameterValue);
-                conn.Open();
-                using (SqlDataReader reader = command.ExecuteReader())
-                {
-                    while (reader.Read())
-                    {
-                        var quantity = Convert.ToDecimal(reader["Quantity"].ToString());
-                        metadataQuantity += decimal.ToInt32(quantity);
-                    }
-                }
-
-                conn.Close();
-            }
-
-            return metadataQuantity;
-        }
-
+        
         public async Task<int> AddNewInventoryTransaction(InventoryTransactions transaction)
         {
             int createdId;
@@ -145,7 +119,7 @@ namespace Sparcpoint.DataServices
 
         public async Task RollbackInventoryUpdate(int transactionId)
         {
-            string commandText = "DELETE * FROM [Transactions].[InventoryTransactions] WHERE TransactionId = @TransactionId;";
+            string commandText = "DELETE FROM [Transactions].[InventoryTransactions] WHERE TransactionId = @TransactionId;";
             SqlParameter parametertransId = new SqlParameter("@TransactionId", transactionId);
 
 

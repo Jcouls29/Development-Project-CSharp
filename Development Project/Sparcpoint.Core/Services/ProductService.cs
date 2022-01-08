@@ -23,7 +23,7 @@ namespace Sparcpoint.Services
 
         public async Task CreateProductAsync(CreateProductRequest req)
         {
-            //eventually want to use a mapper here but start simple
+            //EVAL: eventually want to use a mapper here but start simple
 
             var product = new Product()
             {
@@ -36,6 +36,8 @@ namespace Sparcpoint.Services
 
             var createdId = await _productDataService.CreateProductAsync(product);
 
+            //EVAL: for efficieny imporvement I'd want to write a method that accepts
+            //multiple attributes at once to prevent too many DB connections
             if (req.ProductAttributes != null && req.ProductAttributes.Count > 0)
             {
                 foreach (var attr in req.ProductAttributes)
@@ -44,6 +46,8 @@ namespace Sparcpoint.Services
                 }
             }
 
+            //EVAL: for efficieny imporvement I'd want to write a method that accepts
+            //multiple attributes at once to prevent too many DB connections
             if (req.CategoryIds != null && req.CategoryIds.Count > 0)
             {
                 foreach (var cat in req.CategoryIds)
@@ -55,6 +59,11 @@ namespace Sparcpoint.Services
 
         public async Task<List<Product>> SearchProducts(ProductSearchRequest req)
         {
+            //default to product name for order
+            //default to asc for sort order
+            //default page to 1
+            //default page count to 25
+            //default search by to name
             return new List<Product>();
         }
 
@@ -63,6 +72,8 @@ namespace Sparcpoint.Services
         {
             foreach (var attr in attributes)
             {
+                //EVAL: for efficieny imporvement I'd want to write a method that accepts
+                //multiple attributes at once to prevent too many DB connections
                 await _productDataService.AddAttributeToProduct(productId, attr);
             }
         }
@@ -71,6 +82,8 @@ namespace Sparcpoint.Services
         {
             foreach (var cat in categories)
             {
+                //EVAL: for efficieny imporvement I'd want to write a method that accepts
+                //multiple attributes at once to prevent too many DB connections
                 await _productDataService.AddProductToCategory(cat, productId);
             }
         }

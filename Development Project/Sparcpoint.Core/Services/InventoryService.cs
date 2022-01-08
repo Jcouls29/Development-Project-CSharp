@@ -27,11 +27,6 @@ namespace Sparcpoint.Services
             return await _inventoryDataService.GetInventoryForProduct(productId);
         }
 
-        public async Task<int> GetInventoryByMetadata(KeyValuePair<string, string> metadata)
-        {
-            return await _inventoryDataService.GetInventoryByMetadata(metadata);
-        }
-
         public async Task UpdateProductInventory(int productId, int newInventoryCount)
         {
             var transaction = new InventoryTransactions();

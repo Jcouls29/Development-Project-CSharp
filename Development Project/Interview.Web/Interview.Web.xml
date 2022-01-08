@@ -4,5 +4,11 @@
         <name>Interview.Web</name>
     </assembly>
     <members>
+        <member name="M:Interview.Web.Controllers.CategoryController.GetAllCategories">
+            <summary>
+            Gets all categories
+            </summary>
+            <returns>List of categories</returns>
+        </member>
     </members>
 </doc>

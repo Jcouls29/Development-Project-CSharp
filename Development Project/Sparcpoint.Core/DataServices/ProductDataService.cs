@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 
 namespace Sparcpoint.DataServices
 {
+    //EVAL: with more time I'd want to refactor this to use the ISQLExecutor and pull out repeated code to lesson repition
     public class ProductDataService : IProductDataService
     {
         private string _dbConn;

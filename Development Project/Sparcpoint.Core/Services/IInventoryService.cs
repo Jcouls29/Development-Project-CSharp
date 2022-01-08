@@ -10,7 +10,6 @@ namespace Sparcpoint.Services
     {
         Task<List<InventoryTransactions>> GetAllInventoryTransactions();
         Task<int> GetInventoryForProduct(int productId);
-        Task<int> GetInventoryByMetadata(KeyValuePair<string, string> metadata);
         Task UpdateProductInventory(int productId, int newInventoryCount);
         Task RollbackInventoryUpdate(int transactionId);
     }

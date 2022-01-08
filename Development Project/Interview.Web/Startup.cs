@@ -38,6 +38,7 @@ namespace Interview.Web
             });
 
             services.AddSingleton<IProductService, ProductService>();
+            services.AddSingleton<IValidationService, ValidationService>();
             services.AddSingleton<ICategoryService, CategoryService>();
             services.AddSingleton<IInventoryService, InventoryService>();
             services.AddSingleton<IProductDataService>(ds => {

@@ -12,8 +12,6 @@ namespace Sparcpoint.DataServices
 
         Task<int> GetInventoryForProduct(int productId);
 
-        Task<int> GetInventoryByMetadata(KeyValuePair<string, string> metadata);
-
         Task<int> AddNewInventoryTransaction(InventoryTransactions transaction);
 
         Task RollbackInventoryUpdate(int transactionId);

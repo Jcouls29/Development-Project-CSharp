@@ -36,20 +36,6 @@ namespace Sparcpoint.Test
             mockDataService.Verify(m => m.GetInventoryForProduct(5), Times.Once());
             Assert.AreEqual(12, result);
         }
-        
-        [TestMethod]
-        public async Task GetsInventoryByMetadata()
-        {
-            var passedMetadata = new KeyValuePair<string, string>("Brand", "Apple");
-
-            Mock<IInventoryDataService> mockDataService = new Mock<IInventoryDataService>();
-            mockDataService.Setup(p => p.GetInventoryByMetadata(It.IsAny<KeyValuePair<string, string>>())).Returns(Task.FromResult(34));
-            var inventoryService = new InventoryService(mockDataService.Object);
-            var result = await inventoryService.GetInventoryByMetadata(passedMetadata);
-
-            mockDataService.Verify(m => m.GetInventoryByMetadata(passedMetadata), Times.Once());
-            Assert.AreEqual(34, result);
-        }
 
         [TestClass]
         public class WhenUpdatingInventory
@@ -61,7 +47,7 @@ namespace Sparcpoint.Test
                 var calledWith = new InventoryTransactions();
 
                 Mock<IInventoryDataService> mockDataService = new Mock<IInventoryDataService>();
-                mockDataService.Setup(p => p.AddNewInventoryTransaction(It.IsAny<InventoryTransactions>())).Callback<InventoryTransactions>(i => { calledWith = i; }).Returns(Task.CompletedTask);
+                mockDataService.Setup(p => p.AddNewInventoryTransaction(It.IsAny<InventoryTransactions>())).Callback<InventoryTransactions>(i => { calledWith = i; }).Returns(Task.FromResult(1));
                 var inventoryService = new InventoryService(mockDataService.Object);
                 await inventoryService.UpdateProductInventory(6, 90);
 
