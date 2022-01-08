@@ -2,6 +2,7 @@
 using Sparcpoint.Models;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -59,12 +60,11 @@ namespace Sparcpoint.Services
 
         public async Task<List<Product>> SearchProducts(ProductSearchRequest req)
         {
-            //default to product name for order
-            //default to asc for sort order
-            //default page to 1
-            //default page count to 25
-            //default search by to name
-            return new List<Product>();
+            req.Page = req.Page == 0 ? 1 : req.Page;
+            req.PageCount = req.PageCount == 0 ? 25 : req.PageCount;
+            req.SearchBy = req.SearchBy == null || !req.SearchBy.Any() ? new List<string>() { "Name" } : req.SearchBy;
+
+            return await _productDataService.SearchProducts(req.Keyword, req.SearchBy, req.Page, req.PageCount);
         }
 
 

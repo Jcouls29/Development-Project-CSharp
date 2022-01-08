@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -114,7 +115,7 @@ namespace Sparcpoint.DataServices
 
         public async Task AddProductToCategory(int categoryId, int productId)
         {
-            string commandText = "INSERT [Instances].[CategoryCategories] (InstanceId, CategoryInstanceId) VALUES (@InstanceId, @CategoryInstanceId)";
+            string commandText = "INSERT [Instances].[ProductCategories] (InstanceId, CategoryInstanceId) VALUES (@InstanceId, @CategoryInstanceId)";
 
             SqlParameter parameterProductId = new SqlParameter("@InstanceId", productId);
             SqlParameter parameterCategoryId = new SqlParameter("@CategoryInstanceId", categoryId);
@@ -136,9 +137,62 @@ namespace Sparcpoint.DataServices
             }
         }
 
-        public async Task<List<Product>> SearchProducts(string keyword, List<string> searchBy, string orderBy, string orderDirection, int page, int pageCount)
+        //EVAL: typically I would utilize a third party search tool in a situation like this since they tend to be very fully featured
+        // Given short timeframe I wrote a rudamentary search 
+        public async Task<List<Product>> SearchProducts(string keyword, List<string> searchBy, int page, int pageCount)
         {
-            return new List<Product>();
+            var productList = new List<Product>();
+
+            string commandText = BuildCommandString(searchBy);
+
+            var skip = (page - 1) * pageCount;
+
+            SqlParameter parameterPageCount = new SqlParameter("@Take", pageCount);
+            SqlParameter parameterSkip = new SqlParameter("@Skip", skip);
+            SqlParameter parameterKeyword = new SqlParameter("@Keyword", keyword);
+
+            using (SqlConnection conn = new SqlConnection(_dbConn))
+            {
+                using (SqlCommand cmd = new SqlCommand(commandText, (SqlConnection)conn))
+                {
+                    SqlCommand command = new SqlCommand(commandText, conn);
+
+                    command.Parameters.Add(parameterPageCount);
+                    command.Parameters.Add(parameterSkip);
+                    command.Parameters.Add(parameterKeyword);
+
+                    conn.Open();
+                    using (SqlDataReader reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            var timestamp = DateTime.Parse(reader["CreatedTimestamp"].ToString());
+
+                            var instance = Convert.ToInt32(reader["InstanceId"].ToString());
+                            if(productList.Any(p => p.InstanceId == instance))
+                            {
+                                continue;
+                            }
+
+                            var product = new Product()
+                            {
+                                InstanceId = instance,
+                                Name = reader["Name"].ToString(),
+                                Description = reader["Description"].ToString(),
+                                ProductImageUris = reader["ProductImageUris"].ToString(),
+                                ValidSkus = reader["ValidSkus"].ToString(),
+                                CreatedTimestamp = timestamp
+                            };
+
+                            productList.Add(product);
+                        }
+                    }
+
+                    conn.Close();
+                }
+            }
+
+            return productList;
         }
 
         public async Task<List<KeyValuePair<string, string>>> GetAttributesForProduct(int productId)
@@ -167,6 +221,52 @@ namespace Sparcpoint.DataServices
             }
 
             return attributeList;
+        }
+
+        private string BuildCommandString(List<string> searchBy)
+        {
+            var lowerSearch = searchBy.Select(s => s.ToLower());
+
+            var commandString = "Select * From [Instances].[Products] p";
+
+            if (lowerSearch.Contains("all") || lowerSearch.Contains("metadata"))
+            {
+                commandString += " Left Join [Instances].[ProductAttributes] a ON p.InstanceId=a.InstanceId";
+            }
+
+            if (lowerSearch.Contains("all") || lowerSearch.Contains("categories"))
+            {
+                commandString += " Left Join [Instances].[ProductCategories] pc ON p.InstanceId=pc.InstanceId Left Join [Instances].[Categories] c ON pc.CategoryInstanceId=c.InstanceId";
+            }
+
+            if (lowerSearch.Contains("all") || lowerSearch.Contains("name"))
+            {
+                commandString +=  commandString.Contains("Where") ?  " OR ": " Where " ;
+                commandString += " p.Name Like  '%' + @Keyword + '%'";
+            }
+
+            if (lowerSearch.Contains("all") || lowerSearch.Contains("description"))
+            {
+                commandString +=  commandString.Contains("Where") ?  " OR ": " Where " ;
+                commandString += " p.Description Like  '%' + @Keyword + '%'";
+            }
+
+
+            if (lowerSearch.Contains("all") || lowerSearch.Contains("metadata"))
+            {
+                commandString += commandString.Contains("Where") ? " OR " : " Where ";
+                commandString += " a.[Key] Like  '%' + @Keyword + '%' OR a.[Value] Like  '%' + @Keyword + '%'";
+            }
+
+            if (lowerSearch.Contains("all") || lowerSearch.Contains("categories"))
+            {
+                commandString += commandString.Contains("Where") ? " OR " : " Where ";
+                commandString += " c.Name Like  '%' + @Keyword + '%'";
+            }
+
+            commandString += " order by p.Name ASC OFFSET @Skip ROWS FETCH NEXT @Take ROWS ONLY;";
+
+            return commandString;
         }
     }
 }

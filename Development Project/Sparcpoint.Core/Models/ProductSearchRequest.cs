@@ -13,8 +13,11 @@ namespace Sparcpoint.Models
         /// </summary>
         /// <example></example>
         public List<string> SearchBy { get; set; }
-        public string OrderBy { get; set; }
-        public string OrderDirection { get; set; }
+
+        //EVAL: In an optimal solution I would want options for order by and order direction as well
+        //public string OrderBy { get; set; }
+        //public string OrderDirection { get; set; }
+        
         public int Page { get; set; }
         public int PageCount { get; set; }
     }
