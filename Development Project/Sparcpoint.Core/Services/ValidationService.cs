@@ -73,7 +73,7 @@ namespace Sparcpoint.Services
                 };
             }
 
-            if (!req.ProductImageUris.Any())
+            if (req.ProductImageUris == null || !req.ProductImageUris.Any())
             {
                 return new ValidationResponse()
                 {
@@ -82,7 +82,7 @@ namespace Sparcpoint.Services
                 };
             }
 
-            if (!req.ValidSkus.Any())
+            if (req.ValidSkus == null || !req.ValidSkus.Any())
             {
                 return new ValidationResponse()
                 {
@@ -113,16 +113,19 @@ namespace Sparcpoint.Services
                 };
             }
 
-            foreach (var searchBy in req.SearchBy)
+            if(req.SearchBy != null)
             {
-
-                if (!validSearchFields.Contains(searchBy.ToLower()))
+                foreach (var searchBy in req.SearchBy)
                 {
-                    return new ValidationResponse()
+
+                    if (!validSearchFields.Contains(searchBy.ToLower()))
                     {
-                        InvalidMessage = "The search by field is not a valid option",
-                        IsValid = false
-                    };
+                        return new ValidationResponse()
+                        {
+                            InvalidMessage = "The search by field is not a valid option",
+                            IsValid = false
+                        };
+                    }
                 }
             }
 

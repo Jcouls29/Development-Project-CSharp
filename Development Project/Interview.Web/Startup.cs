@@ -17,6 +17,10 @@ namespace Interview.Web
 {
     public class Startup
     {
+
+        //EVAL: Given more time I would want to add authentication and authorization to the startup
+        // Potentially with roles defined and determining what actions can be done by which roles
+
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
