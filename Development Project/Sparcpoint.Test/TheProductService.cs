@@ -83,10 +83,10 @@ namespace Sparcpoint.Test
                         Description = "The best description ever",
                         ProductImageUris = new List<string>() { "www.google.com/cutekittens", "www.google.com/cutepuppies" },
                         ValidSkus = new List<string>() { "1234", "5678" },
-                        ProductAttributes = new List<KeyValuePair<string, string>>() {
-                            new KeyValuePair<string, string>("Material", "Cotton"),
-                            new KeyValuePair<string, string>("Brand", "Just Yarn"),
-                            new KeyValuePair<string, string>("Length", "100 yd")
+                        ProductAttributes = new Dictionary<string, string>() {
+                            { "Material", "Cotton" },
+                            { "Brand", "Just Yarn" },
+                            { "Length", "100 yd" }
                         }
                     };
 

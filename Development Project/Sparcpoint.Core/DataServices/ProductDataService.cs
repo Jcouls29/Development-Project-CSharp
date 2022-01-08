@@ -57,7 +57,7 @@ namespace Sparcpoint.DataServices
             var productList = new List<Product>();
             int createdId;
 
-            string commandText = "INSERT [Instances].[Products] (Name, Description, ProductImageUris, ValidSkus, CreatedTimestamp) VALUES (@Name, @Description, @ProductImageUris, @ValidSkus, @CreatedTimestamp)";
+            string commandText = "INSERT [Instances].[Products] (Name, Description, ProductImageUris, ValidSkus, CreatedTimestamp) OUTPUT Inserted.InstanceId  VALUES (@Name, @Description, @ProductImageUris, @ValidSkus, @CreatedTimestamp)";
 
             SqlParameter parameterName = new SqlParameter("@Name", newProduct.Name);
             SqlParameter parameterDescription = new SqlParameter("@Description", newProduct.Description);
@@ -69,16 +69,14 @@ namespace Sparcpoint.DataServices
             {
                 using (SqlCommand cmd = new SqlCommand(commandText, (SqlConnection)conn))
                 {
-                    SqlCommand command = new SqlCommand(commandText, conn);
-
-                    command.Parameters.Add(parameterName);
-                    command.Parameters.Add(parameterDescription);
-                    command.Parameters.Add(parameterImages);
-                    command.Parameters.Add(parameterSkus);
-                    command.Parameters.Add(parameterCreatedOn);
+                    cmd.Parameters.Add(parameterName);
+                    cmd.Parameters.Add(parameterDescription);
+                    cmd.Parameters.Add(parameterImages);
+                    cmd.Parameters.Add(parameterSkus);
+                    cmd.Parameters.Add(parameterCreatedOn);
 
                     conn.Open();
-                    createdId = (int)command.ExecuteScalar();
+                    createdId = (int)cmd.ExecuteScalar();
 
                     conn.Close();
                 }
@@ -99,14 +97,12 @@ namespace Sparcpoint.DataServices
             {
                 using (SqlCommand cmd = new SqlCommand(commandText, (SqlConnection)conn))
                 {
-                    SqlCommand command = new SqlCommand(commandText, conn);
-
-                    command.Parameters.Add(parameterProductId);
-                    command.Parameters.Add(parameterKey);
-                    command.Parameters.Add(parameterValue);
+                    cmd.Parameters.Add(parameterProductId);
+                    cmd.Parameters.Add(parameterKey);
+                    cmd.Parameters.Add(parameterValue);
 
                     conn.Open();
-                    command.ExecuteNonQuery();
+                    cmd.ExecuteNonQuery();
 
                     conn.Close();
                 }
@@ -124,13 +120,12 @@ namespace Sparcpoint.DataServices
             {
                 using (SqlCommand cmd = new SqlCommand(commandText, (SqlConnection)conn))
                 {
-                    SqlCommand command = new SqlCommand(commandText, conn);
 
-                    command.Parameters.Add(parameterProductId);
-                    command.Parameters.Add(parameterCategoryId);
+                    cmd.Parameters.Add(parameterProductId);
+                    cmd.Parameters.Add(parameterCategoryId);
 
                     conn.Open();
-                    command.ExecuteNonQuery();
+                    cmd.ExecuteNonQuery();
 
                     conn.Close();
                 }
@@ -155,14 +150,12 @@ namespace Sparcpoint.DataServices
             {
                 using (SqlCommand cmd = new SqlCommand(commandText, (SqlConnection)conn))
                 {
-                    SqlCommand command = new SqlCommand(commandText, conn);
-
-                    command.Parameters.Add(parameterPageCount);
-                    command.Parameters.Add(parameterSkip);
-                    command.Parameters.Add(parameterKeyword);
+                    cmd.Parameters.Add(parameterPageCount);
+                    cmd.Parameters.Add(parameterSkip);
+                    cmd.Parameters.Add(parameterKeyword);
 
                     conn.Open();
-                    using (SqlDataReader reader = command.ExecuteReader())
+                    using (SqlDataReader reader = cmd.ExecuteReader())
                     {
                         while (reader.Read())
                         {

@@ -34,7 +34,7 @@ namespace Interview.Web.Controllers
         /// Creates a new product
         /// </summary>
         [HttpPost]
-        public async Task<IActionResult> CreateProduct(CreateProductRequest req)
+        public async Task<IActionResult> CreateProduct([FromBody]CreateProductRequest req)
         {
             var prodValidation = _validationService.ProductIsValid(req);
 
@@ -51,7 +51,7 @@ namespace Interview.Web.Controllers
         /// Searches products
         /// </summary>
         [HttpPost("search")]
-        public async Task<IActionResult> SearchProducts(ProductSearchRequest req)
+        public async Task<IActionResult> SearchProducts([FromBody]ProductSearchRequest req)
         {
             var searchalidation = _validationService.SearchIsValid(req);
 

@@ -63,14 +63,12 @@ namespace Sparcpoint.DataServices
             {
                 using (SqlCommand cmd = new SqlCommand(commandText, (SqlConnection)conn))
                 {
-                    SqlCommand command = new SqlCommand(commandText, conn);
-
-                    command.Parameters.Add(parameterName);
-                    command.Parameters.Add(parameterDescription);
-                    command.Parameters.Add(parameterCreatedOn);
+                    cmd.Parameters.Add(parameterName);
+                    cmd.Parameters.Add(parameterDescription);
+                    cmd.Parameters.Add(parameterCreatedOn);
 
                     conn.Open();
-                    createdId = (int)command.ExecuteScalar();
+                    createdId = (int)cmd.ExecuteScalar();
 
                     conn.Close();
                 }
@@ -91,14 +89,12 @@ namespace Sparcpoint.DataServices
             {
                 using (SqlCommand cmd = new SqlCommand(commandText, (SqlConnection)conn))
                 {
-                    SqlCommand command = new SqlCommand(commandText, conn);
-
-                    command.Parameters.Add(parameterCategoryId);
-                    command.Parameters.Add(parameterKey);
-                    command.Parameters.Add(parameterValue);
+                    cmd.Parameters.Add(parameterCategoryId);
+                    cmd.Parameters.Add(parameterKey);
+                    cmd.Parameters.Add(parameterValue);
 
                     conn.Open();
-                    command.ExecuteNonQuery();
+                    cmd.ExecuteNonQuery();
 
                     conn.Close();
                 }
@@ -116,13 +112,11 @@ namespace Sparcpoint.DataServices
             {
                 using (SqlCommand cmd = new SqlCommand(commandText, (SqlConnection)conn))
                 {
-                    SqlCommand command = new SqlCommand(commandText, conn);
-
-                    command.Parameters.Add(parameterCategoryId);
-                    command.Parameters.Add(parameterParentCategoryId);
+                    cmd.Parameters.Add(parameterCategoryId);
+                    cmd.Parameters.Add(parameterParentCategoryId);
 
                     conn.Open();
-                    command.ExecuteNonQuery();
+                    cmd.ExecuteNonQuery();
 
                     conn.Close();
                 }

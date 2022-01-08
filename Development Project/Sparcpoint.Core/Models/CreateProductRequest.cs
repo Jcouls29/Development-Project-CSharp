@@ -10,7 +10,7 @@ namespace Sparcpoint.Models
         public string Description { get; set; }
         public List<string> ProductImageUris { get; set; }
         public List<string> ValidSkus { get; set; }
-        public List<KeyValuePair<string,string>> ProductAttributes { get; set; }
+        public Dictionary<string, string> ProductAttributes { get; set; }
         public List<int> CategoryIds { get; set; }
     }
 }

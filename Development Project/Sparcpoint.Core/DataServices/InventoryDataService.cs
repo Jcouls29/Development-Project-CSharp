@@ -99,16 +99,14 @@ namespace Sparcpoint.DataServices
             {
                 using (SqlCommand cmd = new SqlCommand(commandText, (SqlConnection)conn))
                 {
-                    SqlCommand command = new SqlCommand(commandText, conn);
-
-                    command.Parameters.Add(parameterProductId);
-                    command.Parameters.Add(parameterQuantity);
-                    command.Parameters.Add(parameterStarted);
-                    command.Parameters.Add(parameterCompleted);
-                    command.Parameters.Add(parameterCategory);
+                    cmd.Parameters.Add(parameterProductId);
+                    cmd.Parameters.Add(parameterQuantity);
+                    cmd.Parameters.Add(parameterStarted);
+                    cmd.Parameters.Add(parameterCompleted);
+                    cmd.Parameters.Add(parameterCategory);
 
                     conn.Open();
-                    createdId = (int)command.ExecuteScalar();
+                    createdId = (int)cmd.ExecuteScalar();
 
                     conn.Close();
                 }
@@ -127,12 +125,10 @@ namespace Sparcpoint.DataServices
             {
                 using (SqlCommand cmd = new SqlCommand(commandText, (SqlConnection)conn))
                 {
-                    SqlCommand command = new SqlCommand(commandText, conn);
-
-                    command.Parameters.Add(parametertransId);
+                    cmd.Parameters.Add(parametertransId);
 
                     conn.Open();
-                    command.ExecuteNonQuery();
+                    cmd.ExecuteNonQuery();
 
                     conn.Close();
                 }

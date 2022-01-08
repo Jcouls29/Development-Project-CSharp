@@ -35,7 +35,7 @@ namespace Interview.Web.Controllers
         /// Creates a category
         /// </summary>
         [HttpPost]
-        public async Task<IActionResult> CreateNewCategory(CreateCategoryRequest request)
+        public async Task<IActionResult> CreateNewCategory([FromBody]CreateCategoryRequest request)
         {
             var catValidation = _validationService.CategoryIsValid(request);
 
@@ -52,7 +52,7 @@ namespace Interview.Web.Controllers
         /// Adds attribute to a category
         /// </summary>
         [HttpPost("{categoryId}/attributes")]
-        public async Task<IActionResult> AddAttributesToCategory(int categoryId, Dictionary<string, string> attributes)
+        public async Task<IActionResult> AddAttributesToCategory(int categoryId, [FromBody]Dictionary<string, string> attributes)
         {
             if (attributes == null)
             {
