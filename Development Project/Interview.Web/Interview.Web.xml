@@ -8,7 +8,71 @@
             <summary>
             Gets all categories
             </summary>
-            <returns>List of categories</returns>
+        </member>
+        <member name="M:Interview.Web.Controllers.CategoryController.CreateNewCategory(Sparcpoint.Models.CreateCategoryRequest)">
+            <summary>
+            Creates a category
+            </summary>
+        </member>
+        <member name="M:Interview.Web.Controllers.CategoryController.AddAttributesToCategory(System.Int32,System.Collections.Generic.Dictionary{System.String,System.String})">
+            <summary>
+            Adds attribute to a category
+            </summary>
+        </member>
+        <member name="M:Interview.Web.Controllers.CategoryController.AddCategoryToCategory(System.Int32,System.Collections.Generic.List{System.Int32})">
+            <summary>
+            Adds category to a category
+            </summary>
+        </member>
+        <member name="M:Interview.Web.Controllers.InventoryController.GetAllInventoryTransactions">
+            <summary>
+            Gets all inventory transactions
+            </summary>
+        </member>
+        <member name="M:Interview.Web.Controllers.InventoryController.GetInventoryForProduct(System.Int32)">
+            <summary>
+            Gets inventory for a supplied product
+            </summary>
+        </member>
+        <member name="M:Interview.Web.Controllers.InventoryController.UpdateProductInventory(System.Int32,System.Int32)">
+            <summary>
+            Update inventory for a specific product
+            </summary>
+        </member>
+        <member name="M:Interview.Web.Controllers.InventoryController.RollbackInventoryUpdate(System.Int32)">
+            <summary>
+            Removes the indicated inventory transaction
+            </summary>
+        </member>
+        <member name="M:Interview.Web.Controllers.ProductController.GetAllProducts">
+            <summary>
+            Gets all products
+            </summary>
+        </member>
+        <member name="M:Interview.Web.Controllers.ProductController.CreateProduct(Sparcpoint.Models.CreateProductRequest)">
+            <summary>
+            Creates a new product
+            </summary>
+        </member>
+        <member name="M:Interview.Web.Controllers.ProductController.SearchProducts(Sparcpoint.Models.ProductSearchRequest)">
+            <summary>
+            Searches products
+            </summary>
+        </member>
+        <member name="M:Interview.Web.Controllers.ProductController.GetAttributesForProduct(System.Int32)">
+            <summary>
+            Gets Attributes for a product
+            </summary>
+        </member>
+        <member name="M:Interview.Web.Controllers.ProductController.AddAttributesToProduct(System.Int32,System.Collections.Generic.Dictionary{System.String,System.String})">
+            <summary>
+            Adds a new attribute to a product
+            </summary>
+        </member>
+        <member name="M:Interview.Web.Controllers.ProductController.AddProductToCategories(System.Int32,System.Collections.Generic.List{System.Int32})">
+            <summary>
+            Adds product to a category
+            </summary>
         </member>
     </members>
 </doc>

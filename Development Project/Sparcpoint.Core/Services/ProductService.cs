@@ -87,5 +87,10 @@ namespace Sparcpoint.Services
                 await _productDataService.AddProductToCategory(cat, productId);
             }
         }
+
+        public async Task<List<KeyValuePair<string, string>>> GetAttributesForProduct(int productId)
+        {
+            return await _productDataService.GetAttributesForProduct(productId);
+        }
     }
 }

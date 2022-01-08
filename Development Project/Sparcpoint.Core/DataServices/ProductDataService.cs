@@ -140,5 +140,33 @@ namespace Sparcpoint.DataServices
         {
             return new List<Product>();
         }
+
+        public async Task<List<KeyValuePair<string, string>>> GetAttributesForProduct(int productId)
+        {
+            var attributeList = new List<KeyValuePair<string, string>>();
+
+            string queryString = "SELECT * FROM [Instances].[ProductAttributes] Where InstanceId = @InstanceId;";
+            SqlParameter parameterProductId = new SqlParameter("@InstanceId", productId);
+            using (SqlConnection conn = new SqlConnection(_dbConn))
+            {
+                SqlCommand command = new SqlCommand(queryString, conn);
+                command.Parameters.Add(parameterProductId);
+
+                conn.Open();
+                using (SqlDataReader reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        var attribute = new KeyValuePair<string, string>(reader["Key"].ToString(), reader["Value"].ToString());
+
+                        attributeList.Add(attribute);
+                    }
+                }
+
+                conn.Close();
+            }
+
+            return attributeList;
+        }
     }
 }

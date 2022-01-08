@@ -64,6 +64,22 @@ namespace Interview.Web.Controllers
             return Ok(results);
         }
 
+
+        /// <summary>
+        /// Gets Attributes for a product
+        /// </summary>
+        [HttpGet("{productId}/attributes")]
+        public async Task<IActionResult> GetAttributesForProduct(int productId)
+        {
+            if (productId == null)
+            {
+                return BadRequest("You must provide a product id");
+            }
+
+            var result = await _productService.GetAttributesForProduct(productId);
+            return Ok(result);
+        }
+
         /// <summary>
         /// Adds a new attribute to a product
         /// </summary>

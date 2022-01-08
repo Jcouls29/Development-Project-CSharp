@@ -25,6 +25,19 @@ namespace Sparcpoint.Test
             Assert.AreEqual(expectedReturnList, result);
         }
 
+        [TestMethod]
+        public async Task GetsAttributesForAProduct()
+        {
+
+            var expectedReturnList = new List<KeyValuePair<string, string>>();
+
+            Mock<IProductDataService> mockDataService = new Mock<IProductDataService>();
+            mockDataService.Setup(p => p.GetAttributesForProduct(It.IsAny<int>())).Returns(Task.FromResult(expectedReturnList));
+            var productService = new ProductService(mockDataService.Object);
+            var result = await productService.GetAttributesForProduct(5);
+            Assert.AreEqual(expectedReturnList, result);
+        }
+
         [TestClass]
         public class WhenCreatingAProduct
         {

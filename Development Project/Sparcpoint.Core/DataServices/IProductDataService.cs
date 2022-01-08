@@ -13,5 +13,6 @@ namespace Sparcpoint.DataServices
         Task AddAttributeToProduct(int productId, KeyValuePair<string, string> attribute);
         Task AddProductToCategory(int categoryId, int productId);
         Task<List<Product>> SearchProducts(string keyword, List<string> searchBy, string orderBy, string orderDirection, int page, int pageCount);
+        Task<List<KeyValuePair<string, string>>> GetAttributesForProduct(int productId);
     }
 }
