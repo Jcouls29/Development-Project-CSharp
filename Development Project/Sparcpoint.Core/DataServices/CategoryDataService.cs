@@ -80,7 +80,7 @@ namespace Sparcpoint.DataServices
 
         public async Task AddAttributeToCategory(int categoryId, KeyValuePair<string, string> attribute)
         {
-            string commandText = "INSERT [Instances].[CategoryAttributes] (InstanceId, Key, Value) VALUES (@InstanceId, @Key, @Value)";
+            string commandText = "INSERT [Instances].[CategoryAttributes] ([InstanceId], [Key], [Value]) VALUES (@InstanceId, @Key, @Value)";
 
             SqlParameter parameterCategoryId = new SqlParameter("@InstanceId", categoryId);
             SqlParameter parameterKey = new SqlParameter("@Key", attribute.Key);

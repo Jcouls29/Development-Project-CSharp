@@ -42,9 +42,9 @@ namespace Interview.Web.Controllers
         }
 
         [HttpPost("{productId}/attributes")]
-        public async Task<IActionResult> AddAttributesToProduct(int productId, List<KeyValuePair<string, string>> attributes)
+        public async Task<IActionResult> AddAttributesToProduct(int productId, [FromBody] Dictionary<string, string> attributes)
         {
-            await _productService.AddAttributesToProduct(productId, attributes);
+            await _productService.AddAttributesToProduct(productId, attributes.ToList());
             return Ok();
         }
 

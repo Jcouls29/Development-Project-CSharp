@@ -33,9 +33,9 @@ namespace Interview.Web.Controllers
         }
 
         [HttpPost("{categoryId}/attributes")]
-        public async Task<IActionResult> AddAttributesToCategory(int categoryId, List<KeyValuePair<string, string>> attributes)
+        public async Task<IActionResult> AddAttributesToCategory(int categoryId, Dictionary<string, string> attributes)
         {
-            await _categoryService.AddAttributesToCategory(categoryId, attributes);
+            await _categoryService.AddAttributesToCategory(categoryId, attributes.ToList());
             return Ok();
         }
 
