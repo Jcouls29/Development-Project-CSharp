@@ -90,6 +90,10 @@
     <Folder Include="Transactions\Tables" />
     <Folder Include="Table Types" />
     <Folder Include="Instances\Table Types" />
+    <Folder Include="Instances\Programmability" />
+    <Folder Include="Instances\Programmability\Functions" />
+    <Folder Include="Instances\Programmability\Functions\Table-valued Functions" />
+    <Folder Include="Instances\Programmability\Stored Procedures" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="Instances\Instances.sql" />
@@ -109,6 +113,10 @@
     <Build Include="Table Types\CorrelatedStringList.sql" />
     <Build Include="Instances\Table Types\CorrelatedProductInstanceList.sql" />
     <Build Include="Instances\Table Types\CorrelatedListItemList.sql" />
+    <Build Include="Instances\Programmability\Functions\Table-valued Functions\instances.SearchProductsByCategory.sql" />
+    <Build Include="Instances\Programmability\Stored Procedures\instances.CreateCategoryIfNotExists.sql" />
+    <Build Include="Instances\Programmability\Stored Procedures\instances.CreateProductCategories.sql" />
+    <Build Include="Instances\Programmability\Stored Procedures\instances.CreateProductIfNotExists.sql" />
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="Sparcpoint.Inventory.Database.refactorlog" />

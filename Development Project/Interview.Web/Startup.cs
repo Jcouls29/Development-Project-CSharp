@@ -1,13 +1,15 @@
+using DomainServices;
+using DomainServices.Interface;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using Dal.Interfaces;
+using Sparcpoint;
+using Sparcpoint.SqlServer.Abstractions;
+using Dal;
 
 namespace Interview.Web
 {
@@ -24,6 +26,12 @@ namespace Interview.Web
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+            services.AddSingleton(Configuration);
+            services.AddScoped<ISqlExecutor>(instance => new SqlServerExecutor(Configuration.GetConnectionString("InventoryDatabase")));
+            services.AddRazorPages();
+            services.AddSingleton<IDataSerializer, JsonDataSerializer>();
+            services.AddSingleton<IProductRepository>(pr => new ProductRepository(new SqlServerExecutor(Configuration.GetConnectionString("InventoryDatabase")), Configuration));
+            services.AddSingleton<IProductService, ProductService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -49,7 +57,8 @@ namespace Interview.Web
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapControllers();
+                endpoints.MapControllerRoute(name: "default", pattern: "{controller=Product}/{action=Index}/{id?}");
+                endpoints.MapRazorPages();
             });
         }
     }

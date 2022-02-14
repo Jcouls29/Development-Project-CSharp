@@ -1,0 +1,76 @@
+﻿@model Dal.Models.Search
+
+@{
+    ViewData["Title"] = "SearchByCategory";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<form asp-action="Search">
+<div>
+    <div>
+        <h1>Search By Category</h1>
+        @Html.DropDownListFor(list => Model.SelectedCriteria, new SelectList(Model.SearchCriteria, "Id",  "Name"))
+
+        <input asp-for="CriteriaValue" />
+    </div>
+
+    <div class="form-group">
+        <input type="submit" value="Submit" class="btn btn-primary" />
+    </div>
+</div>
+
+  
+
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(products => Model.Products[0].InstanceId)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Products[0].Name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Products[0].Description)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Products[0].ProductImageUris)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Products[0].ValidSkus)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Products[0].CreateTimestamp)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model.Products) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.InstanceId)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Description)
+            </td>
+           @* <td>
+                @Html.DisplayFor(modelItem => item.CategoryName)
+            </td>*@
+            <td>
+                @Html.DisplayFor(modelItem => item.ProductImageUris)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ValidSkus)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.CreateTimestamp)
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>
+ </form> 
