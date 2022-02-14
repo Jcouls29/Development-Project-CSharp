@@ -7,11 +7,11 @@ namespace Sparcpoint.SqlServer.Abstractions
 {
     public class SqlServerExecutor : ISqlExecutor
     {
-        private readonly string _ConnectionString;
+        private readonly SqlServerOptions _sqlServerOptions;
 
-        public SqlServerExecutor(string connectionString)
+        public SqlServerExecutor(SqlServerOptions sqlServerOptions)
         {
-            _ConnectionString = connectionString ?? throw new ArgumentNullException(nameof(connectionString));
+            _sqlServerOptions = sqlServerOptions; 
         }
 
         public T Execute<T>(Func<IDbConnection, IDbTransaction, T> command)
@@ -48,14 +48,14 @@ namespace Sparcpoint.SqlServer.Abstractions
 
         private SqlConnection Open()
         {
-            SqlConnection connection = new SqlConnection(_ConnectionString);
+            SqlConnection connection = new SqlConnection(_sqlServerOptions.ConnectionString);
             connection.Open();
             return connection;
         }
 
         private async Task<SqlConnection> OpenAsync()
         {
-            SqlConnection connection = new SqlConnection(_ConnectionString);
+            SqlConnection connection = new SqlConnection(_sqlServerOptions.ConnectionString);
             await connection.OpenAsync();
             return connection;
         }
