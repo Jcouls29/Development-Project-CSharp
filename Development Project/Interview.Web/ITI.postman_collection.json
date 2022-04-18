@@ -1,0 +1,174 @@
+{
+	"info": {
+		"_postman_id": "a5383ec2-460e-4709-b5f4-37ba973fbbc1",
+		"name": "ITI",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Create product ",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "accept",
+						"value": "text/plain"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"Cherry Coke\",\n    \"description\": \"Large bottle of cherry coke from Coca-Cola.\",\n    \"unit\": {\n      \"id\": \"87dc6e3c-705c-4cb5-8383-1c0585153aa5\"\n    },\n    \"metadatas\": [\n      {\n        \"id\": \"138cc3b1-7e38-417b-88ea-f93e7821f22d\",\n        \"metadataType\": {\n          \"id\": \"1db713ec-9c06-472d-bfa9-b08ae0bcb0c7\",\n          \"name\": \"Manufacturer\"\n        },\n        \"value\": \"Coca-Cola beverages Inc.\"\n      }\n    ],\n    \"categories\": [\n      {\n        \"id\": \"d4bc694b-b9f3-469c-ae4d-75b41905c4a8\",\n        \"name\": \"Beverages\",\n        \"description\": \"Beverage products\"\n      }\n    ]\n  }"
+				},
+				"url": {
+					"raw": "https://localhost:5001/api/v1/products",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "5001",
+					"path": [
+						"api",
+						"v1",
+						"products"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Search by categories",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "accept",
+						"value": "text/plain"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n   \"searchCategories\": [\n      {\"name\": \"Beverages\"}, {\"name\":\"Soda\"}]\n}"
+				},
+				"url": {
+					"raw": "https://localhost:5001/api/v1/products/search",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "5001",
+					"path": [
+						"api",
+						"v1",
+						"products",
+						"search"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Search by metadata",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "accept",
+						"value": "text/plain"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n   \"searchMetadatas\": [\n      {\n          \"metadataType\": {\"name\" : \"Manufacturer\"},\n          \"value\": \"Cola\"}\n      ]\n\n}"
+				},
+				"url": {
+					"raw": "https://localhost:5001/api/v1/products/search",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "5001",
+					"path": [
+						"api",
+						"v1",
+						"products",
+						"search"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Search by categories and metadata",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "accept",
+						"value": "text/plain"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n   \"searchMetadatas\": [\n      {\n          \"metadataType\": {\"name\" : \"Manufacturer\"},\n          \"value\": \"Cola\"\n        }\n    ]\n}"
+				},
+				"url": {
+					"raw": "https://localhost:5001/api/v1/products/search",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "5001",
+					"path": [
+						"api",
+						"v1",
+						"products",
+						"search"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get all products",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "accept",
+						"value": "text/plain"
+					}
+				],
+				"url": {
+					"raw": "https://localhost:5001/api/v1/products",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "5001",
+					"path": [
+						"api",
+						"v1",
+						"products"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
