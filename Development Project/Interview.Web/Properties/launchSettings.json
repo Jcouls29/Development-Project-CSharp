@@ -19,6 +19,7 @@
     "Interview.Web": {
       "commandName": "Project",
       "launchBrowser": true,
+      "launchUrl": "api/v1/products",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
