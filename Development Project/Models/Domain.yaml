@@ -1,0 +1,248 @@
+openapi: "3.0.0"
+info:
+  version: 1.0.0
+  title: Inventory
+components:
+  schemas:
+    documentType:
+      description: >
+        Used for the parsing of metadata. :
+        * 'JSON' : A json document.
+        * 'XML' : An XML document.
+      type: string
+      enum:
+        - Inches
+        - Centimeter
+    customer:
+      type: object
+      description: The customer that joined the service to send/receive packages.
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+    product:
+      type: object
+      description: Represents a product for sale.
+      properties:
+        id:
+          type: string
+        metadata:
+          description: The metadata for this product. 
+          $ref: '#/components/schemas/metaData'
+        category:
+          description: The categories for this product. 
+          $ref: '#/components/schemas/category'
+        dateAddedUTC:
+          type: string
+          format: datetime
+        dateDeletedUTC:
+          type: string
+          format: datetime
+        dateUpdatedUTC:
+          type: string
+          format: datetime
+    metaData:
+      type: object
+      description: Data that describes something in the system.
+      properties:
+        id:
+          type: string
+        note:
+          $ref: '#/components/schemas/note'
+        document:
+          type: string
+        documentType:
+          $ref: '#/components/schemas/documentType'
+        subMetadata:
+          description: Creates a hierarchy of metadata. 
+          $ref: '#/components/schemas/metaData'
+    category:
+      type: object
+      description: Used for the categorization of products.
+      properties:
+        id:
+          type: string
+        note:
+          $ref: '#/components/schemas/note'
+        subCategory:
+          description: Creates a hierarchy of categories. 
+          $ref: '#/components/schemas/category'
+    user:
+      type: object
+      description: A user, associated with a customer.
+      properties:
+        id:
+          description: The id of the user.
+          type: string
+        customerId:
+          type: string
+        name:
+          description: The name of the user.
+          type: string
+        token:
+          description: The token representing the user.
+          type: string
+        profile:
+          description: The profile attached to this user.
+          $ref: '#/components/schemas/userProfile'
+        claims:
+          description: The claims associated to the user.
+          type: array
+          items:
+            $ref: '#/components/schemas/userClaim'
+        groups:
+          description: The groups associated to the user.
+          type: array
+          items:
+            $ref: '#/components/schemas/userGroup'
+    userGroup:
+      type: object
+      description: A group that a user belongs to.
+      properties:
+        id:
+          description: The identity of the user group.
+          type: string
+        value:
+          description: The group value.
+          type: string
+    userClaim:
+      type: object
+      description: A claim for a user.
+      properties:
+        id:
+          description: The identification of the user.
+          type: string
+        subject:
+          description: Subject of the claim.
+          type: string
+        type:
+          description: The type of the claim.
+          type: string
+        value:
+          description: The value of the claim.
+          type: string
+        valueType:
+          description: The type of the value.
+          type: string
+    userProfile:
+      type: object
+      description: Describes the user, TZ, formatting, location, etc.
+      properties:
+        id:
+          description: The ID for the user profile.
+          type: string
+        timeZone:
+          description: The time zone for the user.
+          type: string
+        culture:
+          description: Used to work out how things need to be formated for display to the user.
+          type: string
+    note:
+      description: Used to add notes to the entities in the system.
+      properties:
+        id:
+          description: The Id of the note.
+          type: string
+        value:
+          description: The actual note.
+          type: string
+        createdAtUtc:
+          description: The date time the payment outcome was created on, as UTC.
+          type: string
+          format: date-time
+    healthCheck:
+      description: The result of a health check.
+      properties:
+        subSystem:
+          description: The sub system that is being tested.
+          type: string
+        successful:
+          description: If the health check succeeded or failed.
+          type: boolean
+        failureReasons:
+          description: All of the errors thrown during the health check.
+          type: array
+          items:
+            $ref: '#/components/schemas/note'
+    kv:
+      description: A key value
+      properties:
+        key:
+          description: the KEY part of the key value.
+          type: string
+        value:
+          description: the VALUE part of the key value.
+          type: string
+    versionInformation:
+      description: Used to return the current version of the system.
+      properties:
+        systemMajorVersion:
+          description: The top number of the version of the software.
+          type: integer
+        systemMinorVersion:
+          description: The minor number, or sub version of the major version of the software.
+          type: integer
+        buildNumber:
+          description: The build number of the software. This is a value that will always get larger with each build of the software.
+          type: integer
+        revisionNumber:
+          description: Like the buildNumber, this number always gets larger with each build.
+          type: integer
+        createdOnUtc:
+          description: The UTC date when the software was created.
+          type: string
+          format: date-time
+        currentConfiguration:
+          description: The current configuration the system is running under.
+          type: string
+        healthCheck:
+          description: The results of the healthcheck done as part of getting the version information for a system.
+          type: array
+          items:
+            $ref: '#/components/schemas/healthCheck'
+        injectedCode:
+          description: The currently injected code.
+          type: array
+          items:
+            type: string
+        featureToggles:
+          description: The current active feature toggles.
+          type: array
+          items:
+            $ref: '#/components/schemas/kv'
+        recentModifications:
+          description: The most recent modifications to the system.
+          type: string
+paths:
+  /search:
+    post:
+      summary: Get an inventory item on metadata
+      operationId: findProductOnMetadata
+      tags:
+        - Inventory
+      responses:
+        '200':
+          description: The find results.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/product"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/metaData'
+  /add:
+    post:
+      summary: Add a product on metadata
+      operationId: addProduct
+      tags:
+        - Inventory
+      responses:
+        '200':
+          description: The find results.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/product"
