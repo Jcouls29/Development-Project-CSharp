@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+    <PackageReference Include="Microsoft.TypeScript.MSBuild" Version="4.0.3" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <None Remove="Client.ts" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <TypeScriptCompile Remove="Client.ts" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <ProjectReference Include="..\Domain.Models\Domain.Models.csproj" />
+  </ItemGroup>
+
+</Project>

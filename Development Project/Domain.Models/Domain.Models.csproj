@@ -1,0 +1,57 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Domain.js" />
+    <None Remove="Domain.js.map" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <TypeScriptCompile Remove="Domain.ts" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+    <PackageReference Include="Microsoft.TypeScript.MSBuild" Version="4.0.3" />
+    <PackageReference Include="NSwag.MSBuild" Version="13.7.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="System.ComponentModel.Annotations" Version="5.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Extensions\" />
+  </ItemGroup>
+
+  <Target Name="DomainModel" BeforeTargets="PreBuildEvent">
+    <Exec Command="$(NSwagExe_Core31) run Domain.nswag /variables:Configuration=$(Configuration)" WorkingDirectory="..\Models" />
+  </Target>
+
+  <Target Name="DomainClients" AfterTargets="DomainModel">
+    <Exec Command="$(NSwagExe_Core31) run DomainClients.nswag /variables:Configuration=$(Configuration)" WorkingDirectory="..\Models" />
+  </Target>
+
+  <Target Name="DomainControllers" AfterTargets="DomainClients">
+    <Exec Command="$(NSwagExe_Core31) run DomainControllers.nswag /variables:Configuration=$(Configuration)" WorkingDirectory="..\Models" />
+  </Target>
+
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
+    <TypeScriptTarget>ES2016</TypeScriptTarget>
+    <TypeScriptJSXEmit>React</TypeScriptJSXEmit>
+    <TypeScriptModuleKind>AMD</TypeScriptModuleKind>
+    <TypeScriptCompileOnSaveEnabled>False</TypeScriptCompileOnSaveEnabled>
+    <TypeScriptNoImplicitAny>False</TypeScriptNoImplicitAny>
+    <TypeScriptRemoveComments>False</TypeScriptRemoveComments>
+    <TypeScriptOutFile />
+    <TypeScriptOutDir />
+    <TypeScriptGeneratesDeclarations>False</TypeScriptGeneratesDeclarations>
+    <TypeScriptNoEmitOnError>True</TypeScriptNoEmitOnError>
+    <TypeScriptSourceMap>True</TypeScriptSourceMap>
+    <TypeScriptMapRoot />
+    <TypeScriptSourceRoot />
+  </PropertyGroup>
+</Project>
