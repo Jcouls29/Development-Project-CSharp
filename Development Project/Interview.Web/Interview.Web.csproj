@@ -4,4 +4,9 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Sparcpoint.Models\Sparcpoint.Models.csproj" />
+    <ProjectReference Include="..\Sparcpoint.Services\Sparcpoint.Services.csproj" />
+  </ItemGroup>
+
 </Project>

@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Sparcpoint.DataRepository\Sparcpoint.DataRepository.csproj" />
+    <ProjectReference Include="..\Sparcpoint.Entities\Sparcpoint.Entities.csproj" />
+    <ProjectReference Include="..\Sparcpoint.Models\Sparcpoint.Models.csproj" />
+  </ItemGroup>
+
+</Project>
