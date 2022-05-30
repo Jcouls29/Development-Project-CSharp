@@ -1,0 +1,273 @@
+{
+	"info": {
+		"_postman_id": "74ec05bd-8cc4-4395-a962-f71199cf3c4b",
+		"name": "Shawn-Interview.Web",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "1881205"
+	},
+	"item": [
+		{
+			"name": "Product",
+			"item": [
+				{
+					"name": "IsAvailable - Product endpoint",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://localhost:44387/api/Product/IsAvailable",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "44387",
+							"path": [
+								"api",
+								"Product",
+								"IsAvailable"
+							]
+						},
+						"description": "A ping to check to see if the services for Products are available"
+					},
+					"response": []
+				},
+				{
+					"name": "GetAllProducts - Products Get All active products",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://localhost:44387/api/Product/GetAllProducts",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "44387",
+							"path": [
+								"api",
+								"Product",
+								"GetAllProducts"
+							]
+						},
+						"description": "Get all products not marked as \"Deleted\""
+					},
+					"response": []
+				},
+				{
+					"name": "GetProductCount - Product Get count",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://localhost:44387/api/Product/GetProductCount/",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "44387",
+							"path": [
+								"api",
+								"Product",
+								"GetProductCount",
+								""
+							]
+						},
+						"description": "Get the count of all products not marked as \"Deleted\""
+					},
+					"response": []
+				},
+				{
+					"name": "AddProduct - Product Add product",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"Name\": \"Rose\",\r\n    \"Description\" : \"Red Rose\",\r\n    \"ProductImageUris\" : \"Rose\",\r\n    \"ValidSkus\" : \"Rose 123\",\r\n    \"Category\" : {\r\n        \"Name\":\"Flower\",\r\n        \"Description\":\"Flower\"\r\n    }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://localhost:44387/api/Product/AddProduct/",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "44387",
+							"path": [
+								"api",
+								"Product",
+								"AddProduct",
+								""
+							]
+						},
+						"description": "Add products"
+					},
+					"response": []
+				},
+				{
+					"name": "GetInventory (All) - Products Get All Inventory",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"Name\": null,\r\n    \"Description\" : null,\r\n    \"ValidSkus\" : null,\r\n    \"CategoryName\" : null\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://localhost:44387/api/Product/GetInventory",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "44387",
+							"path": [
+								"api",
+								"Product",
+								"GetInventory"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetInventoryByOptions - Products Search Inventory",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://localhost:44387/api/Product/GetInventoryByOptions/Rose",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "44387",
+							"path": [
+								"api",
+								"Product",
+								"GetInventoryByOptions",
+								"Rose"
+							]
+						},
+						"description": "Pass in optional parameters"
+					},
+					"response": []
+				},
+				{
+					"name": "DeleteProduct - Delete Product ",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "https://localhost:44387/api/Product/DeleteProduct/2",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "44387",
+							"path": [
+								"api",
+								"Product",
+								"DeleteProduct",
+								"2"
+							]
+						},
+						"description": "Mark the product as \"Deleted\""
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Category",
+			"item": [
+				{
+					"name": "IsAvailable - Category endpoint",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://localhost:44387/api/Category/IsAvailable",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "44387",
+							"path": [
+								"api",
+								"Category",
+								"IsAvailable"
+							]
+						},
+						"description": "Ping to check if category endpoints are available"
+					},
+					"response": []
+				},
+				{
+					"name": "GetCategories - Category Get all categories",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://localhost:44387/api/Category/GetCategories/",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "44387",
+							"path": [
+								"api",
+								"Category",
+								"GetCategories",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "AddCategory - Category Add",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"Name\": \"Sports Car\",\r\n    \"Description\" : \"Vehicle\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://localhost:44387/api/Category/AddCategory/",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "44387",
+							"path": [
+								"api",
+								"Category",
+								"AddCategory",
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
