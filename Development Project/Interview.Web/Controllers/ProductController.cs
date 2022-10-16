@@ -1,4 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Sparcpoint;
+using Sparcpoint.Abstract;
+using Sparcpoint.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,6 +12,22 @@ namespace Interview.Web.Controllers
     [Route("api/v1/products")]
     public class ProductController : Controller
     {
+        private readonly IProductRepository _ProductRepository;
+        public ProductController(IProductRepository productRepository)
+        {
+            PreConditions.ParameterNotNull(productRepository, nameof(productRepository));
+
+            _ProductRepository = productRepository;
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AddProduct([FromBody] Product product)
+        {
+            int productId =  await _ProductRepository.AddProductAsync(product);
+
+            return Ok(productId);
+        }
+
         // NOTE: Sample Action
         [HttpGet]
         public Task<IActionResult> GetAllProducts()

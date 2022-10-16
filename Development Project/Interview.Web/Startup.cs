@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Sparcpoint.Abstract;
 using Sparcpoint.Implementations;
+using Sparcpoint.SqlServer.Abstractions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,6 +27,8 @@ namespace Interview.Web
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+
+            services.AddSingleton<ISqlExecutor>(new SqlServerExecutor(Configuration.GetConnectionString("ProductSqlServerDatabase")));
 
             services.AddSingleton<IProductRepository, SqlServerProductRepository>();
             services.AddSingleton<ICategoryRepository, SqlServerCategoryRepository>();

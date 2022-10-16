@@ -1,9 +1,11 @@
 ﻿using Sparcpoint.Abstract;
 using Sparcpoint.Models;
+using Sparcpoint.SqlServer.Abstractions;
 using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using Dapper;
 
 namespace Sparcpoint.Implementations
 {
@@ -13,6 +15,15 @@ namespace Sparcpoint.Implementations
         //      of IProductValidator service.
         private const int NAME_MAX_LENGTH = 256;
         private const int DESCRIPTION_MAX_LENGTH = 256;
+
+        private readonly ISqlExecutor _SqlExecutor;
+
+        public SqlServerProductRepository(ISqlExecutor sqlExecutor)
+        {
+            PreConditions.ParameterNotNull(sqlExecutor, nameof(sqlExecutor));
+
+            _SqlExecutor = sqlExecutor;
+        }
 
         public async Task<int> AddProductAsync(Product product)
         {
@@ -42,9 +53,24 @@ namespace Sparcpoint.Implementations
             PreConditions.StringLengthDoesNotExceed(product.Description, DESCRIPTION_MAX_LENGTH, nameof(product.Description));
         }
 
-        private Task<int> AddOnlyProductAsync(Product product)
+        private async Task<int> AddOnlyProductAsync(Product product)
         {
-            throw new NotImplementedException();
+            string sql = @"INSERT INTO [Instances].[Products] 
+                (Name, Description, ProductImageUris, ValidSkus)
+                VALUES
+                (@Name, @Description, @ProductImageUris, @ValidSkus);
+                SELECT SCOPE_IDENTITY();";
+
+            return await _SqlExecutor.ExecuteAsync<int>(async (sqlConnection, sqlTransaction) =>
+            {
+                return await sqlConnection.QuerySingleAsync<int>(sql, new
+                {
+                    product.Name,
+                    product.Description,
+                    product.ProductImageUris,
+                    product.ValidSkus,
+                }, sqlTransaction);
+            });
         }
 
         private Task AddProductMetadataAsync(Product product)
