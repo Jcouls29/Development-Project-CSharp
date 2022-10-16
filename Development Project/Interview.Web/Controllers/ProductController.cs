@@ -23,9 +23,7 @@ namespace Interview.Web.Controllers
         [HttpPost]
         public async Task<IActionResult> AddProduct([FromBody] Product product)
         {
-            int productId =  await _ProductRepository.AddProductAsync(product);
-
-            return Ok(productId);
+            return Ok(await _ProductRepository.AddProductAsync(product));
         }
 
         // NOTE: Sample Action
