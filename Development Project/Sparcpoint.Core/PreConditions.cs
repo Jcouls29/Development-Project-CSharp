@@ -15,5 +15,11 @@ namespace Sparcpoint
             if (string.IsNullOrWhiteSpace(value))
                 throw new ArgumentException($"{parameterName} is required.", parameterName);
         }
+
+        public static void StringLengthDoesNotExceed(string value, int length, string parameterName)
+        {
+            if (value.Length > length)
+                throw new ArgumentException($"{parameterName} max length ({length}) exceeded.", parameterName);
+        }
     }
 }
