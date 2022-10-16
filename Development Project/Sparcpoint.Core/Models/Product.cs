@@ -4,15 +4,9 @@ using System.Text;
 
 namespace Sparcpoint.Models
 {
-    public class Product
+    public class Product : MetadataEntity
     {
-        public int InstanceId { get; set; }
-        public string Name { get; set; }
-        public string Description { get; set; }
         public string ProductImageUris { get; set; }
         public string ValidSkus { get; set; }
-        public DateTime CreatedTimestamp { get; set; }
-
-        public Dictionary<string, string> Metadata { get; set; }
     }
 }

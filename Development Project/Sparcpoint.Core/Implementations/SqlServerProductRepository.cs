@@ -9,20 +9,17 @@ using Dapper;
 
 namespace Sparcpoint.Implementations
 {
-    public class SqlServerProductRepository : IProductRepository
+    public class SqlServerProductRepository : SqlServerMetadataEntityRepository, IProductRepository
     {
+        private const string METADATA_TABLE_NAME = "ProductAttributes";
+
         //EVAL: This doesn't feel like a particularly elegant solution. With more time, I may consider some sort
         //      of IProductValidator service.
         private const int NAME_MAX_LENGTH = 256;
         private const int DESCRIPTION_MAX_LENGTH = 256;
 
-        private readonly ISqlExecutor _SqlExecutor;
-
-        public SqlServerProductRepository(ISqlExecutor sqlExecutor)
+        public SqlServerProductRepository(ISqlExecutor sqlExecutor) : base(sqlExecutor, METADATA_TABLE_NAME)
         {
-            PreConditions.ParameterNotNull(sqlExecutor, nameof(sqlExecutor));
-
-            _SqlExecutor = sqlExecutor;
         }
 
         public async Task<int> AddProductAsync(Product product)
@@ -35,7 +32,7 @@ namespace Sparcpoint.Implementations
 
             //Null coalesce into 0 to check for both null and empty collection in one condition
             if ((product.Metadata?.Count ?? 0) > 0)
-                await AddProductMetadataAsync(product);
+                await AddMetadataAsync(product);
 
             return productId;
         }
@@ -73,27 +70,6 @@ namespace Sparcpoint.Implementations
             });
         }
 
-        private async Task AddProductMetadataAsync(Product product)
-        {
-            string sql = @"INSERT INTO [Instances].[ProductAttributes] 
-                ([InstanceId], [Key], [Value])
-                VALUES
-                (@InstanceId, @Key, @Value);";
-
-            List<Task> insertTasks = new List<Task>();
-
-            foreach (KeyValuePair<string, string> metadata in product.Metadata)
-                insertTasks.Add(_SqlExecutor.ExecuteAsync(async (sqlConnection, sqlTransaction) =>
-                {
-                    await sqlConnection.ExecuteAsync(sql, new
-                    {
-                        product.InstanceId,
-                        metadata.Key,
-                        metadata.Value,
-                    }, sqlTransaction);
-                }));
-
-            await Task.WhenAll(insertTasks);
-        }
+        
     }
 }

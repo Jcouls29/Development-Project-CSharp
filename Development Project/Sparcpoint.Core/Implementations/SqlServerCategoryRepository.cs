@@ -9,20 +9,18 @@ using System.Threading.Tasks;
 
 namespace Sparcpoint.Implementations
 {
-    public class SqlServerCategoryRepository : ICategoryRepository
+    public class SqlServerCategoryRepository : SqlServerMetadataEntityRepository, ICategoryRepository
     {
+        private const string METADATA_TABLE_NAME = "CategoryAttributes";
+
         //EVAL: This doesn't feel like a particularly elegant solution. With more time, I may consider some sort
         //      of ICategoryValidator service.
         private const int NAME_MAX_LENGTH = 64;
         private const int DESCRIPTION_MAX_LENGTH = 256;
 
-        private readonly ISqlExecutor _SqlExecutor;
 
-        public SqlServerCategoryRepository(ISqlExecutor sqlExecutor)
+        public SqlServerCategoryRepository(ISqlExecutor sqlExecutor) : base(sqlExecutor, METADATA_TABLE_NAME)
         {
-            PreConditions.ParameterNotNull(sqlExecutor, nameof(sqlExecutor));
-
-            _SqlExecutor = sqlExecutor;
         }
 
         public async Task<int> AddCategoryAsync(Category category)
@@ -35,7 +33,7 @@ namespace Sparcpoint.Implementations
 
             //Null coalesce into 0 to check for both null and empty collection in one condition
             if ((category.Metadata?.Count ?? 0) > 0)
-                await AddCategoryMetadataAsync(category);
+                await AddMetadataAsync(category);
 
             return categoryId;
         }
@@ -67,29 +65,6 @@ namespace Sparcpoint.Implementations
                     category.Description,
                 }, sqlTransaction);
             });
-        }
-
-        private async Task AddCategoryMetadataAsync(Category category)
-        {
-            string sql = @"INSERT INTO [Instances].[CategoryAttributes] 
-                ([InstanceId], [Key], [Value])
-                VALUES
-                (@InstanceId, @Key, @Value);";
-
-            List<Task> insertTasks = new List<Task>();
-
-            foreach (KeyValuePair<string, string> metadata in category.Metadata)
-                insertTasks.Add(_SqlExecutor.ExecuteAsync(async (sqlConnection, sqlTransaction) =>
-                {
-                    await sqlConnection.ExecuteAsync(sql, new
-                    {
-                        category.InstanceId,
-                        metadata.Key,
-                        metadata.Value,
-                    }, sqlTransaction);
-                }));
-
-            await Task.WhenAll(insertTasks);
         }
     }
 }

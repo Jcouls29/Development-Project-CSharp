@@ -4,13 +4,7 @@ using System.Text;
 
 namespace Sparcpoint.Models
 {
-    public class Category
+    public class Category : MetadataEntity
     {
-        public int InstanceId { get; set; }
-        public string Name { get; set; }
-        public string Description { get; set; }
-        public DateTime CreatedTimestamp { get; set; }
-
-        public Dictionary<string, string> Metadata { get; set; }
     }
 }
