@@ -14,7 +14,7 @@ namespace Sparcpoint.Implementations
         private const int NAME_MAX_LENGTH = 256;
         private const int DESCRIPTION_MAX_LENGTH = 256;
 
-        public async Task<bool> AddProductAsync(Product product)
+        public async Task<int> AddProductAsync(Product product)
         {
             ValidateAddProductParameter(product, nameof(product));
 
@@ -26,7 +26,7 @@ namespace Sparcpoint.Implementations
             if ((product.Metadata?.Count ?? 0) > 0)
                 await AddProductMetadataAsync(product);
 
-            return true;
+            return productId;
         }
 
         private void ValidateAddProductParameter(Product product, string parameterName)
