@@ -8,6 +8,6 @@ namespace Sparcpoint.Abstract
 {
     public interface ICategoryRepository
     {
-        Task<bool> AddCategoryAsync(Category category);
+        Task<int> AddCategoryAsync(Category category);
     }
 }
