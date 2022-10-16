@@ -12,5 +12,7 @@ namespace Sparcpoint.Models
         public string ProductImageUris { get; set; }
         public string ValidSkus { get; set; }
         public DateTime CreatedTimestamp { get; set; }
+
+        public Dictionary<string, string> Metadata { get; set; }
     }
 }

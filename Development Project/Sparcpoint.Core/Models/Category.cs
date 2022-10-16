@@ -10,5 +10,7 @@ namespace Sparcpoint.Models
         public string Name { get; set; }
         public string Description { get; set; }
         public DateTime CreatedTimestamp { get; set; }
+
+        public Dictionary<string, string> Metadata { get; set; }
     }
 }
