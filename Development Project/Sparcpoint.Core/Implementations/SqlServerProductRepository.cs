@@ -56,7 +56,7 @@ namespace Sparcpoint.Implementations
         private async Task<int> AddOnlyProductAsync(Product product)
         {
             string sql = @"INSERT INTO [Instances].[Products] 
-                (Name, Description, ProductImageUris, ValidSkus)
+                ([Name], [Description], [ProductImageUris], [ValidSkus])
                 VALUES
                 (@Name, @Description, @ProductImageUris, @ValidSkus);
                 SELECT SCOPE_IDENTITY();";
@@ -73,9 +73,27 @@ namespace Sparcpoint.Implementations
             });
         }
 
-        private Task AddProductMetadataAsync(Product product)
+        private async Task AddProductMetadataAsync(Product product)
         {
-            throw new NotImplementedException();
+            string sql = @"INSERT INTO [Instances].[ProductAttributes] 
+                ([InstanceId], [Key], [Value])
+                VALUES
+                (@InstanceId, @Key, @Value);";
+
+            List<Task> insertTasks = new List<Task>();
+
+            foreach (KeyValuePair<string, string> metadata in product.Metadata)
+                insertTasks.Add(_SqlExecutor.ExecuteAsync(async (sqlConnection, sqlTransaction) =>
+                {
+                    await sqlConnection.ExecuteAsync(sql, new
+                    {
+                        product.InstanceId,
+                        metadata.Key,
+                        metadata.Value,
+                    }, sqlTransaction);
+                }));
+
+            await Task.WhenAll(insertTasks);
         }
     }
 }
