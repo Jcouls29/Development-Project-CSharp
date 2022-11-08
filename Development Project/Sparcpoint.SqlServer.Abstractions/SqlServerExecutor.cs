@@ -40,9 +40,19 @@ namespace Sparcpoint.SqlServer.Abstractions
             using (var sqlConn = await OpenAsync())
             using (var sqlTrans = sqlConn.BeginTransaction())
             {
-                var result = await command(sqlConn, sqlTrans);
-                sqlTrans.Commit();
-                return result;
+                try
+                {
+                    var result = await command(sqlConn, sqlTrans);
+                    sqlTrans.Commit();
+                    return result;
+                }
+                catch (Exception)
+                {
+                    //EVAL : Added the rollback statement in case of any issues mid-transaction
+                    sqlTrans.Rollback();
+                    throw;
+                }
+                
             }
         }
 
