@@ -1,7 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using System;
+﻿using AutoMapper;
+using Interview.Web.Dtos;
+using Microsoft.AspNetCore.Mvc;
+using Sparcpoint.Interfaces;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace Interview.Web.Controllers
@@ -9,11 +10,23 @@ namespace Interview.Web.Controllers
     [Route("api/v1/products")]
     public class ProductController : Controller
     {
-        // NOTE: Sample Action
-        [HttpGet]
-        public Task<IActionResult> GetAllProducts()
+        private readonly IUnitOfWork uow;
+        private readonly IMapper mapper;
+
+        public ProductController(IUnitOfWork uow, IMapper mapper)
         {
-            return Task.FromResult((IActionResult)Ok(new object[] { }));
+            this.uow = uow;
+            this.mapper = mapper;
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllProducts()
+        {
+            var products = await uow.ProductsRepository.GetProductsAsync();
+
+            var productDtos = mapper.Map<IEnumerable<ProductDto>>(products);
+
+            return Ok(productDtos);
         }
     }
 }
