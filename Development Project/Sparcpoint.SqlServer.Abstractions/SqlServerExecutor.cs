@@ -14,6 +14,15 @@ namespace Sparcpoint.SqlServer.Abstractions
             _ConnectionString = connectionString ?? throw new ArgumentNullException(nameof(connectionString));
         }
 
+        public SqlServerExecutor(SqlServerOptions sqlServerOptions)
+        {
+            if (sqlServerOptions == null) throw new ArgumentNullException(nameof(sqlServerOptions));
+            if (string.IsNullOrEmpty(sqlServerOptions.ConnectionString))
+                throw new ArgumentException("ConnectionString property must be provided", nameof(sqlServerOptions));
+
+            _ConnectionString = sqlServerOptions.ConnectionString;
+        }
+
         public T Execute<T>(Func<IDbConnection, IDbTransaction, T> command)
         {
             using (var sqlConn = Open())
