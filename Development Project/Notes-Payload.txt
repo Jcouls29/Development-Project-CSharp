@@ -1,0 +1,70 @@
+Request:
+curl -X 'POST' \
+  'https://localhost:44387/api/v1/product' \
+  -H 'accept: text/plain' \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "name": "P1",
+  "description": "Description P1",
+  "productImageUris": "uris...",
+  "validSkus": "skus...",
+  "categories": [
+    {
+      "name": "C1",
+      "description": "Description C1",
+      "categoryAttributes": {
+        "key": "CA 1",
+        "value": "Value CA 1"
+      }
+    }
+  ],
+  "productAttributes": [
+    {
+      "key": "PA1",
+      "value": "Value PA1"
+    },
+    {
+      "key": "PA2",
+      "value": "Value PA2"
+    }
+  ]
+}'
+
+RESPONSE:
+{
+  "instanceId": 16,
+  "productAttributeInstanceIds": [
+    16,
+    16
+  ]
+}
+
+
+PAYLOAD:
+
+{
+  "name": "P1",
+  "description": "Description P1",
+  "productImageUris": "uris...",
+  "validSkus": "skus...",
+  "categories": [
+    {
+      "name": "C1",
+      "description": "Description C1",
+      "categoryAttributes": {
+        "key": "CA 1",
+        "value": "Value CA 1"
+      }
+    }
+  ],
+  "productAttributes": [
+    {
+      "key": "PA1",
+      "value": "Value PA1"
+    },
+    {
+      "key": "PA2",
+      "value": "Value PA2"
+    }
+  ]
+}

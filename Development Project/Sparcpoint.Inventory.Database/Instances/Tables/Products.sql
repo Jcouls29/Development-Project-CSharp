@@ -6,6 +6,7 @@
 	[ProductImageUris] VARCHAR(MAX) NOT NULL,
 	[ValidSkus] VARCHAR(MAX) NOT NULL,
 	[CreatedTimestamp] DATETIME2(7) NOT NULL DEFAULT SYSUTCDATETIME(), 
+    [IsDeleted] BIT NOT NULL DEFAULT 0, 
 )
 
 GO
