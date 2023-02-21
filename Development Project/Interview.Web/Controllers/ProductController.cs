@@ -36,6 +36,8 @@ namespace Interview.Web.Controllers
             }
         }
 
+        [HttpPost]
+        [Route("api/v1/products/add")]
         public Task<IActionResult> AddProduct(Product product)
         {
             try
