@@ -5,4 +5,3 @@ namespace Sparcpoint.Abstractions
 	{
 	}
 }
-
