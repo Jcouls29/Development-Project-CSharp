@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Sparcpoint.Core.Entities
+namespace Sparcpoint.Core.Models
 {
     [Table("[Instances].[CategoryCategories]")]
     public class CategoryCategories

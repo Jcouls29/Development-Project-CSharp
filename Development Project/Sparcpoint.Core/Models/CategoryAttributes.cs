@@ -1,8 +1,6 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Sparcpoint.Core.Entities
+namespace Sparcpoint.Core.Models
 {
     [Table("[Instances].[CategoryAttributes]")]
     public class CategoryAttributes

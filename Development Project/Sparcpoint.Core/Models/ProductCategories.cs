@@ -1,4 +1,4 @@
-﻿namespace Sparcpoint.Core.Entities
+﻿namespace Sparcpoint.Core.Models
 {
     public class ProductCategories
     {

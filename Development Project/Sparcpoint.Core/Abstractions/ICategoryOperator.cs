@@ -1,5 +1,5 @@
 ﻿using System;
-namespace Sparcpoint.Abstract
+namespace Sparcpoint.Abstractions
 {
 	public interface ICategoryOperator
 	{

@@ -2,7 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Sparcpoint
+namespace Sparcpoint.Abstractions
 {
     public interface IAsyncQueue<T>
     {

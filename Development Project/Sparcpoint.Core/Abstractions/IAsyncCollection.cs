@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace Sparcpoint
+namespace Sparcpoint.Abstractions
 {
     public interface IAsyncCollection<T> : IEnumerable<T>
     {

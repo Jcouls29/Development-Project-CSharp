@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Sparcpoint
+namespace Sparcpoint.Abstractions
 {
     public interface IDataSerializer
     {

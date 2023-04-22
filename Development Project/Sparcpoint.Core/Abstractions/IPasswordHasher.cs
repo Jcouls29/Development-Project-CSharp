@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Threading.Tasks;
 
-namespace Sparcpoint
+namespace Sparcpoint.Abstractions
 {
     public interface IPasswordHasher
     {
