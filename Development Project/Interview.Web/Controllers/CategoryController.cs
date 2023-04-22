@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
-using Sparcpoint.Abstract;
+using Sparcpoint.Abstractions;
 
 namespace Interview.Web.Controllers
 {

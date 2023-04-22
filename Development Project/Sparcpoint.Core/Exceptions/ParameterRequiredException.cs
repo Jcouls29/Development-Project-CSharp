@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Sparcpoint
+namespace Sparcpoint.Exceptions
 {
     public class ParameterRequiredException : Exception
     {

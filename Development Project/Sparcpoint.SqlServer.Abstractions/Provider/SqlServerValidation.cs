@@ -5,7 +5,7 @@ namespace Sparcpoint.SqlServer.Abstractions
 {
     internal static class SqlServerValidation
     {
-        private static Regex SQL_OBJECT_NAME_PATTERN = new Regex(@"^\s*(([a-zA-Z][a-zA-Z0-9]*\.)?[a-zA-Z][a-zA-Z0-9_]*|(\[[a-zA-Z0-9_\s]+\]\.)?\[[a-zA-Z0-9_\s]+\])\s*$");
+        private static readonly Regex SQL_OBJECT_NAME_PATTERN = new(@"^\s*(([a-zA-Z][a-zA-Z0-9]*\.)?[a-zA-Z][a-zA-Z0-9_]*|(\[[a-zA-Z0-9_\s]+\]\.)?\[[a-zA-Z0-9_\s]+\])\s*$");
         public static string SanitizeColumnName(string columnName)
         {
             if (!SQL_OBJECT_NAME_PATTERN.IsMatch(columnName))
@@ -22,7 +22,7 @@ namespace Sparcpoint.SqlServer.Abstractions
             return tableName.Trim();
         }
 
-        private static Regex PARAMETER_NAME_PATTERN = new Regex(@"^\s*\@?[a-zA-Z][a-zA-Z0-9_]*\s*$");
+        private static readonly Regex PARAMETER_NAME_PATTERN = new(@"^\s*\@?[a-zA-Z][a-zA-Z0-9_]*\s*$");
         public static string SanitizeParameterName(string parameterName)
         {
             if (!PARAMETER_NAME_PATTERN.IsMatch(parameterName))

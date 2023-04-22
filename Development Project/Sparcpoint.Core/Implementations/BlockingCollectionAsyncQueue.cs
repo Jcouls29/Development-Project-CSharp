@@ -4,8 +4,9 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
+using Sparcpoint.Abstractions;
 
-namespace Sparcpoint
+namespace Sparcpoint.Implementations
 {
     public class BlockingCollectionAsyncQueue<T> : IAsyncQueue<T>, IDisposable
     {

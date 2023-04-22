@@ -5,7 +5,7 @@ namespace Sparcpoint.SqlServer.Abstractions
 {
     public class JoinTables : IEnumerable<string>
     {
-        private readonly List<string> _Backer = new List<string>();
+        private readonly List<string> _Backer = new();
 
         public void Add(string clause)
             => _Backer.Add(clause);

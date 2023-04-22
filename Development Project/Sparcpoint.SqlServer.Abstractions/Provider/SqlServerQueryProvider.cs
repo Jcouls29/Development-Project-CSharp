@@ -27,7 +27,7 @@ namespace Sparcpoint.SqlServer.Abstractions
         public string JoinClause => _Joins.ToString();
         public string WhereClause => _Where.ToString();
         public string OrderByClause => _OrderBy.ToString();
-        public Dictionary<string, object> Parameters => new Dictionary<string, object>(_Parameters);
+        public Dictionary<string, object> Parameters => new(_Parameters);
 
         public SqlServerQueryProvider SetTargetTableAlias(string tableAlias)
             => Execute(() => _TargetTableAlias = SqlServerValidation.SanitizeTableName(tableAlias));
@@ -150,9 +150,9 @@ namespace Sparcpoint.SqlServer.Abstractions
             return _TargetTableAlias + "." + columnName;
         }
 
-        public static SqlServerQueryProvider Empty => new SqlServerQueryProvider();
+        public static SqlServerQueryProvider Empty => new();
         public static SqlServerQueryProvider WithParameters(Dictionary<string, object> parameters)
-            => new SqlServerQueryProvider
+            => new()
             {
                 _Parameters = parameters ?? throw new ArgumentNullException(nameof(parameters))
             };
