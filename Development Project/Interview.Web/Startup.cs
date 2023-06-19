@@ -94,9 +94,9 @@ namespace Interview.Web
             {
                 app.UseDeveloperExceptionPage();
                 app.UseSwagger();
-                app.UseSwaggerUI(c =>
+                app.UseSwaggerUI(option =>
                 {
-                    c.SwaggerEndpoint("./v1/swagger.json", "My API V1");
+                    option.SwaggerEndpoint("./v1/swagger.json", "Sparcpoint API V1");
                 });
             }
             else
