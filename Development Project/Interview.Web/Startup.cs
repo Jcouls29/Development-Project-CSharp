@@ -82,7 +82,7 @@ namespace Interview.Web
 
             // EVAL: Use this to register the services.
             services.AddScoped<IProductService, ProductService>();
-            // services.AddScoped<ICategoryService, CategoryService>();
+            services.AddScoped<ICategoryService, CategoryService>();
             // services.AddScoped<IInventoryTransactionService, InventoryTransactionService>();
             // services.AddScoped<IInventoryService, InventoryService>();
         }
