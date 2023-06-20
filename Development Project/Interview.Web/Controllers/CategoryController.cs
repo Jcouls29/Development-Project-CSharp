@@ -21,6 +21,7 @@ namespace Interview.Web.Controllers
         [Route("all")]
         public async Task<IActionResult> GetAllCategories()
         {
+            // EVAL: Should add pagination to this to limit the number of products returned.
             var categories = await _categoryService.GetAllCategoriesAsync();
 
             return Ok(categories);

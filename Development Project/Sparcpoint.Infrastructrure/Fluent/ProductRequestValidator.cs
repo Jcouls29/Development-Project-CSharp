@@ -16,6 +16,6 @@ namespace Sparcpoint.Infrastructure.Fluent
 
             RuleFor(x => x.ValidSkus).NotEmpty()
                                      .Length(min: 3, max: 12);
-        }   
+        }
     }
 }

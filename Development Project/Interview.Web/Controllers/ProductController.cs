@@ -22,6 +22,7 @@ namespace Interview.Web.Controllers
         [Route("all")]
         public async Task<IActionResult> GetAllProducts()
         {
+            // EVAL: Should add pagination to this to limit the number of products returned.
             var products = await _productService.GetAllProductAsync();
 
             return Ok(products);
@@ -45,6 +46,7 @@ namespace Interview.Web.Controllers
         public async Task<IActionResult> CreateProduct(CreateProductRequest product)
         {
             // EVAL: This uses FluentValidation to handle this.
+            // EVAL: Should check if products exists before creating it.
             bool createdProduct = await _productService.CreateProductAsync(product);
 
             return createdProduct ? StatusCode(201) : BadRequest();
