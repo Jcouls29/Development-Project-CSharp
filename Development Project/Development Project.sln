@@ -9,7 +9,13 @@ Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "Sparcpoint.Inventory.Databa
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sparcpoint.Core", "Sparcpoint.Core\Sparcpoint.Core.csproj", "{C4ECDF4B-3396-4512-84DB-ECECA8C5600E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sparcpoint.Infrastructure", "Sparcpoint.Infrastructrure\Sparcpoint.Infrastructure.csproj", "{B99231F2-6810-452C-B487-12453A4F3A39}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sparcpoint.Infrastructure", "Sparcpoint.Infrastructrure\Sparcpoint.Infrastructure.csproj", "{B99231F2-6810-452C-B487-12453A4F3A39}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Requests", "Requests", "{CE51285F-80FD-4739-81D6-B020B173E1D2}"
+	ProjectSection(SolutionItems) = preProject
+		GetAllProducts.http = GetAllProducts.http
+		GetProductById.http = GetProductById.http
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

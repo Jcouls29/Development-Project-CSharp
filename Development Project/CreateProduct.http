@@ -1,0 +1,9 @@
+POST https://localhost:44387/api/v1/products/create
+Content-Type: application/json
+
+{
+  "Name": "Product 1",
+  "Description": "Product 1 description",
+  "ProductImageUris": "/testimageurl",
+  "ValidSkus": "JU234343"
+}

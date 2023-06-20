@@ -1,0 +1,2 @@
+GET https://localhost:44387/api/v1/products/1
+Content-Type: application/json
