@@ -1,4 +1,5 @@
 ﻿using Sparcpoint.Core.Persistence.Entity.Sparcpoint.Entities;
+using Sparcpoint.Infrastructure.RequestModels;
 
 namespace Sparcpoint.Infrastructure.Services.Interfaces
 {
@@ -13,7 +14,7 @@ namespace Sparcpoint.Infrastructure.Services.Interfaces
 
         public Task<Product?> GetProductByIdAsync(int id);
 
-        public Task<bool> CreateProductAsync(Product product);
+        public Task<bool> CreateProductAsync(CreateProductRequest product);
 
         public Task<Product?> UpdateProductAsync(Product product);
 

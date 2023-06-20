@@ -1,3 +1,5 @@
+using FluentValidation;
+using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -8,6 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using Sparcpoint.Core.Persistence.Entity.Sparcpoint.Context;
+using Sparcpoint.Infrastructure;
 using Sparcpoint.Infrastructure.Services;
 using Sparcpoint.Infrastructure.Services.Interfaces;
 using System;
@@ -83,8 +86,10 @@ namespace Interview.Web
             // EVAL: Use this to register the services.
             services.AddScoped<IProductService, ProductService>();
             services.AddScoped<ICategoryService, CategoryService>();
-            // services.AddScoped<IInventoryTransactionService, InventoryTransactionService>();
-            // services.AddScoped<IInventoryService, InventoryService>();
+
+            // Eval: Use this to register the validators.
+            services.AddFluentValidationAutoValidation();
+            services.AddValidatorsFromAssemblyContaining<IAssemblyMarker>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

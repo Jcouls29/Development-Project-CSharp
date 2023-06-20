@@ -13,8 +13,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sparcpoint.Infrastructure",
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Requests", "Requests", "{CE51285F-80FD-4739-81D6-B020B173E1D2}"
 	ProjectSection(SolutionItems) = preProject
-		GetAllProducts.http = GetAllProducts.http
-		GetProductById.http = GetProductById.http
+		Product.http = Product.http
 	EndProjectSection
 EndProject
 Global

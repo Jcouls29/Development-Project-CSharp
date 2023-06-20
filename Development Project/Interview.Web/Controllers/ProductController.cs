@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Sparcpoint.Core.Persistence.Entity.Sparcpoint.Entities;
+using Sparcpoint.Infrastructure.RequestModels;
 using Sparcpoint.Infrastructure.Services.Interfaces;
 using System.Threading.Tasks;
 
@@ -41,17 +42,9 @@ namespace Interview.Web.Controllers
 
         [HttpPost]
         [Route("create")]
-        public async Task<IActionResult> CreateProduct([FromBody] Product product)
+        public async Task<IActionResult> CreateProduct(CreateProductRequest product)
         {
-            // EVAL: Check if model state is valid before proceeding.
-            // Can use model validation attributes on the model to handle this
-            // or use FluentValidation to handle this.
-
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
+            // EVAL: This uses FluentValidation to handle this.
             bool createdProduct = await _productService.CreateProductAsync(product);
 
             return createdProduct ? StatusCode(201) : BadRequest();

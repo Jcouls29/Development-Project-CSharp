@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Sparcpoint.Core.Persistence.Entity.Sparcpoint.Context;
 using Sparcpoint.Core.Persistence.Entity.Sparcpoint.Entities;
+using Sparcpoint.Infrastructure.RequestModels;
 using Sparcpoint.Infrastructure.Services.Interfaces;
 
 namespace Sparcpoint.Infrastructure.Services
@@ -14,7 +15,7 @@ namespace Sparcpoint.Infrastructure.Services
             _context = context;
         }
 
-        public async Task<bool> CreateProductAsync(Product product)
+        public async Task<bool> CreateProductAsync(CreateProductRequest product)
         {
             if (product == null)
             {
@@ -24,7 +25,17 @@ namespace Sparcpoint.Infrastructure.Services
             try
             {
                 // EVAL: Validate the product data before proceeding. I would use FluentValidation for this
-                _context.Products.Add(product);
+                // EVAL: Can use a data mapper to map the request model to the entity model.
+
+                var productModel = new Product
+                {
+                    Name = product.Name,
+                    Description = product.Description,
+                    ProductImageUris = product.ProductImageUris,
+                    ValidSkus = product.ValidSkus
+                };
+
+                _context.Products.Add(productModel);
                 await _context.SaveChangesAsync();
 
                 return true;
