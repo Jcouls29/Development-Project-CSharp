@@ -15,5 +15,73 @@ namespace Interview.Web.Controllers
         {
             return Task.FromResult((IActionResult)Ok(new object[] { }));
         }
+
+        // GET: api/v1/products/{productId}
+        [HttpGet("{productId}")]
+        public Task<IActionResult> GetProductById(Guid productId)
+        {
+            // Implement logic to retrieve a product by ID
+            // ...
+
+            return Task.FromResult((IActionResult)Ok(new
+            {
+                productId,
+                name = "Sample Product",
+                price = 10.99
+            }));
+        }
+
+        // POST: api/v1/products
+        // The Product is a Dto
+        [HttpPost]
+        public Task<IActionResult> AddProduct([FromBody] Product product)
+        {
+            // Implement logic to add a product
+            // ...
+
+            return Task.FromResult((IActionResult)Ok(new
+            {
+                message = "Product added successfully",
+                productId = Guid.NewGuid()
+            }));
+        }
+
+        // POST: api/v1/products/search
+        [HttpPost("search")]
+        public Task<IActionResult> SearchProduct([FromBody] ProductSearchCriteria searchCriteria)
+        {
+            // Implement logic to search for products
+            // ...
+
+            return Task.FromResult((IActionResult)Ok(new List<object>()));
+        }
+
+        // PUT: api/v1/products/{productId}/inventory
+        // The InventoryUpdate is a Dto
+        [HttpPut("{productId}/inventory")]
+        public Task<IActionResult> AddToInventory(Guid productId, [FromBody] InventoryUpdate update)
+        {
+            // Implement logic to add products to inventory
+            // ...
+
+            return Task.FromResult((IActionResult)Ok(new
+            {
+                message = "Inventory updated successfully"
+            }));
+        }
+
+        // DELETE: api/v1/products/{productId}/inventory
+        // The InventoryUpdate is a Dto
+        [HttpDelete("{productId}/inventory")]
+        public Task<IActionResult> RemoveFromInventory(Guid productId, [FromBody] InventoryUpdate update)
+        {
+            // Implement logic to remove products from inventory
+            // ...
+
+            return Task.FromResult((IActionResult)Ok(new
+            {
+                message = "Inventory updated successfully"
+            }));
+        }
     }
 }
