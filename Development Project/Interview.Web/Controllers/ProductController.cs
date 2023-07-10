@@ -31,57 +31,60 @@ namespace Interview.Web.Controllers
             }));
         }
 
-        // POST: api/v1/products
-        // The Product is a Dto
-        [HttpPost]
-        public Task<IActionResult> AddProduct([FromBody] Product product)
-        {
-            // Implement logic to add a product
-            // ...
+        //TODO: Implement the UnitOfWork and IProductRepository calls to add products, remove products, update products, etc.
+        //TODO: Create the CategoryController to implement the UnitOfWork and ICategoryRepository calls to add, remove, update categories and more.
 
-            return Task.FromResult((IActionResult)Ok(new
-            {
-                message = "Product added successfully",
-                productId = Guid.NewGuid()
-            }));
-        }
+        // // POST: api/v1/products
+        // // The Product is a Dto
+        // [HttpPost]
+        // public Task<IActionResult> AddProduct([FromBody] Product product)
+        // {
+        //     // Implement logic to add a product
+        //     // ...
 
-        // POST: api/v1/products/search
-        [HttpPost("search")]
-        public Task<IActionResult> SearchProduct([FromBody] ProductSearchCriteria searchCriteria)
-        {
-            // Implement logic to search for products
-            // ...
+        //     return Task.FromResult((IActionResult)Ok(new
+        //     {
+        //         message = "Product added successfully",
+        //         productId = Guid.NewGuid()
+        //     }));
+        // }
 
-            return Task.FromResult((IActionResult)Ok(new List<object>()));
-        }
+        // // POST: api/v1/products/search
+        // [HttpPost("search")]
+        // public Task<IActionResult> SearchProduct([FromBody] ProductSearchCriteria searchCriteria)
+        // {
+        //     // Implement logic to search for products
+        //     // ...
 
-        // PUT: api/v1/products/{productId}/inventory
-        // The InventoryUpdate is a Dto
-        [HttpPut("{productId}/inventory")]
-        public Task<IActionResult> AddToInventory(Guid productId, [FromBody] InventoryUpdate update)
-        {
-            // Implement logic to add products to inventory
-            // ...
+        //     return Task.FromResult((IActionResult)Ok(new List<object>()));
+        // }
 
-            return Task.FromResult((IActionResult)Ok(new
-            {
-                message = "Inventory updated successfully"
-            }));
-        }
+        // // PUT: api/v1/products/{productId}/inventory
+        // // The InventoryUpdate is a Dto
+        // [HttpPut("{productId}/inventory")]
+        // public Task<IActionResult> AddToInventory(Guid productId, [FromBody] InventoryUpdate update)
+        // {
+        //     // Implement logic to add products to inventory
+        //     // ...
 
-        // DELETE: api/v1/products/{productId}/inventory
-        // The InventoryUpdate is a Dto
-        [HttpDelete("{productId}/inventory")]
-        public Task<IActionResult> RemoveFromInventory(Guid productId, [FromBody] InventoryUpdate update)
-        {
-            // Implement logic to remove products from inventory
-            // ...
+        //     return Task.FromResult((IActionResult)Ok(new
+        //     {
+        //         message = "Inventory updated successfully"
+        //     }));
+        // }
 
-            return Task.FromResult((IActionResult)Ok(new
-            {
-                message = "Inventory updated successfully"
-            }));
-        }
+        // // DELETE: api/v1/products/{productId}/inventory
+        // // The InventoryUpdate is a Dto
+        // [HttpDelete("{productId}/inventory")]
+        // public Task<IActionResult> RemoveFromInventory(Guid productId, [FromBody] InventoryUpdate update)
+        // {
+        //     // Implement logic to remove products from inventory
+        //     // ...
+
+        //     return Task.FromResult((IActionResult)Ok(new
+        //     {
+        //         message = "Inventory updated successfully"
+        //     }));
+        // }
     }
 }
