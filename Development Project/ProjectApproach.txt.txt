@@ -1,0 +1,17 @@
+Order of operations to complete project
+	1. Build and test Stored Procedures to perform required CRUD operations
+		Prefer ground up approach.  Data management is typically the most important part of any project, 
+		therefore more time should be spent on the CRUD operations to verify the integrity of the data handling.
+		Typically I prefer json input to stored procedures so that data input/output is constant (the plumbing
+		doesn't change just the contents through it).
+
+	2. Build and test API endpoints to verify database CRUD operations
+		Once the stored procedures have been created and tested the next crucial aspect of any project should
+		be accessing and exposing that functionality.  
+	
+	3. Build and test front end usage of API endpoints to verify functionality of inventory system
+		Finally the front-end consideration comes into play.  How to present the data returned within the UI?
+		Is this to be a web app or winforms/wpf?  Perhaps Android or iOS considerations come into play.  Maybe 
+		even all of the above.  This is typically the part of the design phase where the client has more 
+		opportunity for input, as well as verification that the system works per their specifications.
+		
