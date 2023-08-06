@@ -9,7 +9,6 @@ namespace Interview.Web.Controllers
     [Route("api/v1/products")]
     public class ProductController : Controller
     {
-        // NOTE: Sample Action
         [HttpGet]
         public Task<IActionResult> GetAllProducts()
         {
