@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Interview.Web.Models;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,13 +9,99 @@ using System.Threading.Tasks;
 namespace Interview.Web.Controllers
 {
     [Route("api/v1/products")]
+    [ApiController]
     public class ProductController : Controller
     {
-        // NOTE: Sample Action
-        [HttpGet]
-        public Task<IActionResult> GetAllProducts()
+        private readonly InventoryDbContext _context;
+
+        public ProductController(InventoryDbContext context)
         {
-            return Task.FromResult((IActionResult)Ok(new object[] { }));
+            _context = context;
+        }
+
+        // GET: api/v1/products
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<Product>>> GetProducts()
+        {
+            return await _context.Products.ToListAsync();
+        }
+
+        // GET: api/v1/products/5
+        [HttpGet("{id}")]
+        public async Task<ActionResult<Product>> GetProduct(int id)
+        {
+            var product = await _context.Products.FindAsync(id);
+
+            if (product == null)
+            {
+                return NotFound();
+            }
+
+            return product;
+        }
+
+        // PUT: api/v1/products/5
+        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        [HttpPut("{id}")]
+        public async Task<IActionResult> PutProduct(int id, Product product)
+        {
+            if (id != product.InstanceId)
+            {
+                return BadRequest();
+            }
+
+            _context.Entry(product).State = EntityState.Modified;
+
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!ProductExists(id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
+            return NoContent();
+        }
+
+        // POST: api/v1/products
+        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        [HttpPost]
+        public async Task<ActionResult<Product>> PostProduct(Product product)
+        {
+            _context.Products.Add(product);
+            await _context.SaveChangesAsync();
+
+            return CreatedAtAction("GetProduct", new { id = product.InstanceId }, product);
+        }
+
+        // DELETE: api/v1/products/5
+        // Based on requirements, products cannot be deleted. Commenting out for now
+        //[HttpDelete("{id}")]
+        //public async Task<IActionResult> DeleteProduct(int id)
+        //{
+        //    var product = await _context.Products.FindAsync(id);
+        //    if (product == null)
+        //    {
+        //        return NotFound();
+        //    }
+
+        //    _context.Products.Remove(product);
+        //    await _context.SaveChangesAsync();
+
+        //    return NoContent();
+        //}
+
+        private bool ProductExists(int id)
+        {
+            return _context.Products.Any(e => e.InstanceId == id);
         }
     }
 }
