@@ -1,13 +1,11 @@
+using Interview.Service.Inventory;
+using Interview.Service.Products;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using Sparcpoint.SqlServer.Abstractions;
 
 namespace Interview.Web
 {
@@ -24,6 +22,12 @@ namespace Interview.Web
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+
+            services.AddScoped<IInventoryService, InventoryService>();
+            services.AddScoped<IProductRepo, ProductRepo>();
+            services.AddScoped<IInventoryRepo, InventoryRepo>();
+      
+            services.AddScoped<ISqlExecutor>(exec => new SqlServerExecutor(Configuration.GetSection("SqlServerDbSettings:ConnectionString").Value));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
