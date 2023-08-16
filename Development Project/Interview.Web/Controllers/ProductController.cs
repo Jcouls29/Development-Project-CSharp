@@ -35,6 +35,7 @@ namespace Interview.Web.Controllers
             catch (Exception ex)
             {
                 var message = $"An error occurred when attempting to save a list of products {ex.Message}";
+                // EVAL: Log message to db (message, ex.StackTrace)
                 return Task.FromResult((IActionResult)StatusCode(500, new { message }));
             }
         }
@@ -56,7 +57,7 @@ namespace Interview.Web.Controllers
             catch (Exception ex)
             {
                 var message = $"An error occurred when attempting to retrieve a filtered list of products {ex.Message}";
-                // EVAL: Log Error
+                // EVAL: Log message to db (message, ex.StackTrace)
                 return Task.FromResult((IActionResult)StatusCode(500, new { message }));
             }
         }

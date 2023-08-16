@@ -8,8 +8,4 @@
     <ProjectReference Include="..\Sparcpoint.SqlServer.Abstractions\Sparcpoint.SqlServer.Abstractions.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Inventory\" />
-  </ItemGroup>
-
 </Project>

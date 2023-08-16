@@ -17,6 +17,7 @@ namespace Interview.Service.Products
         {
             // EVAL: Build SQL query based on parms values
             // EVAL: Execute SQL command using SqlExecutor
+            // EVAL: Map result (if necessary)
             // EVAL: Return result
             return new List<Product>();
         }
