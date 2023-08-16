@@ -1,3 +1,4 @@
+using Interview.Service.Inventory;
 using Interview.Service.Products;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -28,9 +29,8 @@ namespace Interview.Web
         {
             services.AddControllers();
 
-            
-
             services.AddScoped<IProductRepo, ProductRepo>();
+            services.AddScoped<IInventoryRepo, InventoryRepo>();
             services.AddScoped<ISqlExecutor>(exec => new SqlServerExecutor(Configuration.GetSection("SqlServerDbSettings:ConnectionString").Value));
         }
 
