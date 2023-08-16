@@ -1,5 +1,6 @@
 ﻿using Interview.Service.Models;
 using Sparcpoint.SqlServer.Abstractions;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
@@ -35,21 +36,29 @@ namespace Interview.Service.Inventory
 
         public void DeleteInventory(List<int> productIds)
         {
-            string sql = "";
-
+            var transactions = new List<InventoryTransaction>();
             foreach (var id in productIds)
             {
-                sql += "DELETE FROM InventoryTransactions WHERE ProductInstanceId = @id;";
-                // EVAL: Create command
-                // EVAL: await ExecuteAsync(InventoryDeleteCommand)
-                // EVAL: Log to db that inventory id was successfully deleted??
+                InventoryTransaction trans = new InventoryTransaction
+                {
+                    ProductInstanceId = id,
+                    Quantity = GetInventoryCount(new ProductFilterParams { Id = id }) * -1,
+                    StartedTimestamp = DateTime.Now,
+                    CompletedTimestamp = DateTime.Now,
+                    TypeCategory = "DELETE"
+                };
+                transactions.Add(trans);
             }
+            var result = AddInventory(transactions);
         }
 
         public int GetInventoryCount(ProductFilterParams parms)
         {
             int result = 0;
             string sql = "SELECT COUNT(*) FROM InventoryTransactions T INNER JOIN Products P ON P.InstanceId = T.ProductInstanceId WHERE 1=1";
+
+            if (parms.Id != 0)
+                sql += " AND P.InstanceId = @id";
             if (parms.Name != "")
                 sql += " AND P.Name LIKE %@name%";
             // EVAL: Build where clause
