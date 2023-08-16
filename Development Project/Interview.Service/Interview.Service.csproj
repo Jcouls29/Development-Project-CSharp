@@ -10,7 +10,6 @@
 
   <ItemGroup>
     <Folder Include="Inventory\" />
-    <Folder Include="Products\" />
   </ItemGroup>
 
 </Project>
