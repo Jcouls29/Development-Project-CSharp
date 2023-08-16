@@ -2,16 +2,10 @@ using Interview.Service.Inventory;
 using Interview.Service.Products;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Sparcpoint.SqlServer.Abstractions;
-using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Interview.Web
 {
@@ -29,8 +23,10 @@ namespace Interview.Web
         {
             services.AddControllers();
 
+            services.AddScoped<IInventoryService, InventoryService>();
             services.AddScoped<IProductRepo, ProductRepo>();
             services.AddScoped<IInventoryRepo, InventoryRepo>();
+      
             services.AddScoped<ISqlExecutor>(exec => new SqlServerExecutor(Configuration.GetSection("SqlServerDbSettings:ConnectionString").Value));
         }
 

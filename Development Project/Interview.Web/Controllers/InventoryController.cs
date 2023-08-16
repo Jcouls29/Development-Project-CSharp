@@ -9,12 +9,11 @@ namespace Interview.Web.Controllers
 {
     public class InventoryController : Controller
     {
-        private readonly IInventoryRepo _repo;
+        private readonly IInventoryService _inventoryService;
 
-        public InventoryController(IInventoryRepo repo)
+        public InventoryController(IInventoryService inventoryService)
         {
-            // EVAL: Not currently expecting business logic outside of query building, if this changes then a business service layer would be introduced.
-            _repo = repo;
+            _inventoryService = inventoryService;
         }
 
         [HttpPost]
@@ -23,7 +22,7 @@ namespace Interview.Web.Controllers
         {
             try
             {
-                var count = _repo.GetInventoryCount(parms);
+                var count = _inventoryService.GetInventoryCount(parms);
 
                 // EVAL: Could wrap the added products in a response object if more info was needed by the response
                 return Task.FromResult((IActionResult)Ok(count));
@@ -39,14 +38,14 @@ namespace Interview.Web.Controllers
 
         [HttpPost]
         [Route("AddInventory")]
-        public Task<IActionResult> AddInventory([FromBody] List<InventoryTransaction> transactions)
+        public Task<IActionResult> AddInventory([FromBody] List<Product> products)
         {
             try
             {
-                if (transactions.Count == 0)
+                if (products.Count == 0)
                     return Task.FromResult((IActionResult)BadRequest("There were no products to add to inventory."));
 
-                var result = _repo.AddInventory(transactions);
+                var result = _inventoryService.AddInventory(products);
 
                 // EVAL: Could wrap the added products in a response object if more info was needed by the response
                 return Task.FromResult((IActionResult)Ok(result));
@@ -67,7 +66,7 @@ namespace Interview.Web.Controllers
             try
             {
                 // EVAL: May need to return something from delete action that can be used to verify that delete occurred on items
-                _repo.DeleteInventory(productIds);
+                _inventoryService.DeleteInventory(productIds);
 
                 return Task.FromResult((IActionResult)Ok());
             }

@@ -5,8 +5,7 @@ namespace Interview.Service.Inventory
 {
     public interface IInventoryRepo
     {
-        void DeleteInventory(List<int> productIds);
         List<InventoryTransaction> AddInventory(List<InventoryTransaction> products);
-        int GetInventoryCount(ProductFilterParams parms);
+        List<Product> GetProductInventory(ProductFilterParams parms);
     }
 }

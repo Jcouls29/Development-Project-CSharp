@@ -25,7 +25,7 @@ namespace Interview.Service.Inventory
             {
                 // EVAL: Valdiate that product being added exists in Products table (this is better served in a business service layer to avoid dependency between Inventory and Product repo classes)
                 // EVAL: -- what happens when product does not exist? Does it get added, or invalid product exception is thrown for that item?
-                sql += "INSERT INTO InventoryTransactions (ProductInstanceId, Quantity, StartedTimestamp, CompletedTimestamp, TypeCategory) VALUES (@productId, @qty, @startedTimestamp, @completedTimestamp, 'INSERT');";
+                sql += "INSERT INTO InventoryTransactions (ProductInstanceId, Quantity, StartedTimestamp, CompletedTimestamp, TypeCategory) VALUES (@productId, @qty, @startedTimestamp, @completedTimestamp, @TypeCategory);";
                 // EVAL: Create command
                 // EVAL: result.Add(await _sqlExecutor.ExecuteAsync(AddCommand))
             }
@@ -34,28 +34,10 @@ namespace Interview.Service.Inventory
             return result;
         }
 
-        public void DeleteInventory(List<int> productIds)
+        public List<Product> GetProductInventory(ProductFilterParams parms)
         {
-            var transactions = new List<InventoryTransaction>();
-            foreach (var id in productIds)
-            {
-                InventoryTransaction trans = new InventoryTransaction
-                {
-                    ProductInstanceId = id,
-                    Quantity = GetInventoryCount(new ProductFilterParams { Id = id }) * -1,
-                    StartedTimestamp = DateTime.Now,
-                    CompletedTimestamp = DateTime.Now,
-                    TypeCategory = "DELETE"
-                };
-                transactions.Add(trans);
-            }
-            var result = AddInventory(transactions);
-        }
-
-        public int GetInventoryCount(ProductFilterParams parms)
-        {
-            int result = 0;
-            string sql = "SELECT COUNT(*) FROM InventoryTransactions T INNER JOIN Products P ON P.InstanceId = T.ProductInstanceId WHERE 1=1";
+            List<Product> result = new List<Product>();
+            string sql = "SELECT P.InstanceId, P.Name, P.Description, COUNT(T.InstanceId) AS RecordCount, SUM(T.Quantity) AS InventoryQty FROM InventoryTransactions T INNER JOIN Products P ON P.InstanceId = T.ProductInstanceId WHERE 1=1";
 
             if (parms.Id != 0)
                 sql += " AND P.InstanceId = @id";
@@ -63,6 +45,7 @@ namespace Interview.Service.Inventory
                 sql += " AND P.Name LIKE %@name%";
             // EVAL: Build where clause
             // EVAL: result = await ExecuteAsync(InventoryCountCommand)
+            // EVAL: perform mapping
             return result;
         }
 
