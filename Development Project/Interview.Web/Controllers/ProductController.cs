@@ -15,5 +15,10 @@ namespace Interview.Web.Controllers
         {
             return Task.FromResult((IActionResult)Ok(new object[] { }));
         }
+        [HttpPost]
+        public Task<IActionResult> AddProduct(object product)
+        {
+            return Task.FromResult((IActionResult)Ok(product));
+        }
     }
 }
