@@ -1,9 +1,14 @@
+using Interview.Web.Repositories;
+using Interview.Web.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+using Serilog;
+using Sparcpoint.SqlServer.Abstractions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,7 +20,7 @@ namespace Interview.Web
     {
         public Startup(IConfiguration configuration)
         {
-            Configuration = configuration;
+            Configuration = configuration;           
         }
 
         public IConfiguration Configuration { get; }
@@ -23,6 +28,17 @@ namespace Interview.Web
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddLogging(configure => configure.AddSerilog());
+
+            services.AddOptions();
+
+            services.Configure<SqlServerOptions>(Configuration.GetSection("SqlServerOptions"));
+            
+            services.AddScoped<ISqlExecutor, SqlServerExecutor>();
+            services.AddTransient<IProductsRepo, ProductsRepo>();
+            services.AddTransient<IProductSerivce, ProductsService>();
+
+
             services.AddControllers();
         }
 

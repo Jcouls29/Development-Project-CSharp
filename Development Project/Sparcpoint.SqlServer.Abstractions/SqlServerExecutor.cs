@@ -2,6 +2,7 @@
 using System.Data;
 using System.Data.SqlClient;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Options;
 
 namespace Sparcpoint.SqlServer.Abstractions
 {
@@ -9,9 +10,9 @@ namespace Sparcpoint.SqlServer.Abstractions
     {
         private readonly string _ConnectionString;
 
-        public SqlServerExecutor(string connectionString)
+        public SqlServerExecutor(IOptions<SqlServerOptions> config)
         {
-            _ConnectionString = connectionString ?? throw new ArgumentNullException(nameof(connectionString));
+            _ConnectionString = config.Value.ConnectionString ?? throw new ArgumentNullException(nameof(config.Value.ConnectionString));
         }
 
         public T Execute<T>(Func<IDbConnection, IDbTransaction, T> command)
