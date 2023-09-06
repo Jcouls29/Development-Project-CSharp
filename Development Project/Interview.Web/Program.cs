@@ -18,9 +18,22 @@ namespace Interview.Web
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
-                .ConfigureWebHostDefaults(webBuilder =>
-                {
-                    webBuilder.UseStartup<Startup>();
-                });
+			.ConfigureLogging(logger =>
+			{
+				logger.ClearProviders();
+				logger.AddConsole();
+				logger.AddDebug();
+			})
+			.ConfigureAppConfiguration((hostingContext, config) =>
+            {
+                config
+               .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+               .AddJsonFile($"appsettings.{hostingContext.HostingEnvironment.EnvironmentName.ToLowerInvariant()}.json", optional: true, reloadOnChange: true)
+               .AddEnvironmentVariables();
+            })
+            .ConfigureWebHostDefaults(webBuilder =>
+            {
+                webBuilder.UseStartup<Startup>();
+            });
     }
 }

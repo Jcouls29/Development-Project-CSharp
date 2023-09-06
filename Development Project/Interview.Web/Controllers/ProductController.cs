@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Interview.Web.Services;
+using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,11 +10,20 @@ namespace Interview.Web.Controllers
     [Route("api/v1/products")]
     public class ProductController : Controller
     {
+		public readonly IProductSerivce ProductSerivce;
+
+        public ProductController(IProductSerivce productSerivce) 
+        {
+            ProductSerivce = productSerivce ?? throw new ArgumentException($"{nameof(IProductSerivce)} DI cannot be null");
+        }
+
         // NOTE: Sample Action
         [HttpGet]
-        public Task<IActionResult> GetAllProducts()
+        public async Task<IActionResult> GetAllProducts()
         {
-            return Task.FromResult((IActionResult)Ok(new object[] { }));
+            var products = await ProductSerivce.GetAllProducts();
+
+            return new OkObjectResult(products);
         }
     }
 }
