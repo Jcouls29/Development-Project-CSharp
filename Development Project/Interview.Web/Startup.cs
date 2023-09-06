@@ -8,6 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Serilog;
+using Sparcpoint.SqlServer.Abstractions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -29,6 +30,11 @@ namespace Interview.Web
         {
             services.AddLogging(configure => configure.AddSerilog());
 
+            services.AddOptions();
+
+            services.Configure<SqlServerOptions>(Configuration.GetSection("SqlServerOptions"));
+            
+            services.AddScoped<ISqlExecutor, SqlServerExecutor>();
             services.AddTransient<IProductsRepo, ProductsRepo>();
             services.AddTransient<IProductSerivce, ProductsService>();
 

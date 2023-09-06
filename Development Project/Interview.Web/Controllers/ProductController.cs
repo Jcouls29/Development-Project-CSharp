@@ -15,7 +15,7 @@ namespace Interview.Web.Controllers
 
         public ProductController(IProductSerivce productSerivce) 
         {
-            ProductSerivce = productSerivce ?? throw new ParameterRequiredException($"{nameof(IProductSerivce)}", " DI cannot be null");
+            ProductSerivce = productSerivce ?? throw new ParameterRequiredException($"{nameof(IProductSerivce)}", "DI cannot be null");
         }
 
         // NOTE: Sample Action
