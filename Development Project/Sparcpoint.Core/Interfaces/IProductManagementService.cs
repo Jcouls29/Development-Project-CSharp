@@ -9,5 +9,6 @@ namespace Interview.Web.Controllers
         Task AddProductAsync(Product product);
         Task<IEnumerable<Product>> GetAllProductsAsync();
         Task<Product> GetProductAsync(string name);
+        Task<IEnumerable<Product>> SearchProductsAsync(ProductSearchCriteria criteria);
     }
 }

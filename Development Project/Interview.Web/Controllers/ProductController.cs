@@ -1,5 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Sparcpoint.Core.Models;
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Interview.Web.Controllers
@@ -22,10 +26,26 @@ namespace Interview.Web.Controllers
         /// This method is used to return all products
         /// </summary>
         /// <remarks>All crud operations are handled by the productManagementService</remarks>
-         public async Task<IActionResult> Products()
+        [HttpGet]
+        public async Task<IActionResult> Products()
         {
-            var products = await _productManagementService.GetAllProductsAsync();
-            return View(products);
+
+            try
+            {
+                var products = await _productManagementService.GetAllProductsAsync();
+
+                // Eval : Return 204 No Content if there are no products
+                if (!products.Any())
+                {
+                    return NoContent();
+                }
+
+                return Ok(products);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "Internal Server Error, please try back or contact customer service for immediate assistance.");
+            }
         }
 
         /// <summary>
@@ -33,9 +53,25 @@ namespace Interview.Web.Controllers
         /// </summary>
         /// <param name="name"></param>
         [HttpGet("{name}")]
-        public async Task<Product> GetProduct(string name)
+        public async Task<IActionResult> GetProduct(string name)
         {
-            return await _productManagementService.GetProductAsync(name);
+            // Eval:Error handling
+            try
+            {
+                var result = await _productManagementService.GetProductAsync(name);
+
+                if (result == null)
+                {
+                    return NotFound();
+                }
+
+                return Ok(result);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "Internal Error, please try back or contact customer service").
+            }
+   
         }
 
         /// <summary>
@@ -48,6 +84,19 @@ namespace Interview.Web.Controllers
             // EVAL: Add product and return 201 Created
             await _productManagementService.AddProductAsync(product);
             return CreatedAtAction(nameof(AddProductAsync), new { product.Name }, product);
+        }
+
+        /// <summary>
+        /// Search for products by name, description, category or metadata
+        /// </summary>
+        /// <param name="criteria"></param>
+        /// <returns></returns>
+        [HttpGet("search")]
+        public async Task<IActionResult> SearchProducts([FromQuery] ProductSearchCriteria criteria)
+        {
+            IEnumerable<Product> products = await _productManagementService.SearchProductsAsync(criteria);
+            if (!products.Any()) return NoContent();
+            return Ok(products);
         }
     }
 }
