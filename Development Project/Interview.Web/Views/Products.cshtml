@@ -1,0 +1,26 @@
+﻿@using Sparcpoint.Core.Models;
+
+@model IEnumerable<Product>
+
+@{
+    ViewData["Title"] = "Products";
+}
+
+<h2>Products</h2>
+
+<h4>Add a new product</h4>
+<form method="post" asp-controller="Product" asp-action="AddProductAsync">
+    <input type="text" name="Name" placeholder="Product Name" />
+
+    <!-- Add other fields as necessary -->
+    <button type="submit">Add Product</button>
+</form>
+
+<h4>All Products</h4>
+<ul>
+    @foreach (var product in Model)
+    {
+        <li>@product.Name</li>
+        <!-- Display other product details -->
+    }
+</ul>
