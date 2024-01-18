@@ -68,7 +68,7 @@ namespace Interview.Web.Controllers
             }
             catch (Exception)
             {
-                return StatusCode(500, "Internal Error, please try back or contact customer service").
+                return StatusCode(500, "Internal Error, please try back or contact customer service");
             }
    
         }
