@@ -1,10 +1,15 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Routing;
 using Sparcpoint.Abstract;
-using Sparcpoint.Models;
+using Sparcpoint.Models.Requests;
+using Sparcpoint.Models.Tables;
 using System.Threading.Tasks;
 
 namespace Interview.Web.Controllers
 {
+    //EVAL: should build in validation service to ensure that model validation is being done prior to entry
+    //EVAL: need to add in error handling
+    //EVAL: should add authorization
     [Route("api/v1/products")]
     public class ProductController : Controller
     {
@@ -16,9 +21,10 @@ namespace Interview.Web.Controllers
         }
 
         [HttpGet]
-        public Task<IActionResult> GetAllProducts()
+        public async Task<IActionResult> GetProducts()
         {
-            return Task.FromResult((IActionResult)Ok(new object[] { }));
+            var products = await _productService.GetProductsAsync();
+            return Ok(products);
         }
 
         [Route("{id}")]
@@ -29,7 +35,6 @@ namespace Interview.Web.Controllers
             return Ok(product);
         }
 
-        //TODO: change input type to specific add product type
         [HttpPost]
         public async Task<IActionResult> CreateProduct([FromBody] Product request)
         {
@@ -37,13 +42,12 @@ namespace Interview.Web.Controllers
             return Ok();
         }
 
-        //TODO: consider changing route, change body request specific for query requests
         [Route("query")]
         [HttpPost]
-        public async Task<IActionResult> QueryProducts([FromBody] Product request)
+        public async Task<IActionResult> QueryProducts([FromBody] ProductRequest? request)
         {
-            await _productService.GetProductsAsync();
-            return Ok();
+            var products = await _productService.GetProductsAsync(request);
+            return Ok(products);
         }
     }
 }
