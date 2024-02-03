@@ -1,4 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
+using Sparcpoint.Inventory.Data;
+using Sparcpoint.Product;
+using Sparcpoint.Product.Domain;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,11 +13,25 @@ namespace Interview.Web.Controllers
     [Route("api/v1/products")]
     public class ProductController : Controller
     {
-        // NOTE: Sample Action
+        // EVAL: The lack of dependency injection is a choice and not an accidental omission. 
+
+        public IConfiguration _config { get; set; }
+        
+        public ProductController(IConfiguration config) { 
+            _config = config; 
+        }
+
         [HttpGet]
-        public Task<IActionResult> GetAllProducts()
+        public async Task<IActionResult> GetAllProducts()
         {
-            return Task.FromResult((IActionResult)Ok(new object[] { }));
+            var inventoryItems = await GetProductsIninventory();
+
+            return (IActionResult)Ok(inventoryItems.ToList());
+        }
+
+        protected async virtual Task<IEnumerable<ProductItem>> GetProductsIninventory()
+        {
+            return await new InventoryManager(_config.GetConnectionString("Inventory")).GetProductsInInventory();
         }
     }
 }
