@@ -81,7 +81,22 @@ namespace Interview.Web.Controllers
             }
         }
 
-        protected async Task<IActionResult> UpdateProduct(Product product)
+        [HttpPost]
+        [Route("api/v1/products/search")]
+        public async Task<IActionResult> Search([FromBody] ProductSearch product)
+        {
+            try
+            {
+                var products = await SearchForProducts(product);
+                return (IActionResult)Ok(products);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        protected async virtual Task<IActionResult> UpdateProduct(Product product)
         {
             try
             {
@@ -94,12 +109,12 @@ namespace Interview.Web.Controllers
             }
         }
 
-        protected async Task AddNewProduct(Product product)
+        protected async virtual Task AddNewProduct(Product product)
         {
             await new ProductManager(_config.GetConnectionString("Inventory")).AddNewProduct(product);
         }
 
-        protected async Task<Product> GetProductById(int productId)
+        protected async virtual Task<Product> GetProductById(int productId)
         {
             return await new ProductManager(_config.GetConnectionString("Inventory")).GetProductById(productId);
         }
@@ -107,6 +122,11 @@ namespace Interview.Web.Controllers
         protected async virtual Task<IEnumerable<Product>> GetProductsIninventory()
         {
             return await new ProductManager(_config.GetConnectionString("Inventory")).GetProductsInInventory();
+        }
+
+        protected async virtual Task<IEnumerable<Product>> SearchForProducts(ProductSearch product)
+        {
+            return await new ProductManager(_config.GetConnectionString("Inventory")).SearchForProducts(product);
         }
     }
 }

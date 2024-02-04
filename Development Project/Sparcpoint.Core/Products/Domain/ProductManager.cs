@@ -54,7 +54,7 @@ namespace Sparcpoint.Products.Domain
             // This increases readability as it becomes far easier to track down the concrete class being used.
             // Plus, Due to CQRS concerns data managers shouldn't be genericized or abstracted between bounded contexts, so there's no need for an interface
             var dataManager = new ProductDataManager(_connectionString);
-            return await dataManager.QueryProductById(productId);
+            return await dataManager.QueryProductWithInventoryItems(productId);
         }
 
         public async Task AddNewProduct(Product product)
@@ -69,7 +69,18 @@ namespace Sparcpoint.Products.Domain
             await QueryUpdateProduct(product);
         }
 
-        private async Task QueryUpdateProduct(Product product)
+        public async Task<IEnumerable<Product>> SearchForProducts(ProductSearch product)
+        {
+            var products = await QuerySearchForProducts(product);
+            return products;
+        }
+
+        protected async virtual Task<IEnumerable<Product>> QuerySearchForProducts(ProductSearch product)
+        {
+            return await _productDataManager.SearchForProducts(product);
+        }
+
+        protected async virtual Task QueryUpdateProduct(Product product)
         {
 
             await _productDataManager.UpdateProduct(product);
@@ -105,7 +116,7 @@ namespace Sparcpoint.Products.Domain
 
         protected async virtual Task<IEnumerable<Product>> QueryProductsInInventory()
         {
-            return await _productDataManager.QueryProductsInInventory();
+            return await _productDataManager.QueryProductsWithInventoryItems();
         }
 
         protected async virtual Task<IEnumerable<Product>> QueryAllInventoryItems() { 

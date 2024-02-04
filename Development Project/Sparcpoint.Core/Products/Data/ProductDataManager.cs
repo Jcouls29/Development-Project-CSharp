@@ -4,8 +4,9 @@ using System.Data.Common;
 using System.Text;
 using Dapper;
 using System.Data.SqlClient;
-using Sparcpoint.Products.Domain;
+using System.Linq;
 using System.Threading.Tasks;
+using Z.Dapper.Plus;
 
 // EVAL: While the norm is to put data access classes in their own project,
 // I find the higher cohesiveness of keeping the domain orchestrator/manager in the same project as data access a bigger benefit
@@ -19,24 +20,6 @@ namespace Sparcpoint.Products.Data
             _connectionString = connString;
         }
 
-        internal async Task<Product> QueryProductById(int productId)
-        {
-            var dictionary = new Dictionary<string, object>
-            {
-                { "@ProductId", productId }
-            };
-            var parameters = new DynamicParameters(dictionary);
-            string sql = "select " +
-                "p.ProductId, Manufacturer, ModelName, Description " +
-                "from instances.Product p " +
-                "where productId = @ProductId";
-            using (var connection = new SqlConnection(_connectionString))
-            {
-                Product product = await connection.QuerySingleAsync<Product>(sql, parameters);
-                return product;
-            }
-        }
-
         internal async Task<Product> QueryProductWithInventoryItems(int productId)
         {
             var dictionary = new Dictionary<string, object>
@@ -45,31 +28,30 @@ namespace Sparcpoint.Products.Data
             };
             var parameters = new DynamicParameters(dictionary);
             string sql = "select " +
-                "p.ProductId, Manufacturer, ModelName, Description, sku, AttributesJson, QuantityOnHand " +
+                "p.ProductId, Manufacturer, ModelName, Description, CategoriesJson, sku, AttributesJson, QuantityOnHand " +
                 "from instances.Product p " +
-                "inner join instances.InventoryItem ii on p.productId = ii.ProductId" +
-                "where productId = @ProductId";
+                "inner join instances.InventoryItem ii on p.productId = ii.ProductId " +
+                "where p.productId = @ProductId";
             using (var connection = new SqlConnection(_connectionString))
             {
-                var product = await connection.QuerySingleAsync<Product>(sql, parameters);
-                return product;
-            }
-        }
-
-        internal async Task<IEnumerable<Product>> QueryProductsInInventory()
-        {
-            string sql = "select ProductId, Manufacturer, ModelName, Description from instances.Product";
-
-            using (var connection = new SqlConnection(_connectionString))
-            {
-                return await connection.QueryAsync<Product>(sql);
+                var product = await connection.QueryAsync<Product, InventoryItem, Product>(
+                    sql,
+                    (p, i) =>
+                    {
+                        p.Items.Add(i);
+                        return p;
+                    },
+                    parameters,
+                    splitOn: "sku"
+                    );
+                return product.Single<Product>();
             }
         }
 
         internal async Task<IEnumerable<Product>> QueryProductsWithInventoryItems()
         {
             string sql = "select " +
-                "p.ProductId, Manufacturer, ModelName, Description, sku, AttributesJson, QuantityOnHand " +
+                "p.ProductId, Manufacturer, ModelName, Description, CategoriesJson, sku, AttributesJson, QuantityOnHand " +
                 "from instances.Product p " +
                 "inner join instances.InventoryItem ii on p.productId = ii.ProductId";
 
@@ -107,6 +89,33 @@ namespace Sparcpoint.Products.Data
                     "Description = @Description " +
                     "WHERE ProductId = @ProductId";
                 var rowsAffected = await connection.ExecuteAsync(sql, product);
+            }
+        }
+
+        internal async Task<IEnumerable<Product>> SearchForProducts(ProductSearch product)
+        {
+            var dictionary = new Dictionary<string, object>
+            {
+                { "@Manufacturer", product.Manufacturer },
+                { "@ModelName", product.ModelName },
+                { "@Category", product.Category },
+                { "@Attribute", product.Attribute }
+            };
+            var parameters = new DynamicParameters(dictionary);
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                var sql = product.CreateQueryString();
+                var products = await connection.QueryAsync<Product, InventoryItem, Product>(
+                  sql,
+                  (Product, InventoryItem) =>
+                  {
+                      Product.Items.Add(InventoryItem);
+                      return Product;
+                  },
+                  parameters,
+                  splitOn: "sku"
+                  );
+                return products;
             }
         }
     }

@@ -61,10 +61,14 @@
     <Folder Include="Instances\" />
     <Folder Include="Instances\Tables\" />
     <Folder Include="Security\" />
+    <Folder Include="SchemaCompare" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="Instances\Tables\InventoryItem.sql" />
     <Build Include="Instances\Tables\Product.sql" />
     <Build Include="Security\Instances.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="SchemaCompare\DatabaseSchemaCompare.scmp" />
   </ItemGroup>
 </Project>
