@@ -19,7 +19,7 @@ namespace Sparcpoint.Products.Data
             _connectionString = connString;
         }
 
-        public async Task<Product> QueryProductById(int productId)
+        internal async Task<Product> QueryProductById(int productId)
         {
             var dictionary = new Dictionary<string, object>
             {
@@ -37,7 +37,7 @@ namespace Sparcpoint.Products.Data
             }
         }
 
-        public async Task<Product> QueryProductWithInventoryItems(int productId)
+        internal async Task<Product> QueryProductWithInventoryItems(int productId)
         {
             var dictionary = new Dictionary<string, object>
             {
@@ -56,7 +56,7 @@ namespace Sparcpoint.Products.Data
             }
         }
 
-        public async Task<IEnumerable<Product>> QueryProductsInInventory()
+        internal async Task<IEnumerable<Product>> QueryProductsInInventory()
         {
             string sql = "select ProductId, Manufacturer, ModelName, Description from instances.Product";
 
@@ -66,7 +66,7 @@ namespace Sparcpoint.Products.Data
             }
         }
 
-        public async Task<IEnumerable<Product>> QueryProductsWithInventoryItems()
+        internal async Task<IEnumerable<Product>> QueryProductsWithInventoryItems()
         {
             string sql = "select " +
                 "p.ProductId, Manufacturer, ModelName, Description, sku, AttributesJson, QuantityOnHand " +
@@ -93,6 +93,19 @@ namespace Sparcpoint.Products.Data
             using (var connection = new SqlConnection(_connectionString))
             {
                 var sql = "INSERT INTO Instances.Product (Manufacturer, ModelName, Description) VALUES (@Manufacturer, @ModelName, @Description)";
+                var rowsAffected = await connection.ExecuteAsync(sql, product);
+            }
+        }
+
+        internal async Task UpdateProduct(Product product)
+        {
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                var sql = "UPDATE Instances.Product " +
+                    "SET Manufacturer = @Manufacturer, " +
+                    "ModelName = @ModelName, " +
+                    "Description = @Description " +
+                    "WHERE ProductId = @ProductId";
                 var rowsAffected = await connection.ExecuteAsync(sql, product);
             }
         }

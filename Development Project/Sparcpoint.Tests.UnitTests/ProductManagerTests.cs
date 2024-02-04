@@ -44,5 +44,29 @@ namespace Sparcpoint.Tests.UnitTests
             ProductManagerMock sut = new ProductManagerMock("");
             await sut.AddNewProduct(new Product { Manufacturer = "Foo", ModelName = "Bar" });
         }
+
+        [TestMethod]
+        [ExpectedException(typeof(ParameterRequiredException))]
+        public async Task UpdateProduct_WhenMissingManufacturer_ShouldThrowException()
+        {
+            ProductManagerMock sut = new ProductManagerMock("");
+            await sut.UpdateProduct(new Product { ModelName = "Foo", Description = "Bar" });
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ParameterRequiredException))]
+        public async Task UpdateProduct_WhenMissingModel_ShouldThrowException()
+        {
+            ProductManagerMock sut = new ProductManagerMock("");
+            await sut.UpdateProduct(new Product { Manufacturer = "Foo", Description = "Bar" });
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ParameterRequiredException))]
+        public async Task UpdateProduct_WhenMissingDescription_ShouldThrowException()
+        {
+            ProductManagerMock sut = new ProductManagerMock("");
+            await sut.UpdateProduct(new Product { Manufacturer = "Foo", ModelName = "Bar" });
+        }
     }
 }

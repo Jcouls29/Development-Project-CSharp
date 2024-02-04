@@ -66,6 +66,34 @@ namespace Interview.Web.Controllers
             }
         }
 
+        [HttpPost]
+        [Route("api/v1/products")]
+        public async Task<IActionResult> PostProduct([FromBody] Product product)
+        {
+            try
+            {
+                await UpdateProduct(product);
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        protected async Task<IActionResult> UpdateProduct(Product product)
+        {
+            try
+            {
+                await new ProductManager(_config.GetConnectionString("Inventory")).UpdateProduct(product);
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
         protected async Task AddNewProduct(Product product)
         {
             await new ProductManager(_config.GetConnectionString("Inventory")).AddNewProduct(product);

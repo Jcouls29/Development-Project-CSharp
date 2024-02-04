@@ -6,7 +6,7 @@ namespace Sparcpoint.Products.Data
 {
     public class Product
     {
-        public int ProductId { get; private set; }
+        public int ProductId { get; set; }
         public string Manufacturer { get; set; }
         public string ModelName { get; set; }
         public string Description { get; set; }

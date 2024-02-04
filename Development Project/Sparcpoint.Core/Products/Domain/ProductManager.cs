@@ -11,11 +11,13 @@ namespace Sparcpoint.Products.Domain
     public class ProductManager
     {
         private string _connectionString {  get; set; }
+        private ProductDataManager _productDataManager { get; set; } 
         public ProductManager() { }
 
         public ProductManager(string connectionString)
         {
             _connectionString = connectionString;
+            _productDataManager = new ProductDataManager(_connectionString);
         }
 
         // EVAL: I'm keeping public methods as a simple passthroughs with exception handling just to make my life easier
@@ -57,6 +59,29 @@ namespace Sparcpoint.Products.Domain
 
         public async Task AddNewProduct(Product product)
         {
+            ValidateProduct(product);
+            await QueryAddNewProduct(product);
+        }
+
+        public async Task UpdateProduct(Product product)
+        {
+            ValidateProduct(product);
+            await QueryUpdateProduct(product);
+        }
+
+        private async Task QueryUpdateProduct(Product product)
+        {
+
+            await _productDataManager.UpdateProduct(product);
+        }
+
+        protected async virtual Task QueryAddNewProduct(Product product)
+        {
+            await _productDataManager.AddNewProduct(product);
+        }
+
+        protected virtual void ValidateProduct(Product product)
+        {
             List<string> missingParameters = new List<string>();
 
             // There may be a more "elegant" way of doing this but I'm a big fan of being explicit
@@ -72,30 +97,19 @@ namespace Sparcpoint.Products.Domain
             {
                 missingParameters.Add(product.Description);
             }
-            if(missingParameters.Any()) 
+            if (missingParameters.Any())
             {
                 throw new ParameterRequiredException(missingParameters);
             }
-
-            await QueryAddNewProduct(product);
-        }
-
-        protected async virtual Task QueryAddNewProduct(Product product)
-        {
-            var dataManager = new ProductDataManager(_connectionString);
-            await dataManager.AddNewProduct(product);
         }
 
         protected async virtual Task<IEnumerable<Product>> QueryProductsInInventory()
         {
-            var dataManager = new ProductDataManager(_connectionString);
-            return await dataManager.QueryProductsInInventory();
+            return await _productDataManager.QueryProductsInInventory();
         }
 
         protected async virtual Task<IEnumerable<Product>> QueryAllInventoryItems() { 
-            var dataManager = new ProductDataManager(_connectionString);
-            return await dataManager.QueryProductsWithInventoryItems();
+            return await _productDataManager.QueryProductsWithInventoryItems();
         }
-
     }
 }
