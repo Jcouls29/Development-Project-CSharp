@@ -74,8 +74,17 @@ namespace Sparcpoint.Products.Data
         {
             using (var connection = new SqlConnection(_connectionString))
             {
-                var sql = "INSERT INTO Instances.Product (Manufacturer, ModelName, Description) VALUES (@Manufacturer, @ModelName, @Description)";
-                var rowsAffected = await connection.ExecuteAsync(sql, product);
+                var dictionary = new Dictionary<string, object>
+                {
+                    { "@Manufacturer", product.Manufacturer },
+                    { "@ModelName", product.ModelName },
+                    { "@Description", product.Description },
+                    { "@CategoriesJson", product.CategoriesJson }
+                };
+                var parameters = new DynamicParameters(dictionary);
+                var sql = "INSERT INTO Instances.Product (Manufacturer, ModelName, Description, CategoriesJson) VALUES (@Manufacturer, @ModelName, @Description, @CategoriesJson)";
+
+                var rowsAffected = await connection.ExecuteAsync(sql, parameters);
             }
         }
 
@@ -83,12 +92,23 @@ namespace Sparcpoint.Products.Data
         {
             using (var connection = new SqlConnection(_connectionString))
             {
+                var dictionary = new Dictionary<string, object>
+                {
+                    { "@Manufacturer", product.Manufacturer },
+                    { "@ModelName", product.ModelName },
+                    { "@Description", product.Description },
+                    { "@CategoriesJson", product.CategoriesJson }
+                };
+                var parameters = new DynamicParameters(dictionary);
+
                 var sql = "UPDATE Instances.Product " +
                     "SET Manufacturer = @Manufacturer, " +
                     "ModelName = @ModelName, " +
                     "Description = @Description " +
+                    "CategoriesJson = @CategoriesJson " +
                     "WHERE ProductId = @ProductId";
-                var rowsAffected = await connection.ExecuteAsync(sql, product);
+
+                var rowsAffected = await connection.ExecuteAsync(sql, parameters);
             }
         }
 

@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -11,18 +12,23 @@ namespace Sparcpoint.Products.Data
     // Realistically, an entire item should be a document but SQL server is terrible at indexing documents. Thus the compromise
     public class Product
     {
+        private string _categoriesJSON = "";
         public int ProductId { get; set; }
         public string Manufacturer { get; set; }
         public string ModelName { get; set; }
         public string Description { get; set; }
-        public List<string> Categories { get; set; }
+        public List<string> Categories => JsonConvert.DeserializeObject<List<string>>(_categoriesJSON);
 
         // The raw Json string from the database gets sent here to populate the publicly available dictionary. 
-        internal string CategoriesJson
+        public string CategoriesJson
         {
             set
             {
-                Categories = JsonConvert.DeserializeObject<List<string>>(value);
+                _categoriesJSON = value;
+            }
+            get
+            {
+                return _categoriesJSON;
             }
         }
 
@@ -31,7 +37,6 @@ namespace Sparcpoint.Products.Data
         public Product()
         {
             Items = new List<InventoryItem>();
-            Categories = new List<string>();
         }
     }
 }
