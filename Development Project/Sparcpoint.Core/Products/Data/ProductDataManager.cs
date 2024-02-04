@@ -98,6 +98,7 @@ namespace Sparcpoint.Products.Data
             {
                 { "@Manufacturer", product.Manufacturer },
                 { "@ModelName", product.ModelName },
+                { "@Description", product.Description },
                 { "@Category", product.Category },
                 { "@Attribute", product.Attribute }
             };

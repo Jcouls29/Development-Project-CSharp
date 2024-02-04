@@ -9,12 +9,14 @@ namespace Sparcpoint.Products.Data
     {
         public string Manufacturer { get; set; }
         public string ModelName { get; set; }
+        public string Description { get; set; }
         public string Attribute { get; set; }
         public string Category { get; set; }
         public ProductSearch() 
         {
             Manufacturer = null;
             ModelName = null;
+            Description = null;
             Attribute = null;
             Category = null;
         }
@@ -43,10 +45,15 @@ namespace Sparcpoint.Products.Data
 
             if (ModelName != null)
             {
-                whereClause.Add("ModelName = @ModelName");
+                whereClause.Add("ModelName like '%' + @ModelName + '%'");
             }
 
-            if(Category != null)
+            if (Description != null)
+            {
+                whereClause.Add("Description like '%' + @Description + '%'");
+            }
+
+            if (Category != null)
             {
                 whereClause.Add($"cat.[value] = @Category");
             }
