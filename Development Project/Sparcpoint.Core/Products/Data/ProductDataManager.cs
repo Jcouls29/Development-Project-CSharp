@@ -119,5 +119,20 @@ namespace Sparcpoint.Products.Data
                 return products;
             }
         }
+
+        internal async virtual Task<int> InventoryCountBySku(string sku)
+        {
+            var dictionary = new Dictionary<string, object>
+            {
+                { "@Sku", sku }
+            };
+            var parameters = new DynamicParameters(dictionary);
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                var sql = "select QuantityOnHand from Instances.InventoryItem where sku = @Sku";
+                var quantityOnHand = await connection.QuerySingleAsync<int>(sql,parameters);
+                return quantityOnHand;
+            }
+        }
     }
 }

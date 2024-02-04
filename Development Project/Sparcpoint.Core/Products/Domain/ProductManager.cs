@@ -75,6 +75,33 @@ namespace Sparcpoint.Products.Domain
             return products;
         }
 
+        public async Task<int> GetInventoryCountBySku(string sku)
+        {
+
+            try
+            {
+                return await QueryInventoryCountBySku(sku);
+            }
+            catch (System.NullReferenceException ex)
+            {
+                // EVAL: If you tell the warehouse to get an item that doesn't exist then something has gone wrong.
+                // The request never should have been possible and the fact that it can happen should be fixed
+                throw new ItemMissingException("SKU", sku, ex);
+            }
+            //Dapper throws an InvalidOperationException if you QuerySingle and no records return
+            catch (InvalidOperationException ex)
+            {
+                // EVAL: If you tell the warehouse to get an item that doesn't exist then something has gone wrong.
+                // The request never should have been possible and the fact that it can happen should be fixed
+                throw new ItemMissingException("SKU", sku, ex);
+            }
+        }
+
+        protected async virtual Task<int> QueryInventoryCountBySku(string sku)
+        {
+            return await _productDataManager.InventoryCountBySku(sku);
+        }
+
         protected async virtual Task<IEnumerable<Product>> QuerySearchForProducts(ProductSearch product)
         {
             return await _productDataManager.SearchForProducts(product);

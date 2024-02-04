@@ -51,6 +51,21 @@ namespace Interview.Web.Controllers
             }
         }
 
+        [HttpGet]
+        [Route("api/v1/products/count/{sku}")]
+        public async Task<IActionResult> GetInventoryCount(string sku)
+        {
+            try
+            {
+                int itemCount = await GetInventoryCountBySku(sku);
+                return (IActionResult)Ok(itemCount);
+            }
+            catch(Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
         [HttpPut]
         [Route("api/v1/products")]
         public async Task<IActionResult> PutProduct([FromBody]Product product)
@@ -94,6 +109,11 @@ namespace Interview.Web.Controllers
             {
                 return BadRequest(ex.Message);
             }
+        }
+
+        protected async virtual Task<int> GetInventoryCountBySku(string sku)
+        {
+            return await new ProductManager(_config.GetConnectionString("Inventory")).GetInventoryCountBySku(sku);
         }
 
         protected async virtual Task<IActionResult> UpdateProduct(Product product)
