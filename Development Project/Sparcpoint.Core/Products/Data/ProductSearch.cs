@@ -23,6 +23,7 @@ namespace Sparcpoint.Products.Data
 
         public string CreateQueryString()
         {
+            // The outer apply statements are SQL Server's way of including JSON data
             StringBuilder sql = new StringBuilder("select  distinct " +
                 "p.ProductId, " +
                 "Manufacturer, " +
@@ -53,11 +54,13 @@ namespace Sparcpoint.Products.Data
                 whereClause.Add("Description like '%' + @Description + '%'");
             }
 
+            // Search JSON data
             if (Category != null)
             {
                 whereClause.Add($"cat.[value] = @Category");
             }
 
+            // Search JSON data
             if (Attribute != null)
             {
                 whereClause.Add($"att.[value] = @Attribute");
