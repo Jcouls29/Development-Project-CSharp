@@ -57,8 +57,8 @@ namespace Sparcpoint.Products.Data
 
             using (var connection = new SqlConnection(_connectionString))
             {
-                var products = await connection.QueryAsync<Product,InventoryItem,Product>(
-                    sql, 
+                var products = await connection.QueryAsync<Product, InventoryItem, Product>(
+                    sql,
                     (Product, InventoryItem) =>
                     {
                         Product.Items.Add(InventoryItem);
@@ -150,8 +150,47 @@ namespace Sparcpoint.Products.Data
             using (var connection = new SqlConnection(_connectionString))
             {
                 var sql = "select QuantityOnHand from Instances.InventoryItem where sku = @Sku";
-                var quantityOnHand = await connection.QuerySingleAsync<int>(sql,parameters);
+                var quantityOnHand = await connection.QuerySingleAsync<int>(sql, parameters);
                 return quantityOnHand;
+            }
+        }
+
+        internal async Task AddInventoryItem(InventoryItem inventoryItem)
+        {
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                var dictionary = new Dictionary<string, object>
+                {
+                    { "@ProductId", inventoryItem.ProductId },
+                    { "@Sku", inventoryItem.Sku },
+                    { "@AttributesJson", inventoryItem.AttributesJson },
+                    { "@QuantityOnHand", inventoryItem.QuantityOnHand }
+                };
+                var parameters = new DynamicParameters(dictionary);
+                var sql = "INSERT INTO Instances.InventoryItem (ProductId, Sku, AttributesJson, QuantityOnHand) VALUES (@ProductId, @Sku, @AttributesJson, @QuantityOnHand)";
+
+                var rowsAffected = await connection.ExecuteAsync(sql, parameters);
+            }
+        }
+
+        internal async Task UpdateInventoryItem(InventoryItem inventoryItem)
+        {
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                var dictionary = new Dictionary<string, object>
+                {
+                    { "@Sku", inventoryItem.Sku },
+                    { "@AttributesJson", inventoryItem.AttributesJson },
+                    { "@QuantityOnHand", inventoryItem.QuantityOnHand }
+                };
+                var parameters = new DynamicParameters(dictionary);
+                var sql = "UPDATE Instances.InventoryItem " +
+                    "SET ProductId = @ProductId, " +
+                    "AttributesJson = @AttributesJson " +
+                    "QuantityOnHand = @QuantityOnHand " +
+                    "WHERE ProductId = @ProductId";
+
+                var rowsAffected = await connection.ExecuteAsync(sql, parameters);
             }
         }
     }

@@ -97,6 +97,18 @@ namespace Sparcpoint.Products.Domain
             }
         }
 
+        public async Task AddNewInventoryItem(InventoryItem inventoryItem)
+        {
+            ValidateInventoryItem(inventoryItem);
+            await QueryAddInventoryItem(inventoryItem);
+        }
+
+        public async Task UpdateInventoryItem(InventoryItem inventoryItem)
+        {
+            ValidateInventoryItem(inventoryItem);
+            await QueryUpdateInventoryItem(inventoryItem);
+        }
+
         protected async virtual Task<int> QueryInventoryCountBySku(string sku)
         {
             return await _productDataManager.InventoryCountBySku(sku);
@@ -148,6 +160,32 @@ namespace Sparcpoint.Products.Domain
 
         protected async virtual Task<IEnumerable<Product>> QueryAllInventoryItems() { 
             return await _productDataManager.QueryProductsWithInventoryItems();
+        }
+
+        protected async virtual Task QueryAddInventoryItem(InventoryItem inventoryItem)
+        {
+            await _productDataManager.AddInventoryItem(inventoryItem);
+        }
+
+        protected async virtual Task QueryUpdateInventoryItem(InventoryItem inventoryItem)
+        {
+            await _productDataManager.UpdateInventoryItem(inventoryItem);
+        }
+
+        protected virtual void ValidateInventoryItem(InventoryItem inventoryItem)
+        {
+            List<string> missingParameters = new List<string>();
+
+            // There may be a more "elegant" way of doing this but I'm a big fan of being explicit
+            if (string.IsNullOrWhiteSpace(inventoryItem.Sku))
+            {
+                missingParameters.Add(inventoryItem.ProductId.ToString());
+            }
+
+            if (missingParameters.Any())
+            {
+                throw new ParameterRequiredException(missingParameters);
+            }
         }
     }
 }

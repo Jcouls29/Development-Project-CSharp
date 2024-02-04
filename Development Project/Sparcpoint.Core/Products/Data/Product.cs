@@ -12,23 +12,23 @@ namespace Sparcpoint.Products.Data
     // Realistically, an entire item should be a document but SQL server is terrible at indexing documents. Thus the compromise
     public class Product
     {
-        private string _categoriesJSON = "";
+        private List<string> _categories = new List<string>();
         public int ProductId { get; set; }
         public string Manufacturer { get; set; }
         public string ModelName { get; set; }
         public string Description { get; set; }
-        public List<string> Categories => JsonConvert.DeserializeObject<List<string>>(_categoriesJSON);
+        public string CategoriesJson => JsonConvert.SerializeObject(_categories);
 
         // The raw Json string from the database gets sent here to populate the publicly available dictionary. 
-        public string CategoriesJson
+        public List<string> Categories
         {
             set
             {
-                _categoriesJSON = value;
+                _categories = value;
             }
             get
             {
-                return _categoriesJSON;
+                return _categories;
             }
         }
 
