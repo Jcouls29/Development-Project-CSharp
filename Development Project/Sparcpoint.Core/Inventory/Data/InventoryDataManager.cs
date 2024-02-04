@@ -19,7 +19,7 @@ namespace Sparcpoint.Inventory.Data
             _connectionString = connString;
         }
 
-        public async Task<ProductItem> QueryProduct(int productId)
+        public async Task<ProductItem> QueryProductById(int productId)
         {
             var dictionary = new Dictionary<string, object>
             {
@@ -27,7 +27,7 @@ namespace Sparcpoint.Inventory.Data
             };
             var parameters = new DynamicParameters(dictionary);
             string sql = "select " +
-                "p.ProductId, Manufacturer, BrandName, Description, sku, AttributesJson, QuantityOnHand " +
+                "p.ProductId, Manufacturer, BrandName, Description " +
                 "from instances.Product p " +
                 "where productId = @ProductId";
             using (var connection = new SqlConnection(_connectionString))
@@ -86,6 +86,11 @@ namespace Sparcpoint.Inventory.Data
                     );
                 return products;
             }
+        }
+
+        internal Task AddNewProduct(ProductItem productItem)
+        {
+            throw new NotImplementedException();
         }
     }
 }
