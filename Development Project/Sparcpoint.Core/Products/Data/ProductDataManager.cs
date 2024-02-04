@@ -94,6 +94,7 @@ namespace Sparcpoint.Products.Data
             {
                 var dictionary = new Dictionary<string, object>
                 {
+                    { "@ProductId", product.ProductId },
                     { "@Manufacturer", product.Manufacturer },
                     { "@ModelName", product.ModelName },
                     { "@Description", product.Description },
@@ -104,7 +105,7 @@ namespace Sparcpoint.Products.Data
                 var sql = "UPDATE Instances.Product " +
                     "SET Manufacturer = @Manufacturer, " +
                     "ModelName = @ModelName, " +
-                    "Description = @Description " +
+                    "Description = @Description, " +
                     "CategoriesJson = @CategoriesJson " +
                     "WHERE ProductId = @ProductId";
 
@@ -180,15 +181,16 @@ namespace Sparcpoint.Products.Data
                 var dictionary = new Dictionary<string, object>
                 {
                     { "@Sku", inventoryItem.Sku },
+                    { "@ProductId", inventoryItem.ProductId },
                     { "@AttributesJson", inventoryItem.AttributesJson },
                     { "@QuantityOnHand", inventoryItem.QuantityOnHand }
                 };
                 var parameters = new DynamicParameters(dictionary);
                 var sql = "UPDATE Instances.InventoryItem " +
                     "SET ProductId = @ProductId, " +
-                    "AttributesJson = @AttributesJson " +
+                    "AttributesJson = @AttributesJson, " +
                     "QuantityOnHand = @QuantityOnHand " +
-                    "WHERE ProductId = @ProductId";
+                    "WHERE Sku = @Sku";
 
                 var rowsAffected = await connection.ExecuteAsync(sql, parameters);
             }
