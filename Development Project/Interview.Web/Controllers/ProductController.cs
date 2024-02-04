@@ -1,8 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
-using Sparcpoint.Inventory.Data;
-using Sparcpoint.Product;
-using Sparcpoint.Product.Domain;
+using Sparcpoint.Products.Data;
+using Sparcpoint.Products.Domain;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -54,11 +53,11 @@ namespace Interview.Web.Controllers
 
         [HttpPut]
         [Route("api/v1/products")]
-        public async Task<IActionResult> PutProduct(ProductItem productItem)
+        public async Task<IActionResult> PutProduct([FromBody]Product product)
         {
             try
             {
-                await AddNewProduct(productItem);
+                await AddNewProduct(product);
                 return NoContent();
             }
             catch(Exception ex)
@@ -67,19 +66,19 @@ namespace Interview.Web.Controllers
             }
         }
 
-        protected async Task AddNewProduct(ProductItem productItem)
+        protected async Task AddNewProduct(Product product)
         {
-            await new InventoryManager(_config.GetConnectionString("Inventory")).AddNewProduct(productItem);
+            await new ProductManager(_config.GetConnectionString("Inventory")).AddNewProduct(product);
         }
 
-        protected async Task<ProductItem> GetProductById(int productId)
+        protected async Task<Product> GetProductById(int productId)
         {
-            return await new InventoryManager(_config.GetConnectionString("Inventory")).GetProductById(productId);
+            return await new ProductManager(_config.GetConnectionString("Inventory")).GetProductById(productId);
         }
 
-        protected async virtual Task<IEnumerable<ProductItem>> GetProductsIninventory()
+        protected async virtual Task<IEnumerable<Product>> GetProductsIninventory()
         {
-            return await new InventoryManager(_config.GetConnectionString("Inventory")).GetProductsInInventory();
+            return await new ProductManager(_config.GetConnectionString("Inventory")).GetProductsInInventory();
         }
     }
 }

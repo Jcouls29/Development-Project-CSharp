@@ -1,35 +1,40 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Sparcpoint
 {
     public class ParameterRequiredException : Exception
     {
-        public string ParameterName { get; }
-        public ParameterRequiredException(string parameterName) 
-            : base(FormatMessage(parameterName))
+        public List<string> ParameterNames { get; }
+        public ParameterRequiredException(List<string> parameterNames) 
+            : base(FormatMessage(parameterNames))
         {
-            ParameterName = parameterName;
+            ParameterNames = parameterNames;
         }
 
-        public ParameterRequiredException(string parameterName, Exception innerException) 
-            : base(FormatMessage(parameterName), innerException)
+        public ParameterRequiredException(List<string> parameterNames, Exception innerException) 
+            : base(FormatMessage(parameterNames), innerException)
         {
-            ParameterName = parameterName;
+            ParameterNames = parameterNames;
         }
 
-        public ParameterRequiredException(string parameterName, string message)
-            : base(FormatMessage(parameterName, message))
+        public ParameterRequiredException(List<string> parameterNames, string message)
+            : base(FormatMessage(parameterNames, message))
         {
-            ParameterName = parameterName;
+            ParameterNames = parameterNames;
         }
 
-        public ParameterRequiredException(string parameterName, string message, Exception innerException)
-            : base(FormatMessage(parameterName, message), innerException)
+        public ParameterRequiredException(List<string> parameterNames, string message, Exception innerException)
+            : base(FormatMessage(parameterNames, message), innerException)
         {
-            ParameterName = parameterName;
+            ParameterNames = parameterNames;
         }
 
-        private static string FormatMessage(string parameterName, string message = "")
-            => $"Parameter '{parameterName}' is required. {message}".Trim();
+        private static string FormatMessage(List<string> parameterNames, string message = "")
+        {
+            string missingParameterNames = String.Join(", ", parameterNames);
+            return $"{missingParameterNames} required. {message}".Trim();
+        }
     }
 }

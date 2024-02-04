@@ -49,7 +49,7 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Mocks\InventoryManagerMock.cs" />
+    <Compile Include="Mocks\ProductManagerMock.cs" />
     <Compile Include="ProductManagerTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
