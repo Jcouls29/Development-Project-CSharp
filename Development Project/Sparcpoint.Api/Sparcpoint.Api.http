@@ -1,0 +1,6 @@
+@Sparcpoint.Api_HostAddress = http://localhost:5012
+
+GET {{Sparcpoint.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
