@@ -29,12 +29,36 @@ namespace Interview.Web.Controllers
           }
 
           [HttpGet]
-          public async Task<IActionResult> GetAllProducts()
+          public async Task<IActionResult> GetProducts([FromQuery] ProductSearchModel searchValues)
           {
                try
                {
-                    var products = await _productService.GetAllProductsAsync();
-                    return Ok(products);
+                    //Check if SKU or Name are in query params
+                    bool isSearchModelEmpty = string.IsNullOrWhiteSpace(searchValues.SKU) &&
+                                              string.IsNullOrWhiteSpace(searchValues.Name);
+                    //no query params get all
+                    if (isSearchModelEmpty)
+                    {
+                         var products = await _productService.GetAllProductsAsync();
+                         return Ok(products);
+                    } 
+                    else
+                    {
+                         //EVAL: This currently does not handle whitespace well
+                         //there is also no security check for SQL injections
+                         //I am turning it into a string through the search params that is not foolproof.
+                         //to search with query params enter 
+                         //?SKU=SKU1
+                         //?Name=Example
+                         //Will default to SKU if both are present
+                         var product = await _productService.FindProduct(searchValues);
+                         if (product == null)
+                         {
+                              return NotFound("No product found...");
+                         }
+
+                         return Ok(product);
+                    }
                }
                catch (Exception ex)
                {
@@ -64,8 +88,12 @@ namespace Interview.Web.Controllers
                     return StatusCode(500, "Error: Ran into an issue while creating a new Product");
                }
           }
-
-          //[HttpGet("search")]
-          //public Task<IActionResult> SearchProducts([]){}
      }
 }
+
+//FINISHED
+//was not able to get all I wanted to get done due to trying to juggle learning C#/ASP.net and Dapper
+//I feel pretty good with what I have but would have liked a bit more time to setup so I could figure out
+//more of my dependencies earlier on(Unit test setup, Dapper, Getting the DB to work locally)
+//This was great though and lots of fun
+//Thanks

@@ -66,5 +66,32 @@ namespace Interview.Web.Services
                return newProduct;
 
           }
+
+          public async Task<List<Product>> FindProduct(ProductSearchModel searchModel)
+          { 
+               string SQL_FIND_BY;
+               object paramObj;
+               if(!string.IsNullOrWhiteSpace(searchModel.SKU))
+               {
+                    SQL_FIND_BY = @"SELECT * FROM inventory.Instances.Products WHERE ValidSkus LIKE @SKU;";
+                    paramObj = new { SKU = $"%{searchModel.SKU}%" };
+               }
+
+               else if(!string.IsNullOrWhiteSpace(searchModel.Name))
+               {
+                    SQL_FIND_BY = @"SELECT * FROM inventory.Instances.Products WHERE Name LIKE @Name;";
+                    paramObj = new { Name = $"%{searchModel.Name}%" };
+               }
+               else
+               {
+                    return null;
+               }
+               var products = await _sqlExecutor.ExecuteAsync(async (conn, trnx) =>
+               {
+                    var result = await conn.QueryAsync<Product>(sql: SQL_FIND_BY, paramObj, transaction: trnx);
+                    return result;
+               });
+               return products.ToList();
+          }
      }
 }

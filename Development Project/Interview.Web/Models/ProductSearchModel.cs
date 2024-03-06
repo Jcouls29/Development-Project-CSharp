@@ -5,7 +5,7 @@
      public class ProductSearchModel
      {
           public string SKU { get; set; }
-          public string Category { get; set; }
-          public string Color { get; set; }
+          public string Name { get; set; }
+
      }
 }
