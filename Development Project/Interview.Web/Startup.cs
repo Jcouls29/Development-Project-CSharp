@@ -1,3 +1,4 @@
+using Interview.Web.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -25,6 +26,7 @@ namespace Interview.Web
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+            services.AddScoped<ProductService>();
             var connectionString = Configuration.GetConnectionString("DefaultConnection");
             services.AddSingleton<ISqlExecutor, SqlServerExecutor>(provider => new SqlServerExecutor(connectionString));
           }

@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Sparcpoint.SqlServer.Abstractions;
 using Dapper;
 using Interview.Web.Models;
+using Interview.Web.Services;
 
 //EVAL: For this test I have decided to work on
 // * an endpoint to create and add Products to the database
@@ -20,38 +21,24 @@ namespace Interview.Web.Controllers
     [Route("api/v1/products")]
     public class ProductController : Controller
     {
-        private readonly ISqlExecutor _sqlExecutor;
+          private readonly ProductService _productService;
 
-          public ProductController(ISqlExecutor sqlExecutor)
+          public ProductController(ProductService productService)
           {
-               _sqlExecutor = sqlExecutor;
+               _productService = productService;
           }
 
           [HttpGet]
           public async Task<IActionResult> GetAllProducts()
           {
-               //used this to test DB connection
-               //TODO: Move to service file for GetAll
-               //If you have time add in necessary params or access haha
                try
                {
-                    var products = await _sqlExecutor.ExecuteAsync(async (conn, trnx) =>
-                    {
-                         var result = await conn.QueryAsync<Product>(sql: @"SELECT * FROM inventory.Instances.Products;", transaction: trnx);
-                         return result.ToList();
-                    });
-
-                    if (products == null || !products.Any())
-                    {
-                         return Ok(new List<Product>());
-                    }
-
+                    var products = await _productService.GetAllProductsAsync();
                     return Ok(products);
                }
                catch (Exception ex)
                {
-
-                    return StatusCode(500, "An error occurred while processing your request.");
+                    return StatusCode(500, "Error: Ran into an issue while retrieving products");
                }
           }
 
@@ -61,6 +48,7 @@ namespace Interview.Web.Controllers
           [HttpPost]
           public Task<IActionResult> CreateProduct(){}
           */
+          /**/
           /*
           [HttpGet]
           public Task<IActionResult> SearchProducts(){}
