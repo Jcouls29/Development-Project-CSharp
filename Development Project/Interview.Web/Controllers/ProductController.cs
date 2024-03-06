@@ -44,14 +44,28 @@ namespace Interview.Web.Controllers
 
           //EVAL: Post endpoint to create product will require base product model
           // will allow for optional category and color values to be added in
-          /*
+          
           [HttpPost]
-          public Task<IActionResult> CreateProduct(){}
-          */
-          /**/
-          /*
-          [HttpGet]
-          public Task<IActionResult> SearchProducts(){}
-           */
+          public async Task<IActionResult> CreateProduct([FromBody] CreateProductModel productModel){
+               
+               //if body is not valid shape send back a bad request
+               if (!ModelState.IsValid)
+               {
+                    return BadRequest(ModelState);
+               }
+               try
+               {
+
+                    var newProduct = await _productService.CreateProduct(productModel);
+                    return new ObjectResult(newProduct) { StatusCode = 201 };
+               }
+               catch (Exception ex)
+               {
+                    return StatusCode(500, "Error: Ran into an issue while creating a new Product");
+               }
+          }
+
+          //[HttpGet("search")]
+          //public Task<IActionResult> SearchProducts([]){}
      }
 }
