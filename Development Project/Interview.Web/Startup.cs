@@ -8,6 +8,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Interview.Web.Services;
+using Sparcpoint.SqlServer.Abstractions;
 
 namespace Interview.Web
 {
@@ -24,6 +26,12 @@ namespace Interview.Web
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+            // Setting up the connection for the SQL file - ClientsProductService
+            services.AddScoped<ClientsProductService>();
+            var connectionString = Configuration.GetConnectionString("DefaultConnection");
+            services.AddSingleton<ISqlExecutor, SqlServerExecutor>(
+                provider => new SqlServerExecutor(connectionString)
+            );
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
