@@ -1,0 +1,15 @@
+{
+  "version": 2,
+  "dgSpecHash": "8otoZ8O3PHltW/YFOCadDaOHR7ejjFQrm3cb5WoP+t3dOjDHdM7ni8/dxXQMvxgJrQGAVa6izkl1a1N3M6HWZA==",
+  "success": true,
+  "projectFilePath": "D:\\Development-Project-CSharp\\Development Project\\Interview.Web\\Interview.Web.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\greb2\\.nuget\\packages\\microsoft.aspnetcore.cryptography.internal\\3.1.8\\microsoft.aspnetcore.cryptography.internal.3.1.8.nupkg.sha512",
+    "C:\\Users\\greb2\\.nuget\\packages\\microsoft.aspnetcore.cryptography.keyderivation\\3.1.8\\microsoft.aspnetcore.cryptography.keyderivation.3.1.8.nupkg.sha512",
+    "C:\\Users\\greb2\\.nuget\\packages\\microsoft.extensions.dependencyinjection.abstractions\\3.1.8\\microsoft.extensions.dependencyinjection.abstractions.3.1.8.nupkg.sha512",
+    "C:\\Users\\greb2\\.nuget\\packages\\microsoft.extensions.options\\3.1.8\\microsoft.extensions.options.3.1.8.nupkg.sha512",
+    "C:\\Users\\greb2\\.nuget\\packages\\microsoft.extensions.primitives\\3.1.8\\microsoft.extensions.primitives.3.1.8.nupkg.sha512",
+    "C:\\Users\\greb2\\.nuget\\packages\\newtonsoft.json\\12.0.3\\newtonsoft.json.12.0.3.nupkg.sha512"
+  ],
+  "logs": []
+}
