@@ -11,7 +11,8 @@
     "IIS Express": {
       "commandName": "IISExpress",
       "launchBrowser": true,
-      "launchUrl": "api/v1/products",
+      //"launchUrl": "api/v1/products",
+      "launchUrl": "index.html", // uncomment this line and comment the line above to use swagger UI for CRUD ops. 
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }

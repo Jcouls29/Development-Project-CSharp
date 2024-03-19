@@ -16,6 +16,7 @@ namespace Sparkpoint.Data
         public string Description { get; set; } // Description (length: 256)
         public string ProductImageUris { get; set; } // ProductImageUris
         public string ValidSkus { get; set; } // ValidSkus
+        public bool IsActive { get; set; } // IsActive
         public DateTime CreatedTimestamp { get; set; } // CreatedTimestamp
 
         // Reverse navigation
@@ -37,6 +38,7 @@ namespace Sparkpoint.Data
 
         public Product()
         {
+            IsActive = true;
             CreatedTimestamp = DateTime.UtcNow;
             InventoryTransactions = new List<InventoryTransaction>();
             ProductAttributes = new List<ProductAttribute>();

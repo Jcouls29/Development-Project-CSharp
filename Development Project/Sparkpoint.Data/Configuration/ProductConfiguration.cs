@@ -12,13 +12,14 @@ namespace Sparkpoint.Data
         public void Configure(EntityTypeBuilder<Product> builder)
         {
             builder.ToTable("Products", "Instances");
-            builder.HasKey(x => x.InstanceId).HasName("PK__Products__5C51994F59847F7F").IsClustered();
+            builder.HasKey(x => x.InstanceId).HasName("PK__tmp_ms_x__5C51994FF93AEE4A").IsClustered();
 
             builder.Property(x => x.InstanceId).HasColumnName(@"InstanceId").HasColumnType("int").IsRequired().ValueGeneratedOnAdd().UseIdentityColumn();
             builder.Property(x => x.Name).HasColumnName(@"Name").HasColumnType("varchar(256)").IsRequired().IsUnicode(false).HasMaxLength(256);
             builder.Property(x => x.Description).HasColumnName(@"Description").HasColumnType("varchar(256)").IsRequired().IsUnicode(false).HasMaxLength(256);
             builder.Property(x => x.ProductImageUris).HasColumnName(@"ProductImageUris").HasColumnType("varchar(max)").IsRequired().IsUnicode(false);
             builder.Property(x => x.ValidSkus).HasColumnName(@"ValidSkus").HasColumnType("varchar(max)").IsRequired().IsUnicode(false);
+            builder.Property(x => x.IsActive).HasColumnName(@"IsActive").HasColumnType("bit").IsRequired();
             builder.Property(x => x.CreatedTimestamp).HasColumnName(@"CreatedTimestamp").HasColumnType("datetime2").IsRequired();
         }
     }
