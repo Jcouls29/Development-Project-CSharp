@@ -1,1 +1,2 @@
 * published database and named database as Inventory. 
+* added Microsoft.EntityFrameworkCore.SqlServer 3.1.32 for reverse engineering database in a new project that handles data models and context
