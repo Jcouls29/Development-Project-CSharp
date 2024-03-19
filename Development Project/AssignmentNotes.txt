@@ -1,2 +1,4 @@
 * published database and named database as Inventory. 
 * added Microsoft.EntityFrameworkCore.SqlServer 3.1.32 for reverse engineering database in a new project that handles data models and context
+* models added to new sparkpoint.data project. This project can be by itself a database management project and deployed to nuget package manager. This helps to add new projects and use same database for each new project without touching existing core projects. 
+* Everytime database changes, you just need to run Inventory.tt file and it will catch new columns and update your project. publish to cloud of your choice, and let other projects update nuget package.
