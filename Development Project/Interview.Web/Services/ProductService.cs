@@ -204,19 +204,15 @@ namespace Interview.Web.Services
                 query = query.Where(p => p.Description.ToLower().Contains(criteria.Description.ToLower()));
             }
             // search by product attributes
-            if (criteria.GeneralDetails != null)
+            // search attributes by their key and value. both key and value should be provided. 
+            criteria.GeneralDetails?.ForEach(generalDetail =>
             {
-                // search attributes by their key and value. both key and value should be provided. 
-                criteria.GeneralDetails.ForEach(generalDetail =>
+                if (!string.IsNullOrEmpty(generalDetail.Key) && !string.IsNullOrEmpty(generalDetail.Value))
                 {
-                    if (!string.IsNullOrEmpty(generalDetail.Key) && !string.IsNullOrEmpty(generalDetail.Value))
-                    {
-                        query = query
-                            .Where(p => p.ProductAttributes.Any(pa => pa.Key == generalDetail.Key && pa.Value == generalDetail.Value));
-                    }
-                });
-                
-            }
+                    query = query
+                        .Where(p => p.ProductAttributes.Any(pa => pa.Key == generalDetail.Key && pa.Value == generalDetail.Value));
+                }
+            });
 
             // Execute the query and return the results
             return query.ToList();
@@ -245,19 +241,15 @@ namespace Interview.Web.Services
                 query = query.Where(p => p.Description.ToLower().Contains(criteria.Description.ToLower()));
             }
             // search by product attributes
-            if (criteria.GeneralDetails != null)
+            // search attributes by their key and value. both key and value should be provided. 
+            criteria.GeneralDetails?.ForEach(generalDetail =>
             {
-                // search attributes by their key and value. both key and value should be provided. 
-                criteria.GeneralDetails.ForEach(generalDetail =>
+                if (!string.IsNullOrEmpty(generalDetail.Key) && !string.IsNullOrEmpty(generalDetail.Value))
                 {
-                    if (!string.IsNullOrEmpty(generalDetail.Key) && !string.IsNullOrEmpty(generalDetail.Value))
-                    {
-                        query = query
-                            .Where(p => p.ProductAttributes.Any(pa => pa.Key == generalDetail.Key && pa.Value == generalDetail.Value));
-                    }
-                });
-
-            }
+                    query = query
+                        .Where(p => p.ProductAttributes.Any(pa => pa.Key == generalDetail.Key && pa.Value == generalDetail.Value));
+                }
+            });
 
             // Execute the query and return the results
             return query.ToList().Count();
