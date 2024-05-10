@@ -11,6 +11,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sparcpoint.Core", "Sparcpoi
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sparcpoint.SqlServer.Abstractions", "Sparcpoint.SqlServer.Abstractions\Sparcpoint.SqlServer.Abstractions.csproj", "{4E72CD4A-C9FE-4A04-9F07-A770E3AD7297}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Business", "Business\Business.csproj", "{AAEA869A-59BF-4791-B7F0-0683FD08DA77}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataAccess", "DataAccess\DataAccess.csproj", "{67584709-F600-40AB-AB88-E4ADF77CF0D3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -55,6 +59,22 @@ Global
 		{4E72CD4A-C9FE-4A04-9F07-A770E3AD7297}.Release|Any CPU.Build.0 = Release|Any CPU
 		{4E72CD4A-C9FE-4A04-9F07-A770E3AD7297}.Release|x86.ActiveCfg = Release|Any CPU
 		{4E72CD4A-C9FE-4A04-9F07-A770E3AD7297}.Release|x86.Build.0 = Release|Any CPU
+		{AAEA869A-59BF-4791-B7F0-0683FD08DA77}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AAEA869A-59BF-4791-B7F0-0683FD08DA77}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AAEA869A-59BF-4791-B7F0-0683FD08DA77}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{AAEA869A-59BF-4791-B7F0-0683FD08DA77}.Debug|x86.Build.0 = Debug|Any CPU
+		{AAEA869A-59BF-4791-B7F0-0683FD08DA77}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AAEA869A-59BF-4791-B7F0-0683FD08DA77}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AAEA869A-59BF-4791-B7F0-0683FD08DA77}.Release|x86.ActiveCfg = Release|Any CPU
+		{AAEA869A-59BF-4791-B7F0-0683FD08DA77}.Release|x86.Build.0 = Release|Any CPU
+		{67584709-F600-40AB-AB88-E4ADF77CF0D3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{67584709-F600-40AB-AB88-E4ADF77CF0D3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{67584709-F600-40AB-AB88-E4ADF77CF0D3}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{67584709-F600-40AB-AB88-E4ADF77CF0D3}.Debug|x86.Build.0 = Debug|Any CPU
+		{67584709-F600-40AB-AB88-E4ADF77CF0D3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{67584709-F600-40AB-AB88-E4ADF77CF0D3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{67584709-F600-40AB-AB88-E4ADF77CF0D3}.Release|x86.ActiveCfg = Release|Any CPU
+		{67584709-F600-40AB-AB88-E4ADF77CF0D3}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
