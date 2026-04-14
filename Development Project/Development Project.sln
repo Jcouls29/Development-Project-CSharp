@@ -11,6 +11,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sparcpoint.Core", "Sparcpoi
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sparcpoint.SqlServer.Abstractions", "Sparcpoint.SqlServer.Abstractions\Sparcpoint.SqlServer.Abstractions.csproj", "{4E72CD4A-C9FE-4A04-9F07-A770E3AD7297}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sparcpoint.Inventory", "Sparcpoint.Inventory\Sparcpoint.Inventory.csproj", "{E129D438-75F4-4573-99F9-F3DD1E8BC987}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sparcpoint.Inventory.Tests", "Sparcpoint.Inventory.Tests\Sparcpoint.Inventory.Tests.csproj", "{A23264DF-9671-4809-AC85-63929CFF42E6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -55,6 +59,22 @@ Global
 		{4E72CD4A-C9FE-4A04-9F07-A770E3AD7297}.Release|Any CPU.Build.0 = Release|Any CPU
 		{4E72CD4A-C9FE-4A04-9F07-A770E3AD7297}.Release|x86.ActiveCfg = Release|Any CPU
 		{4E72CD4A-C9FE-4A04-9F07-A770E3AD7297}.Release|x86.Build.0 = Release|Any CPU
+		{E129D438-75F4-4573-99F9-F3DD1E8BC987}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E129D438-75F4-4573-99F9-F3DD1E8BC987}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E129D438-75F4-4573-99F9-F3DD1E8BC987}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{E129D438-75F4-4573-99F9-F3DD1E8BC987}.Debug|x86.Build.0 = Debug|Any CPU
+		{E129D438-75F4-4573-99F9-F3DD1E8BC987}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E129D438-75F4-4573-99F9-F3DD1E8BC987}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E129D438-75F4-4573-99F9-F3DD1E8BC987}.Release|x86.ActiveCfg = Release|Any CPU
+		{E129D438-75F4-4573-99F9-F3DD1E8BC987}.Release|x86.Build.0 = Release|Any CPU
+		{A23264DF-9671-4809-AC85-63929CFF42E6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A23264DF-9671-4809-AC85-63929CFF42E6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A23264DF-9671-4809-AC85-63929CFF42E6}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{A23264DF-9671-4809-AC85-63929CFF42E6}.Debug|x86.Build.0 = Debug|Any CPU
+		{A23264DF-9671-4809-AC85-63929CFF42E6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A23264DF-9671-4809-AC85-63929CFF42E6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A23264DF-9671-4809-AC85-63929CFF42E6}.Release|x86.ActiveCfg = Release|Any CPU
+		{A23264DF-9671-4809-AC85-63929CFF42E6}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
