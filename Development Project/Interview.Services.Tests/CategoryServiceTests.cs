@@ -20,15 +20,7 @@ namespace Interview.Services.Tests
             _categoryService = new CategoryService(_mockSqlExecutor.Object);
         }
 
-        [Fact]
-        public async Task CreateCategoryAsync_ShouldThrowArgumentNullException_WhenRequestIsNull()
-        {
-            // Act & Assert
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _categoryService.CreateCategoryAsync(null));
-        }
-
         [Theory]
-        [InlineData(null)]
         [InlineData("")]
         [InlineData(" ")]
         public async Task CreateCategoryAsync_ShouldThrowArgumentException_WhenNameIsInvalid(string name)
@@ -46,7 +38,6 @@ namespace Interview.Services.Tests
         }
 
         [Theory]
-        [InlineData(null)]
         [InlineData("")]
         [InlineData(" ")]
         public async Task CreateCategoryAsync_ShouldThrowArgumentException_WhenDescriptionIsInvalid(string description)

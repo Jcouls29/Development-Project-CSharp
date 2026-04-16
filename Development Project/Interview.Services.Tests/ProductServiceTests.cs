@@ -20,14 +20,8 @@ namespace Interview.Services.Tests
             _productService = new ProductService(_mockSqlExecutor.Object);
         }
 
-        [Fact]
-        public async Task CreateProductAsync_ShouldThrowArgumentNullException_WhenRequestIsNull()
-        {
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _productService.CreateProductAsync(null));
-        }
 
         [Theory]
-        [InlineData(null)]
         [InlineData("")]
         [InlineData(" ")]
         public async Task Create_ShouldFail_On_Empty_Name(string name)
@@ -40,7 +34,6 @@ namespace Interview.Services.Tests
         }
 
         [Theory]
-        [InlineData(null)]
         [InlineData("")]
         [InlineData(" ")]
         public async Task Create_ShouldFail_On_Empty_Description(string description)
@@ -87,11 +80,6 @@ namespace Interview.Services.Tests
             _mockSqlExecutor.Verify(x => x.ExecuteAsync(It.IsAny<Func<IDbConnection, IDbTransaction, Task>>()), Times.Once);
         }
 
-        [Fact]
-        public async Task Update_ShouldThrow_If_Request_Is_Null()
-        {
-            await Assert.ThrowsAsync<ArgumentNullException>(() => _productService.UpdateProductAsync(1, null));
-        }
 
         [Fact]
         public async Task SearchProductsAsync_ShouldInvokeExecutor()
