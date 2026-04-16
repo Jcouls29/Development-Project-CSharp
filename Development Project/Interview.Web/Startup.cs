@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Sparcpoint.Inventory.Application.Interfaces;
+using Sparcpoint.Inventory.Application.Repositories;
 using Sparcpoint.Inventory.Application.Services;
 using Sparcpoint.SqlServer.Abstractions;
 
@@ -23,9 +24,13 @@ namespace Interview.Web
         {
             services.AddControllers();
 
+            //services
             services.AddScoped<IProductService, ProductService>();
+            services.AddScoped<IInventoryService, InventoryService>();
 
+            //repositories
             services.AddScoped<IProductRepository, ProductRepository>();
+            services.AddScoped<IInventoryRepository, InventoryRepository>();
 
             services.AddSingleton<ISqlExecutor>(sp =>
             {
