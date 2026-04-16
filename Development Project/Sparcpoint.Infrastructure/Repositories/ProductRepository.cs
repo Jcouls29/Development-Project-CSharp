@@ -31,17 +31,9 @@ namespace Sparcpoint.Infrastucture
                     OUTPUT INSERTED.InstanceId 
                     VALUES (@Name, @Description, @ProductImageUris, @ValidSkus, SYSUTCDATETIME());";
 
-            var parameters = new
-            {
-                product.Name,
-                product.Description,
-                ProductImageUris = JsonConvert.SerializeObject(product.ProductImageUris ?? new List<string>()),
-                ValidSkus = JsonConvert.SerializeObject(product.ValidSkus ?? new List<string>())
-            };
-
             return await _sqlExecutor.ExecuteAsync(async (connection, transaction) =>
             {
-                int instanceId = await connection.QuerySingleAsync<int>(sqlProduct, parameters, transaction);
+                int instanceId = await connection.QuerySingleAsync<int>(sqlProduct, product, transaction);
 
                 // 2. Insert Categories
                 if (product.CategoryInstanceIds != null && product.CategoryInstanceIds.Any())
@@ -57,7 +49,7 @@ namespace Sparcpoint.Infrastucture
                     await connection.ExecuteAsync(sqlAttr, product.Attributes.Select(a => new { instanceId, key = a.Key, value = a.Value }), transaction);
                 }
 
-                product.Id = instanceId;
+                product.InstanceId = instanceId;
                 return instanceId;
             });
         }
@@ -101,9 +93,28 @@ namespace Sparcpoint.Infrastucture
                     parameters.Add(valParam, attr.Value);
                 }
             }
+            
+            return await _sqlExecutor.ExecuteAsync(async (conn, trans) =>
+                    await conn.QueryAsync<Product>(sql.ToString(), parameters, trans));
+        }
+
+        public async Task<IEnumerable<Product>> GetAll()
+        {
+            const string sql = @"
+                SELECT 
+                    InstanceId, 
+                    Name, 
+                    Description, 
+                    ProductImageUris, 
+                    ValidSkus, 
+                    CreatedTimestamp 
+                FROM [Instances].[Products]
+                ORDER BY CreatedTimestamp DESC;";
 
             return await _sqlExecutor.ExecuteAsync(async (conn, trans) =>
-                await conn.QueryAsync<Product>(sql.ToString(), parameters, trans));
+            {
+                return await conn.QueryAsync<Product>(sql, transaction: trans);
+            });
         }
     }
 }

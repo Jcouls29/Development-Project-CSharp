@@ -8,5 +8,6 @@ namespace Sparcpoint
     {
         Task<int> CreateAsync(Product product);
         Task<IEnumerable<Product>> SearchAsync(ProductSearchRequest request);
+        Task<IEnumerable<Product>> GetAll();
     }
 }

@@ -40,9 +40,10 @@ namespace Interview.Web.Controllers
 
         // NOTE: Sample Action
         [HttpGet]
-        public Task<IActionResult> GetAllProducts()
+        public async Task<IActionResult> GetAllProducts()
         {
-            return Task.FromResult((IActionResult)Ok(new object[] { }));
+            var results = await _productService.GetAll();
+            return Ok(results);
         }
     }
 }

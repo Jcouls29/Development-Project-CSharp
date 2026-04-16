@@ -22,5 +22,11 @@ namespace Sparcpoint
         {
             return await _productRepository.SearchAsync(request);
         }
+
+        public async Task<IEnumerable<Product>> GetAll()
+        {
+            // NOTE: Sample method to demonstrate how to add additional service methods that may not be in the repository interface
+            return await _productRepository.GetAll();
+        }
     }
 }
