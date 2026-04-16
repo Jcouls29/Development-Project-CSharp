@@ -8,6 +8,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Interview.Web.Repositories;
+using Interview.Web.Repositories.Interfaces;
+using Sparcpoint.SqlServer.Abstractions;
 
 namespace Interview.Web
 {
@@ -24,6 +27,12 @@ namespace Interview.Web
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+
+            var connectionString = Configuration.GetConnectionString("InventoryDatabase");
+            services.AddSingleton<ISqlExecutor>(new SqlServerExecutor(connectionString));
+
+            services.AddScoped<IProductRepository, ProductRepository>();
+            services.AddScoped<IInventoryRepository, InventoryRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
