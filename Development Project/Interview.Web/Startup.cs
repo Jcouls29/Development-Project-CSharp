@@ -4,6 +4,9 @@ using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Sparcpoint.Abstract.Services;
+using Sparcpoint.Implementations.Services;
+using Sparcpoint.SqlServer.Abstractions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,6 +27,10 @@ namespace Interview.Web
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+
+            services.AddSingleton<ISqlExecutor, SqlServerExecutor>();
+            services.AddScoped<IProductService, ProductService>();
+            services.Configure<SqlServerOptions>(Configuration.GetSection("SqlServerOptions"));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
