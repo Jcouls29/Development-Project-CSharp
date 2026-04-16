@@ -39,6 +39,8 @@ namespace Interview.Web
 
                 return new Sparcpoint.SqlServer.Abstractions.SqlServerExecutor(connectionString);
             });
+
+            services.AddSwaggerGen();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -59,6 +61,14 @@ namespace Interview.Web
             app.UseStaticFiles();
 
             app.UseRouting();
+
+            app.UseSwagger();
+
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Interview API V1");
+                c.RoutePrefix = string.Empty;
+            });
 
             app.UseAuthorization();
 
