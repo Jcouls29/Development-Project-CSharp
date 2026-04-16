@@ -9,7 +9,7 @@ namespace Sparcpoint.Services
 
     }
 
-    public class InventoryService
+    public class InventoryTransactionService
     {
     }
 }
