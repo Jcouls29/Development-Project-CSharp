@@ -4,6 +4,10 @@ using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Sparcpoint.Application.Interfaces;
+using Sparcpoint.Application.Services;
+using Sparcpoint.Infrastructure.Repositories;
+using Sparcpoint.SqlServer.Abstractions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,6 +28,16 @@ namespace Interview.Web
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+            services.AddSwaggerGen();
+            services.AddScoped<IProductService, ProductService>();
+            services.AddScoped<IInventoryService, InventoryService>();
+
+
+            services.AddScoped<IProductRepository, ProductRepository>();
+            services.AddScoped<IInventoryRepository, InventoryRepository>();
+
+
+            services.AddScoped<ISqlExecutor, SqlExecutor>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -33,15 +47,13 @@ namespace Interview.Web
             {
                 app.UseDeveloperExceptionPage();
             }
-            else
-            {
-                app.UseExceptionHandler("/Error");
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-                app.UseHsts();
-            }
 
-            app.UseHttpsRedirection();
-            app.UseStaticFiles();
+            app.UseSwagger();
+
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Inventory API V1");
+            });
 
             app.UseRouting();
 
