@@ -1,4 +1,4 @@
-﻿CREATE TABLE [Transactions].[InventoryTransactions]
+CREATE TABLE [Transactions].[InventoryTransactions]
 (
 	[TransactionId] INT NOT NULL PRIMARY KEY IDENTITY(1,1),
 	[ProductInstanceId] INT NOT NULL,
@@ -6,6 +6,8 @@
 	[StartedTimestamp] DATETIME2(7) NOT NULL DEFAULT SYSUTCDATETIME(),
 	[CompletedTimestamp] DATETIME2(7) NULL,
 	[TypeCategory] VARCHAR(32) NULL,
+	/* EVAL: Soft Delete transaction, might be better */
+	[IsDeleted] BIT NOT NULL DEFAULT 0,
     CONSTRAINT [FK_InventoryTransactions_Products] FOREIGN KEY ([ProductInstanceId]) REFERENCES [Instances].[Products]([InstanceId]) ON DELETE CASCADE
 )
 
