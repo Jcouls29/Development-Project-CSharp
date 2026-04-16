@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Sparcpoint.Models;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Sparcpoint
@@ -17,9 +18,9 @@ namespace Sparcpoint
             return await _productRepository.AddAsync(product);
         }
 
-        public async Task<IEnumerable<Product>> SearchAsync(IEnumerable<int> categoryIds, string attrKey, string attrValue)
+        public async Task<IEnumerable<Product>> SearchAsync(ProductSearchRequest request)
         {
-            return await _productRepository.SearchAsync(categoryIds, attrKey, attrValue);
+            return await _productRepository.SearchAsync(request);
         }
     }
 }

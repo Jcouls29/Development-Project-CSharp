@@ -1,9 +1,11 @@
 using Dapper;
 using Newtonsoft.Json;
+using Sparcpoint.Models;
 using Sparcpoint.SqlServer.Abstractions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace Sparcpoint.Infrastucture
@@ -60,57 +62,48 @@ namespace Sparcpoint.Infrastucture
             });
         }
 
-        public async Task<IEnumerable<Product>> SearchAsync(IEnumerable<int> categoryIds, string attrKey, string attrValue)
+        public async Task<IEnumerable<Product>> SearchAsync(ProductSearchRequest request)
         {
-            return await _sqlExecutor.ExecuteAsync(async (connection, transaction) =>
+            var parameters = new DynamicParameters();
+            var sql = new StringBuilder();
+
+            sql.Append(@"
+                ;WITH CategoryTree AS (
+                    SELECT InstanceId FROM [Instances].[Categories] WHERE InstanceId IN @CatIds
+                    UNION ALL
+                    SELECT cc.CategoryInstanceId
+                    FROM [Instances].[CategoryCategories] cc
+                    INNER JOIN CategoryTree ct ON cc.InstanceId = ct.InstanceId
+                )
+                SELECT DISTINCT p.* FROM [Instances].[Products] p
+                INNER JOIN [Instances].[ProductCategories] pc ON p.InstanceId = pc.InstanceId
+                WHERE pc.CategoryInstanceId IN (SELECT InstanceId FROM CategoryTree)");
+
+            parameters.Add("CatIds", request.CategoryIds);
+
+            if (request.Attributes != null && request.Attributes.Any())
             {
-                // EVAL: The CTE "CategoryTree" finds all requested categories and their descendants.
-                // Then we join with Products to get the final result filtered by Metadata.
-                string sql = @"
-            WITH CategoryTree AS (
-                -- Base case: Categories passed as parameters
-                SELECT InstanceId 
-                FROM [Instances].[Categories] 
-                WHERE InstanceId IN @CatIds
-                
-                UNION ALL
-                
-                -- Find children of the found categories
-                SELECT cc.CategoryInstanceId
-                FROM [Instances].[CategoryCategories] cc
-                INNER JOIN CategoryTree ct ON cc.InstanceId = ct.InstanceId
-            )
-            SELECT DISTINCT p.* FROM [Instances].[Products] p
-            INNER JOIN [Instances].[ProductCategories] pc ON p.InstanceId = pc.InstanceId
-            ";
-
-                var parameters = new DynamicParameters();
-                parameters.Add("CatIds", categoryIds);
-
-                if (!string.IsNullOrWhiteSpace(attrKey))
+                for (int i = 0; i < request.Attributes.Count; i++)
                 {
-                    sql += " INNER JOIN [Instances].[ProductAttributes] pa ON p.InstanceId = pa.InstanceId ";
+                    var attr = request.Attributes[i];
+                    var keyParam = $"@key{i}";
+                    var valParam = $"@val{i}";
+
+                    sql.Append($@" 
+                AND EXISTS (
+                    SELECT 1 FROM [Instances].[ProductAttributes] pa 
+                    WHERE pa.InstanceId = p.InstanceId 
+                    AND pa.[Key] = {keyParam} 
+                    AND pa.[Value] = {valParam}
+                )");
+
+                    parameters.Add(keyParam, attr.Key);
+                    parameters.Add(valParam, attr.Value);
                 }
+            }
 
-                // Filters
-                List<string> filters = new List<string>();
-
-                if (categoryIds != null && categoryIds.Any())
-                    filters.Add("pc.CategoryInstanceId IN (SELECT InstanceId FROM CategoryTree)");
-
-                if (!string.IsNullOrWhiteSpace(attrKey))
-                {
-                    filters.Add("pa.[Key] = @Key");
-                    filters.Add("pa.[Value] = @Value");
-                    parameters.Add("Key", attrKey);
-                    parameters.Add("Value", attrValue);
-                }
-
-                if (filters.Any())
-                    sql += " WHERE " + string.Join(" AND ", filters);
-
-                return await connection.QueryAsync<Product>(sql, parameters, transaction);
-            });
+            return await _sqlExecutor.ExecuteAsync(async (conn, trans) =>
+                await conn.QueryAsync<Product>(sql.ToString(), parameters, trans));
         }
     }
 }

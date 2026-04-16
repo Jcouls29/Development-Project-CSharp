@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Sparcpoint;
+using Sparcpoint.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,14 +27,10 @@ namespace Interview.Web.Controllers
             return CreatedAtAction(nameof(Create), new { id }, product);
         }
 
-        [HttpGet("search")]
-        public async Task<IActionResult> Search(
-            [FromQuery] int[] categoryIds,
-            [FromQuery] string attrKey = null,
-            [FromQuery] string attrValue = null)
+        [HttpPost("search")]
+        public async Task<IActionResult> Search([FromBody] ProductSearchRequest request)
         {
-            // EVAL: Allow searching by multiple categories (api/products/search?categoryIds=1&categoryIds=2)
-            var results = await _productService.SearchAsync(categoryIds, attrKey, attrValue);
+            var results = await _productService.SearchAsync(request);
 
             if (!results.Any())
                 return NotFound("Cannot find products with the specified criteria.");
