@@ -21,77 +21,62 @@ namespace Interview.Services.Tests
         }
 
         [Fact]
-        public async Task RecordInventoryTransactionAsync_ShouldCallSqlExecutor()
+        public async Task Record_ShouldInvokeExecutor_OnSingleTransaction()
         {
-            // Arrange
-            var request = new InventoryRequest { ProductInstanceId = 1, Quantity = 10, TypeCategory = "In" };
+            var req = new InventoryRequest { ProductInstanceId = 1, Quantity = 10, TypeCategory = "In" };
             _mockSqlExecutor.Setup(x => x.ExecuteAsync(It.IsAny<Func<IDbConnection, IDbTransaction, Task<int>>>()))
                 .ReturnsAsync(1);
 
-            // Act
-            var result = await _inventoryService.RecordInventoryTransactionAsync(request);
+            var id = await _inventoryService.RecordInventoryTransactionAsync(req);
 
-            // Assert
-            Assert.Equal(1, result);
+            Assert.Equal(1, id);
             _mockSqlExecutor.Verify(x => x.ExecuteAsync(It.IsAny<Func<IDbConnection, IDbTransaction, Task<int>>>()), Times.Once);
         }
 
         [Fact]
-        public async Task RecordInventoryTransactionsAsync_ShouldCallSqlExecutor()
+        public async Task Record_ShouldInvokeExecutor_OnBatchRequest()
         {
-            // Arrange
-            var requests = new List<InventoryRequest> { new InventoryRequest { ProductInstanceId = 1, Quantity = 10 } };
+            var batch = new List<InventoryRequest> { new InventoryRequest { ProductInstanceId = 1, Quantity = 10 } };
             _mockSqlExecutor.Setup(x => x.ExecuteAsync(It.IsAny<Func<IDbConnection, IDbTransaction, Task>>()))
                 .Returns(Task.CompletedTask);
 
-            // Act
-            await _inventoryService.RecordInventoryTransactionsAsync(requests);
+            await _inventoryService.RecordInventoryTransactionsAsync(batch);
 
-            // Assert
             _mockSqlExecutor.Verify(x => x.ExecuteAsync(It.IsAny<Func<IDbConnection, IDbTransaction, Task>>()), Times.Once);
         }
 
         [Fact]
-        public async Task GetProductStockAsync_ShouldCallSqlExecutor()
+        public async Task GetProductStock_ShouldReturnDataFromExecutor()
         {
-            // Arrange
             _mockSqlExecutor.Setup(x => x.ExecuteAsync(It.IsAny<Func<IDbConnection, IDbTransaction, Task<decimal>>>()))
                 .ReturnsAsync(100m);
 
-            // Act
-            var result = await _inventoryService.GetProductStockAsync(1);
+            var stock = await _inventoryService.GetProductStockAsync(1);
 
-            // Assert
-            Assert.Equal(100m, result);
+            Assert.Equal(100m, stock);
             _mockSqlExecutor.Verify(x => x.ExecuteAsync(It.IsAny<Func<IDbConnection, IDbTransaction, Task<decimal>>>()), Times.Once);
         }
 
         [Fact]
-        public async Task GetStockByMetadataAsync_ShouldCallSqlExecutor()
+        public async Task GetStockByMetadata_ShouldQueryExecutorWithParams()
         {
-            // Arrange
             _mockSqlExecutor.Setup(x => x.ExecuteAsync(It.IsAny<Func<IDbConnection, IDbTransaction, Task<decimal>>>()))
                 .ReturnsAsync(50m);
 
-            // Act
-            var result = await _inventoryService.GetStockByMetadataAsync("Color", "Red");
+            var stock = await _inventoryService.GetStockByMetadataAsync("Color", "Red");
 
-            // Assert
-            Assert.Equal(50m, result);
+            Assert.Equal(50m, stock);
             _mockSqlExecutor.Verify(x => x.ExecuteAsync(It.IsAny<Func<IDbConnection, IDbTransaction, Task<decimal>>>()), Times.Once);
         }
 
         [Fact]
-        public async Task UndoInventoryTransactionAsync_ShouldCallSqlExecutor()
+        public async Task Undo_ShouldUpdateTransactionState()
         {
-            // Arrange
             _mockSqlExecutor.Setup(x => x.ExecuteAsync(It.IsAny<Func<IDbConnection, IDbTransaction, Task>>()))
                 .Returns(Task.CompletedTask);
 
-            // Act
             await _inventoryService.UndoInventoryTransactionAsync(123);
 
-            // Assert
             _mockSqlExecutor.Verify(x => x.ExecuteAsync(It.IsAny<Func<IDbConnection, IDbTransaction, Task>>()), Times.Once);
         }
     }

@@ -7,6 +7,7 @@ namespace Interview.Services
     public interface IProductService
     {
         Task<int> CreateProductAsync(ProductRequest request);
+        Task UpdateProductAsync(int id, ProductRequest request);
         Task<IEnumerable<ProductResponse>> SearchProductsAsync(ProductSearchRequest request);
     }
 }

@@ -30,66 +30,79 @@ namespace Interview.Services.Tests
         [InlineData(null)]
         [InlineData("")]
         [InlineData(" ")]
-        public async Task CreateProductAsync_ShouldThrowArgumentException_WhenNameIsInvalid(string name)
+        public async Task Create_ShouldFail_On_Empty_Name(string name)
         {
-            var request = CreateValidProductRequest();
-            request.Name = name;
+            var req = CreateValidProductRequest();
+            req.Name = name;
 
-            var exception = await Assert.ThrowsAsync<ArgumentException>(() => _productService.CreateProductAsync(request));
-            Assert.Contains("Product Name is required", exception.Message);
+            var err = await Assert.ThrowsAsync<ArgumentException>(() => _productService.CreateProductAsync(req));
+            Assert.Contains("Product Name is required", err.Message);
         }
 
         [Theory]
         [InlineData(null)]
         [InlineData("")]
         [InlineData(" ")]
-        public async Task CreateProductAsync_ShouldThrowArgumentException_WhenDescriptionIsInvalid(string description)
+        public async Task Create_ShouldFail_On_Empty_Description(string description)
         {
-            var request = CreateValidProductRequest();
-            request.Description = description;
+            var req = CreateValidProductRequest();
+            req.Description = description;
 
-            var exception = await Assert.ThrowsAsync<ArgumentException>(() => _productService.CreateProductAsync(request));
-            Assert.Contains("Product Description is required", exception.Message);
+            var err = await Assert.ThrowsAsync<ArgumentException>(() => _productService.CreateProductAsync(req));
+            Assert.Contains("Product Description is required", err.Message);
         }
 
         [Fact]
-        public async Task CreateProductAsync_ShouldThrowArgumentException_WhenMetadataHasSpecialCharacters()
+        public async Task Create_ShouldReject_SpecialChars_In_Metadata()
         {
-            var request = CreateValidProductRequest();
-            request.Metadata = new Dictionary<string, string> { { "Key!", "Value" } };
+            var req = CreateValidProductRequest();
+            req.Metadata = new Dictionary<string, string> { { "Invalid Key!", "Value" } };
 
-            var exception = await Assert.ThrowsAsync<ArgumentException>(() => _productService.CreateProductAsync(request));
-            Assert.Contains("contains special characters", exception.Message);
+            var err = await Assert.ThrowsAsync<ArgumentException>(() => _productService.CreateProductAsync(req));
+            Assert.Contains("contains special characters", err.Message);
         }
 
         [Fact]
         public async Task CreateProductAsync_ShouldCallSqlExecutor_WhenRequestIsValid()
         {
-            // Arrange
             var request = CreateValidProductRequest();
             _mockSqlExecutor.Setup(x => x.ExecuteAsync(It.IsAny<Func<IDbConnection, IDbTransaction, Task<int>>>()))
                 .ReturnsAsync(1);
 
-            // Act
             var result = await _productService.CreateProductAsync(request);
 
-            // Assert
             Assert.Equal(1, result);
             _mockSqlExecutor.Verify(x => x.ExecuteAsync(It.IsAny<Func<IDbConnection, IDbTransaction, Task<int>>>()), Times.Once);
         }
 
         [Fact]
-        public async Task SearchProductsAsync_ShouldCallSqlExecutor()
+        public async Task Update_ShouldPropagateData_And_RefreshMetadata()
         {
-            // Arrange
+            var req = CreateValidProductRequest();
+            _mockSqlExecutor.Setup(x => x.ExecuteAsync(It.IsAny<Func<IDbConnection, IDbTransaction, Task>>()))
+                .Returns(Task.CompletedTask);
+
+            await _productService.UpdateProductAsync(10, req);
+
+            _mockSqlExecutor.Verify(x => x.ExecuteAsync(It.IsAny<Func<IDbConnection, IDbTransaction, Task>>()), Times.Once);
+        }
+
+        [Fact]
+        public async Task Update_ShouldThrow_If_Request_Is_Null()
+        {
+            await Assert.ThrowsAsync<ArgumentNullException>(() => _productService.UpdateProductAsync(1, null));
+        }
+
+        [Fact]
+        public async Task SearchProductsAsync_ShouldInvokeExecutor()
+        {
             var request = new ProductSearchRequest();
             _mockSqlExecutor.Setup(x => x.ExecuteAsync(It.IsAny<Func<IDbConnection, IDbTransaction, Task<IEnumerable<ProductResponse>>>>()))
                 .ReturnsAsync(new List<ProductResponse>());
 
-            // Act
-            await _productService.SearchProductsAsync(request);
+            var results = await _productService.SearchProductsAsync(request);
 
-            // Assert
+            Assert.NotNull(results);
             _mockSqlExecutor.Verify(x => x.ExecuteAsync(It.IsAny<Func<IDbConnection, IDbTransaction, Task<IEnumerable<ProductResponse>>>>()), Times.Once);
         }
 
@@ -97,11 +110,11 @@ namespace Interview.Services.Tests
         {
             return new ProductRequest
             {
-                Name = "Test Product",
-                Description = "Test Description",
-                ProductImageUris = "http://image.com",
-                ValidSkus = "SKU1,SKU2",
-                Metadata = new Dictionary<string, string>()
+                Name = "Unit Test Product",
+                Description = "A product for testing purposes",
+                ProductImageUris = "http://test.com/img.png",
+                ValidSkus = "TEST-01,TEST-02",
+                Metadata = new Dictionary<string, string> { { "Environment", "Test" } }
             };
         }
     }
