@@ -1,9 +1,11 @@
+using Interview.Web.Data;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Sparcpoint.SqlServer.Abstractions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,11 +26,25 @@ namespace Interview.Web
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+
+            services.AddSingleton<ISqlExecutor, SqlServerExecutor>(sp => new SqlServerExecutor(Configuration.GetConnectionString("Default")));
+
+            services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblies(typeof(Sparcpoint.Features.Products.Commands.Add.ProductAddHandler).Assembly));
+
+            services.AddSwaggerGen();
+
+            services.AddSingleton<DatabaseSeeder>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            // Seed the database
+            var seeder = app.ApplicationServices.GetRequiredService<DatabaseSeeder>();
+            seeder.SeedAsync().GetAwaiter().GetResult();
+            app.UseSwagger();
+            app.UseSwaggerUI();
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
