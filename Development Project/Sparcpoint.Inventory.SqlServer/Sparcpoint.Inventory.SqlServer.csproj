@@ -1,0 +1,29 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- EVAL: netstandard2.0 to reuse the library from any host
+       (Interview.Web netN, a serverless function, a worker, etc). -->
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <RootNamespace>Sparcpoint.Inventory.SqlServer</RootNamespace>
+    <LangVersion>latest</LangVersion>
+    <Nullable>disable</Nullable>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Description>SQL Server implementation of the Sparcpoint Inventory repositories.</Description>
+    <Version>1.0.0</Version>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Sparcpoint.Core\Sparcpoint.Core.csproj" />
+    <ProjectReference Include="..\Sparcpoint.SqlServer.Abstractions\Sparcpoint.SqlServer.Abstractions.csproj" />
+    <ProjectReference Include="..\Sparcpoint.Inventory.Abstractions\Sparcpoint.Inventory.Abstractions.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- EVAL: We declare ALL direct dependencies even if they arrive transitively,
+         to prevent a change in another library from breaking build/pack. -->
+    <PackageReference Include="Dapper" Version="2.0.78" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="3.1.8" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
+  </ItemGroup>
+
+</Project>
