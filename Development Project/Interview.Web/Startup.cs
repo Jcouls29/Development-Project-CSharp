@@ -8,6 +8,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Interview.Services;
+using Sparcpoint.SqlServer.Abstractions;
+using Microsoft.OpenApi.Models;
 
 namespace Interview.Web
 {
@@ -24,6 +27,20 @@ namespace Interview.Web
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "Interview API", Version = "v1" });
+            });
+
+            // Register SQL Executor
+            string connectionString = Configuration.GetConnectionString("DefaultConnection");
+            services.AddSingleton<ISqlExecutor>(new SqlServerExecutor(connectionString));
+
+            // Register Services
+            services.AddScoped<IProductService, ProductService>();
+            services.AddScoped<ICategoryService, CategoryService>();
+            services.AddScoped<IInventoryTransactionService, InventoryTransactionService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -32,6 +49,8 @@ namespace Interview.Web
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+                app.UseSwagger();
+                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Interview API v1"));
             }
             else
             {
@@ -40,7 +59,7 @@ namespace Interview.Web
                 app.UseHsts();
             }
 
-            app.UseHttpsRedirection();
+            // app.UseHttpsRedirection();
             app.UseStaticFiles();
 
             app.UseRouting();
