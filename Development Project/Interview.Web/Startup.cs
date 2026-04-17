@@ -8,6 +8,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Sparcpoint.SqlServer.Abstractions;
+using Interview.Web.Services;
 
 namespace Interview.Web
 {
@@ -24,6 +26,10 @@ namespace Interview.Web
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+
+            string connectionString = Configuration.GetConnectionString("InventoryDb") ?? "Server=(localdb)\\MSSQLLocalDB;Database=SparcpointInventory;Trusted_Connection=True;MultipleActiveResultSets=true";
+            services.AddSingleton<ISqlExecutor>(new SqlServerExecutor(connectionString));
+            services.AddScoped<IInventoryService, InventoryService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
