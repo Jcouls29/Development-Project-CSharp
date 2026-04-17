@@ -2,6 +2,7 @@
 using Sparcpoint.Abstract.Repositories;
 using Sparcpoint.DTOs;
 using Sparcpoint.SqlServer.Abstractions;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -18,56 +19,42 @@ namespace Sparcpoint.Implementations.Repositories
 
         public async Task<int> AddProductAsync(CreateProductRequestDto request)
         {
-            int productId = 0;
-
-            // EVAL: Aseguramos atomicidad
-            await _executor.ExecuteAsync(async (connection, transaction) =>
+            return await _executor.ExecuteAsync<int>(async (connection, transaction) =>
             {
-                // 1. Insert Product
-                string sql = @"
-                INSERT INTO [Instances].[Products] (Name, Description, ProductImageUris, ValidSkus) 
-                VALUES (@Name, @Description, @ImageUris, @Skus); 
-                SELECT CAST(SCOPE_IDENTITY() as int);";
+                string prodSql = @"
+                    INSERT INTO [Instances].[Products] (Name, Description, ProductImageUris, ValidSkus)
+                    VALUES (@Name, @Description, @ImageUris, @Skus);
+                    SELECT SCOPE_IDENTITY();";
 
-                productId = await connection.QuerySingleAsync<int>(sql,
-                    new
-                    {
-                        request.Name,
-                        request.Description,
-                        request.ImageUris,
-                        request.Skus
-                    }, transaction);
+                var productId = Convert.ToInt32(await connection.ExecuteScalarAsync(prodSql, new
+                {
+                    request.Name,
+                    request.Description,
+                    request.ImageUris,
+                    request.Skus
+                }, transaction));
 
-                // 2. Insert Attributes (Metadata)
                 if (request.Attributes != null && request.Attributes.Any())
                 {
-                    string attrSql = @"
-                    INSERT INTO [Instances].[ProductAttributes] (InstanceId, [Key], [Value]) 
-                    VALUES (@productId, @Key, @Value)";
-
+                    string attrSql = "INSERT INTO [Instances].[ProductAttributes] (InstanceId, [Key], [Value]) VALUES (@InstanceId, @Key, @Value)";
                     foreach (var attr in request.Attributes)
                     {
-                        await connection.ExecuteAsync(attrSql,
-                            new { productId, attr.Key, attr.Value }, transaction);
+                        await connection.ExecuteAsync(attrSql, new { InstanceId = productId, attr.Key, attr.Value }, transaction);
                     }
                 }
 
-                // 3. Insert Categories
                 if (request.CategoryIds != null && request.CategoryIds.Any())
                 {
-                    string catSql = @"
-                    INSERT INTO [Instances].[ProductCategories] (InstanceId, CategoryInstanceId) 
-                    VALUES (@productId, @CategoryInstanceId)";
-
+                    string catSql = "INSERT INTO [Instances].[ProductCategories] (InstanceId, CategoryId) VALUES (@InstanceId, @CategoryId)";
                     foreach (var catId in request.CategoryIds)
                     {
-                        await connection.ExecuteAsync(catSql,
-                            new { productId, CategoryInstanceId = catId }, transaction);
+                        await connection.ExecuteAsync(catSql, new { InstanceId = productId, CategoryId = catId }, transaction);
                     }
                 }
-            });
 
-            return productId;
+                return productId;
+            });
         }
+
     }
 }
