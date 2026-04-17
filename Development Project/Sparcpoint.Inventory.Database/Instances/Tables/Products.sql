@@ -9,3 +9,8 @@
 )
 
 GO
+
+CREATE UNIQUE NONCLUSTERED INDEX [UQ_Instances_Products_Name]
+    ON [Instances].[Products] ([Name]);
+
+GO

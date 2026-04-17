@@ -5,13 +5,13 @@ namespace Sparcpoint
     public class ParameterRequiredException : Exception
     {
         public string ParameterName { get; }
-        public ParameterRequiredException(string parameterName) 
+        public ParameterRequiredException(string parameterName)
             : base(FormatMessage(parameterName))
         {
             ParameterName = parameterName;
         }
 
-        public ParameterRequiredException(string parameterName, Exception innerException) 
+        public ParameterRequiredException(string parameterName, Exception innerException)
             : base(FormatMessage(parameterName), innerException)
         {
             ParameterName = parameterName;

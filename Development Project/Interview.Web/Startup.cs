@@ -1,13 +1,13 @@
+using Interview.Application.Abstractions;
+using Interview.Application.Services;
+using Interview.Infrastructure.Sql;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Sparcpoint.SqlServer.Abstractions;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Interview.Web
 {
@@ -24,6 +24,16 @@ namespace Interview.Web
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+
+            var inventoryConnection = Configuration.GetConnectionString("Inventory");
+            if (string.IsNullOrWhiteSpace(inventoryConnection))
+            {
+                throw new InvalidOperationException("Connection string 'Inventory' is not configured.");
+            }
+
+            services.AddSingleton<ISqlExecutor>(_ => new SqlServerExecutor(inventoryConnection));
+            services.AddScoped<IProductRepository, ProductRepository>();
+            services.AddScoped<IProductService, ProductService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
