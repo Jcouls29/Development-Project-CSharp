@@ -9,6 +9,5 @@ namespace Sparcpoint.SqlServer.Abstractions
     {
         Task ExecuteAsync(Func<IDbConnection, IDbTransaction, Task> command);
         Task<T> ExecuteAsync<T>(Func<IDbConnection, IDbTransaction, Task<T>> command);
-        T Execute<T>(Func<IDbConnection, IDbTransaction, T> command);
     }
 }
