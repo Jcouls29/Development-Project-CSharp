@@ -141,7 +141,8 @@ WHERE t.[CompletedTimestamp] IS NULL";
                 var totalCount = await connection.ExecuteScalarAsync<int>(@"
 SELECT COUNT(*)
 FROM [Transactions].[InventoryTransactions]
-WHERE [ProductInstanceId] = @ProductInstanceId;",
+WHERE [ProductInstanceId] = @ProductInstanceId
+  AND [CompletedTimestamp] IS NULL;",
                     new { ProductInstanceId = productInstanceId }, transaction);
 
                 var items = (await connection.QueryAsync<InventoryTransactionModel>(@"
@@ -154,6 +155,7 @@ SELECT
     [TypeCategory]
 FROM [Transactions].[InventoryTransactions]
 WHERE [ProductInstanceId] = @ProductInstanceId
+  AND [CompletedTimestamp] IS NULL
 ORDER BY [StartedTimestamp] DESC
 OFFSET @Offset ROWS FETCH NEXT @PageSize ROWS ONLY;",
                     new { ProductInstanceId = productInstanceId, Offset = offset, PageSize = pageSize }, transaction)).ToList();
