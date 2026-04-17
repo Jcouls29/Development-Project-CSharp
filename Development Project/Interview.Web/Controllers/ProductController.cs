@@ -42,11 +42,17 @@ namespace Interview.Web.Controllers
             return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
         }
 
-        // Search by metadata (match all provided key/value pairs)
+        // EVAL: The ability to search for products by name, category, and metadata criteria.
+        public class SearchRequest { public string Name { get; set; } public List<string> Categories { get; set; } public Dictionary<string, string> Metadata { get; set; } }
+
         [HttpPost("search")]
-        public async Task<IActionResult> SearchByMetadata([FromBody] Dictionary<string, string> metadata)
+        public async Task<IActionResult> Search([FromBody] SearchRequest req)
         {
-            var results = await _service.SearchByMetadataAsync(metadata ?? new Dictionary<string, string>());
+            var name = req?.Name;
+            var categories = req?.Categories ?? new List<string>();
+            var metadata = req?.Metadata ?? new Dictionary<string, string>();
+
+            var results = await _service.SearchAsync(name, categories, metadata);
             return Ok(results);
         }
     }

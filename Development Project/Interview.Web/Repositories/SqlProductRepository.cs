@@ -3,13 +3,12 @@ using Sparcpoint.SqlServer.Abstractions;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace Interview.Web.Repositories
 {
-    // Simple SQL-backed repository that uses ISqlExecutor for database operations.
-    // Metadata and categories are stored as JSON in NVARCHAR(MAX) columns for simplicity.
     public class SqlProductRepository : IProductRepository
     {
         private readonly ISqlExecutor _executor;
@@ -92,7 +91,6 @@ namespace Interview.Web.Repositories
             if (metadataCriteria == null || metadataCriteria.Count == 0)
                 return GetAllAsync();
 
-            // Simple approach: load all products and filter in-memory. Keeps SQL simple for demo purposes.
             return _executor.ExecuteAsync(async (conn, trans) =>
             {
                 var all = new List<Product>();
@@ -125,6 +123,59 @@ namespace Interview.Web.Repositories
             });
         }
 
+        public Task<IEnumerable<Product>> SearchAsync(string name, List<string> categories, Dictionary<string, string> metadataCriteria)
+        {
+            return _executor.ExecuteAsync(async (conn, trans) =>
+            {
+                var results = new List<Product>();
+                using (var cmd = conn.CreateCommand())
+                {
+                    cmd.Transaction = trans;
+                    var sql = new StringBuilder("SELECT Id, Name, CreatedAt, Metadata, Categories, Quantity FROM dbo.Products WHERE 1=1");
+
+                    if (!string.IsNullOrWhiteSpace(name))
+                    {
+                        sql.Append(" AND Name LIKE @Name");
+                        var pName = cmd.CreateParameter(); pName.ParameterName = "@Name"; pName.Value = "%" + name + "%"; cmd.Parameters.Add(pName);
+                    }
+
+                    if (categories != null && categories.Count > 0)
+                    {
+                        sql.Append(" AND (");
+                        for (int i = 0; i < categories.Count; i++)
+                        {
+                            if (i > 0) sql.Append(" OR ");
+                            var paramName = "@cat" + i;
+                            // use OPENJSON to check for a matching value inside the JSON array stored in Categories
+                            sql.Append($"EXISTS (SELECT 1 FROM OPENJSON(Categories) WHERE value = {paramName})");
+                            var p = cmd.CreateParameter(); p.ParameterName = paramName; p.Value = categories[i]; cmd.Parameters.Add(p);
+                        }
+                        sql.Append(")");
+                    }
+
+                    if (metadataCriteria != null && metadataCriteria.Count > 0)
+                    {
+                        var metaIndex = 0;
+                        foreach (var kv in metadataCriteria)
+                        {
+                            var paramName = "@meta" + metaIndex++;
+                            sql.Append($" AND JSON_VALUE(Metadata, '$.{kv.Key}') = {paramName}");
+                            var p = cmd.CreateParameter(); p.ParameterName = paramName; p.Value = kv.Value; cmd.Parameters.Add(p);
+                        }
+                    }
+
+                    cmd.CommandText = sql.ToString();
+
+                    using (var reader = ((System.Data.Common.DbCommand)cmd).ExecuteReader())
+                    {
+                        while (reader.Read()) results.Add(MapReaderToProduct(reader));
+                    }
+                }
+
+                return (IEnumerable<Product>)results;
+            });
+        }
+
         private Product MapReaderToProduct(IDataReader reader)
         {
             var p = new Product();
@@ -141,6 +192,23 @@ namespace Interview.Web.Repositories
             else
             {
                 p.Metadata = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            }
+
+            if (reader.FieldCount > 4 && !reader.IsDBNull(4))
+            {
+                var cats = reader.GetString(4);
+                try { p.Categories = JsonSerializer.Deserialize<List<string>>(cats, _jsonOptions); }
+                catch { p.Categories = new List<string>(); }
+            }
+            else
+            {
+                p.Categories = new List<string>();
+            }
+
+            if (reader.FieldCount > 5 && !reader.IsDBNull(5))
+            {
+                try { p.Quantity = reader.GetInt32(5); }
+                catch { p.Quantity = 0; }
             }
 
             return p;

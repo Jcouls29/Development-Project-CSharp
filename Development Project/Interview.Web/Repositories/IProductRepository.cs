@@ -11,5 +11,6 @@ namespace Interview.Web.Repositories
         Task<IEnumerable<Product>> GetAllAsync();
         Task<Product> GetByIdAsync(Guid id);
         Task<IEnumerable<Product>> SearchByMetadataAsync(Dictionary<string, string> metadataCriteria);
+        Task<IEnumerable<Product>> SearchAsync(string name, List<string> categories, Dictionary<string, string> metadataCriteria);
     }
 }

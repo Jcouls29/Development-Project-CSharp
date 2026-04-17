@@ -36,5 +36,10 @@ namespace Interview.Web.Services
         {
             return _repo.SearchByMetadataAsync(metadataCriteria);
         }
+
+        public Task<IEnumerable<Product>> SearchAsync(string name, List<string> categories, Dictionary<string, string> metadataCriteria)
+        {
+            return _repo.SearchAsync(name, categories, metadataCriteria);
+        }
     }
 }

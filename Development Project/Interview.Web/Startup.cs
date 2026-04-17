@@ -10,6 +10,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Interview.Web.Services;
 using Interview.Web.Repositories;
+using Interview.Web.Middleware;
 
 namespace Interview.Web
 {
@@ -34,6 +35,12 @@ namespace Interview.Web
 
             services.AddSingleton<Interview.Web.Repositories.IProductRepository, Interview.Web.Repositories.SqlProductRepository>();
             services.AddSingleton<IProductService, ProductService>();
+
+            services.AddSingleton<Interview.Web.Repositories.ICategoryRepository, Interview.Web.Repositories.SqlCategoryRepository>();
+            services.AddSingleton<ICategoryService, CategoryService>();
+
+            services.AddSingleton<Interview.Web.Repositories.IInventoryRepository, Interview.Web.Repositories.SqlInventoryRepository>();
+            services.AddSingleton<IInventoryService, InventoryService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -52,6 +59,10 @@ namespace Interview.Web
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
+
+            // Global middlewares
+            app.UseErrorHandling();
+            app.UseRequestLogging();
 
             app.UseRouting();
 
