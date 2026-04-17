@@ -1,13 +1,12 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using Microsoft.OpenApi.Models;
+using Sparcpoint.SqlServer.Abstractions;
+using Sparcpoint.Application.Repositories;
+using Sparcpoint.Infrastructure.Data.Repositories;
 
 namespace Interview.Web
 {
@@ -24,6 +23,30 @@ namespace Interview.Web
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+
+            // Swagger for simple API exploration during the exercise
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "Interview API", Version = "v1" });
+            });
+
+            // CORS - allow everything for local dev / interview demo
+            services.AddCors(options =>
+            {
+                options.AddPolicy("AllowAll", builder => builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
+            });
+
+            // Configure SqlServerOptions from configuration (if present)
+            var sqlOptions = new SqlServerOptions();
+            Configuration.GetSection("SqlServerOptions").Bind(sqlOptions);
+            if (!string.IsNullOrWhiteSpace(sqlOptions.ConnectionString))
+            {
+                services.AddSingleton<ISqlExecutor>(sp => new SqlServerExecutor(sqlOptions.ConnectionString));
+
+                // Register repositories that depend on ISqlExecutor (interfaces live in Sparcpoint.Application)
+                services.AddScoped<IProductRepository, SqlProductRepository>();
+                services.AddScoped<IInventoryRepository, SqlInventoryRepository>();
+            }
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -32,6 +55,8 @@ namespace Interview.Web
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+                app.UseSwagger();
+                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Interview API v1"));
             }
             else
             {
@@ -44,6 +69,8 @@ namespace Interview.Web
             app.UseStaticFiles();
 
             app.UseRouting();
+
+            app.UseCors("AllowAll");
 
             app.UseAuthorization();
 
