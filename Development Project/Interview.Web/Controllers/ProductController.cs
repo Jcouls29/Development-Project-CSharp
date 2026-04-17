@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Sparcpoint.Abstract.Services;
 using Sparcpoint.DTOs;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Interview.Web.Controllers
@@ -37,6 +38,25 @@ namespace Interview.Web.Controllers
                 var request = _mapper.Map<CreateProductRequestDto>(productDto);
                 int productId = await _productService.AddProductAsync(request);
                 return Ok(new { ProductId = productId });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+
+        [HttpGet("search")]
+        public async Task<IActionResult> SearchProducts([FromQuery] ProductSearchDto searchDto)
+        {
+            try
+            {
+                var request = _mapper.Map<ProductSearchRequestDto>(searchDto);
+                var results = await _productService.SearchProductsAsync(request);
+
+                if (results == null || !results.Any())
+                    return NotFound("No products found.");
+
+                return Ok(results);
             }
             catch (Exception ex)
             {

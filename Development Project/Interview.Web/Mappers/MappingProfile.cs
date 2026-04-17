@@ -10,6 +10,7 @@ namespace Interview.Web.Mappers
         {
             CreateMap<ProductAttributeDto, ProductAttributeRequestDto>();
             CreateMap<CreateProductDto, CreateProductRequestDto>();
+            CreateMap<ProductSearchDto, ProductSearchRequestDto>();
         }
     }
 }
