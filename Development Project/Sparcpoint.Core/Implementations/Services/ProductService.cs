@@ -1,32 +1,28 @@
-﻿using Sparcpoint.Abstract.Services;
-using Sparcpoint.Domain;
-using Sparcpoint.SqlServer.Abstractions;
+﻿using Sparcpoint.Abstract.Repositories;
+using Sparcpoint.Abstract.Services;
+using Sparcpoint.DTOs;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
-using System.Windows.Input;
 
 namespace Sparcpoint.Implementations.Services
 {
     public class ProductService : IProductService
     {
-        private readonly ISqlExecutor _sqlExecutor;
+        private readonly IProductRepository _productRepository;
 
-        public ProductService(ISqlExecutor sqlExecutor)
+        public ProductService(IProductRepository productRepository)
         {
-            _sqlExecutor = sqlExecutor;
+            _productRepository = productRepository;
         }
 
-        // TODO: change paramneter to ProductRequest
-        public async Task<int> AddProductAsync(Product request)
+        public async Task<int> AddProductAsync(CreateProductRequestDto request)
         {
-            // TODO: insert product
-            // TODO insert metada
-            // TODO: return productid
-
-            
-
+            var productId = await _productRepository.AddProductAsync(request);
+            if( productId <= 0 )
+            {
+                throw new InvalidOperationException("Failed to create product. The database did not return a valid Instance ID.");
+            }
+            return productId;
         }
     }
 }

@@ -1,9 +1,9 @@
-﻿using Interview.Web.DTOs;
+﻿using AutoMapper;
+using Interview.Web.DTOs;
 using Microsoft.AspNetCore.Mvc;
 using Sparcpoint.Abstract.Services;
+using Sparcpoint.DTOs;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace Interview.Web.Controllers
@@ -11,10 +11,12 @@ namespace Interview.Web.Controllers
     [Route("api/v1/products")]
     public class ProductController : Controller
     {
+        private readonly IMapper _mapper;
         private readonly IProductService _productService;
 
-        public ProductController(IProductService productService)
+        public ProductController(IProductService productService, IMapper mapper)
         {
+            _mapper = mapper;
             _productService = productService;
         }
 
@@ -25,21 +27,20 @@ namespace Interview.Web.Controllers
             return Task.FromResult((IActionResult)Ok(new object[] { }));
         }
 
-        // add product
         [HttpPost]
         public async Task<IActionResult> CreateProduct([FromBody] CreateProductDto productDto)
         {
-            if (productDto == null) return BadRequest("Invalid product.");
+            if (productDto == null) return BadRequest("Invalid product data.");
 
             try
             {
-                return await _productService.AddProductAsync(productDto);
-                
+                var request = _mapper.Map<CreateProductRequestDto>(productDto);
+                int productId = await _productService.AddProductAsync(request);
+                return Ok(new { ProductId = productId });
             }
             catch (Exception ex)
-
             {
-                return StatusCode(500, $"Error interno: {ex.Message}");
+                return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
 

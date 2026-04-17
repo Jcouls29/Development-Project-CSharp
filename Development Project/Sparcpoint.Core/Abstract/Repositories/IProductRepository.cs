@@ -1,11 +1,10 @@
 ﻿using Sparcpoint.DTOs;
 using System.Threading.Tasks;
 
-namespace Sparcpoint.Abstract.Services
+namespace Sparcpoint.Abstract.Repositories
 {
-    public interface IProductService
+    public interface IProductRepository
     {
         Task<int> AddProductAsync(CreateProductRequestDto request);
-
     }
 }
