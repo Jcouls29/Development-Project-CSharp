@@ -6,7 +6,7 @@ namespace Interview.Web.DTOs
     {
         [Required(ErrorMessage = "ProductId required.")]
         [Range(1, int.MaxValue, ErrorMessage = "ProductId must be a valid.")]
-        public int ProductId { get; set; }
+        public int ProductInstanceId { get; set; }
 
         [Required(ErrorMessage = "Quantity required.")]
         public decimal Quantity { get; set; }

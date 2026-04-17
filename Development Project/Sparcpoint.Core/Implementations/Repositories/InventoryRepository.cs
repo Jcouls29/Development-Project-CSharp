@@ -31,7 +31,7 @@ namespace Sparcpoint.Implementations.Repositories
 
                     await connection.ExecuteAsync(sql, new
                     {
-                        ProductInstanceId = update.ProductId,
+                        update.ProductInstanceId,
                         update.Quantity,
                         update.TypeCategory
                     }, transaction);
