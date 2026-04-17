@@ -4,6 +4,8 @@ using Sparcpoint.Core.Models;
 using Microsoft.Extensions.Logging;
 using Sparcpoint.SqlServer.Abstractions;
 using Sparcpoint.Application.Repositories;
+using System.Collections.Generic;
+using System.Data.Common;
 
 namespace Sparcpoint.Infrastructure.Data.Repositories
 {
@@ -18,12 +20,12 @@ namespace Sparcpoint.Infrastructure.Data.Repositories
             _logger = logger;
         }
 
-        public async Task<System.Collections.Generic.IEnumerable<ProductResponseDto>> SearchAsync(
+        public async Task<IEnumerable<ProductResponseDto>> SearchAsync(
             string name,
-            System.Collections.Generic.Dictionary<string, string> metadata = null,
-            System.Collections.Generic.List<string> categories = null)
+            Dictionary<string, string> metadata = null,
+            List<string> categories = null)
         {
-            var results = new System.Collections.Generic.List<ProductResponseDto>();
+            var results = new List<ProductResponseDto>();
 
             await _executor.ExecuteAsync(async (conn, tx) =>
             {
@@ -57,7 +59,7 @@ namespace Sparcpoint.Infrastructure.Data.Repositories
                     if (categories != null && categories.Count > 0)
                     {
                         // build list of params for IN clause
-                        var catParams = new System.Collections.Generic.List<string>();
+                        var catParams = new List<string>();
                         for (int i = 0; i < categories.Count; i++)
                         {
                             var pname = "@cat" + i;
@@ -72,7 +74,7 @@ namespace Sparcpoint.Infrastructure.Data.Repositories
 
                     cmd.CommandText = sql.ToString();
 
-                    using (var reader = await ((System.Data.Common.DbCommand)cmd).ExecuteReaderAsync())
+                    using (var reader = await ((DbCommand)cmd).ExecuteReaderAsync())
                     {
                         while (await reader.ReadAsync())
                         {
@@ -85,6 +87,38 @@ namespace Sparcpoint.Infrastructure.Data.Repositories
             });
 
             return results;
+        }
+
+        public async Task<ProductResponseDto> GetByIdAsync(int id)
+        {
+            try
+            {
+                return await _executor.ExecuteAsync(async (conn, tx) =>
+                {
+                    using (var cmd = conn.CreateCommand())
+                    {
+                        cmd.Transaction = tx;
+                        cmd.CommandText = "SELECT Name FROM [Instances].[Products] WHERE InstanceId = @Id";
+                        var pId = cmd.CreateParameter(); pId.ParameterName = "@Id"; pId.Value = id; cmd.Parameters.Add(pId);
+
+                        using (var reader = await ((DbCommand)cmd).ExecuteReaderAsync())
+                        {
+                            if (await reader.ReadAsync())
+                            {
+                                var nm = reader.IsDBNull(0) ? string.Empty : reader.GetString(0);
+                                return new ProductResponseDto { Id = id, Name = nm };
+                            }
+                        }
+                    }
+
+                    return null;
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger?.LogError(ex, "Failed to get product instance with id {Id}", id);
+                throw;
+            }
         }
 
         public async Task<int> CreateProductAsync(ProductCreateDto dto)
@@ -109,7 +143,7 @@ namespace Sparcpoint.Infrastructure.Data.Repositories
                     var sku = dto.Metadata != null && dto.Metadata.TryGetValue("SKU", out var s) ? s : string.Empty;
                     var pSkus = cmd.CreateParameter(); pSkus.ParameterName = "@ValidSkus"; pSkus.Value = sku ?? string.Empty; cmd.Parameters.Add(pSkus);
 
-                    var result = await ((System.Data.Common.DbCommand)cmd).ExecuteScalarAsync();
+                    var result = await ((DbCommand)cmd).ExecuteScalarAsync();
                     newInstanceId = (result == null || result == DBNull.Value) ? 0 : Convert.ToInt32(result);
                 }
 
@@ -125,7 +159,7 @@ namespace Sparcpoint.Infrastructure.Data.Repositories
                             var pId = cmd.CreateParameter(); pId.ParameterName = "@Id"; pId.Value = newInstanceId; cmd.Parameters.Add(pId);
                             var pKey = cmd.CreateParameter(); pKey.ParameterName = "@Key"; pKey.Value = kv.Key ?? string.Empty; cmd.Parameters.Add(pKey);
                             var pVal = cmd.CreateParameter(); pVal.ParameterName = "@Value"; pVal.Value = kv.Value ?? (object)DBNull.Value; cmd.Parameters.Add(pVal);
-                            await ((System.Data.Common.DbCommand)cmd).ExecuteNonQueryAsync();
+                            await ((DbCommand)cmd).ExecuteNonQueryAsync();
                         }
                     }
                 }
@@ -141,7 +175,7 @@ namespace Sparcpoint.Infrastructure.Data.Repositories
                             cmd.Transaction = tx;
                             cmd.CommandText = "SELECT InstanceId FROM [Instances].[Categories] WHERE [Name] = @Name";
                             var pName = cmd.CreateParameter(); pName.ParameterName = "@Name"; pName.Value = cat ?? string.Empty; cmd.Parameters.Add(pName);
-                            var res = await ((System.Data.Common.DbCommand)cmd).ExecuteScalarAsync();
+                            var res = await ((DbCommand)cmd).ExecuteScalarAsync();
                             if (res != null && res != DBNull.Value)
                             {
                                 categoryId = Convert.ToInt32(res);
@@ -156,7 +190,7 @@ namespace Sparcpoint.Infrastructure.Data.Repositories
                                 cmd.CommandText = "INSERT INTO [Instances].[Categories] ([Name], [Description]) VALUES (@Name, @Desc); SELECT CAST(SCOPE_IDENTITY() AS INT);";
                                 var pName = cmd.CreateParameter(); pName.ParameterName = "@Name"; pName.Value = cat ?? string.Empty; cmd.Parameters.Add(pName);
                                 var pDesc = cmd.CreateParameter(); pDesc.ParameterName = "@Desc"; pDesc.Value = string.Empty; cmd.Parameters.Add(pDesc);
-                                var res = await ((System.Data.Common.DbCommand)cmd).ExecuteScalarAsync();
+                                var res = await ((DbCommand)cmd).ExecuteScalarAsync();
                                 categoryId = (res == null || res == DBNull.Value) ? 0 : Convert.ToInt32(res);
                             }
                         }
@@ -169,7 +203,7 @@ namespace Sparcpoint.Infrastructure.Data.Repositories
                                 cmd.CommandText = "INSERT INTO [Instances].[ProductCategories] (InstanceId, CategoryInstanceId) VALUES (@InstanceId, @CategoryId)";
                                 var pId = cmd.CreateParameter(); pId.ParameterName = "@InstanceId"; pId.Value = newInstanceId; cmd.Parameters.Add(pId);
                                 var pCat = cmd.CreateParameter(); pCat.ParameterName = "@CategoryId"; pCat.Value = categoryId; cmd.Parameters.Add(pCat);
-                                await ((System.Data.Common.DbCommand)cmd).ExecuteNonQueryAsync();
+                                await ((DbCommand)cmd).ExecuteNonQueryAsync();
                             }
                         }
                     }

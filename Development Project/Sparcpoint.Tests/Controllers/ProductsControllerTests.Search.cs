@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using System.Threading.Tasks;
 using Xunit;
 using Interview.Web.Controllers;
 using Sparcpoint.Core.Models;
@@ -13,6 +14,7 @@ namespace Sparcpoint.Tests.Controllers
         class FakeSearchRepo : IProductRepository
         {
             public Task<int> CreateProductAsync(ProductCreateDto dto) => Task.FromResult(0);
+            public Task<ProductResponseDto> GetByIdAsync(int id) => Task.FromResult((ProductResponseDto)null);
             public Task<IEnumerable<ProductResponseDto>> SearchAsync(string name, Dictionary<string, string> metadata = null, List<string> categories = null)
             {
                 var list = new List<ProductResponseDto> { new ProductResponseDto { Id = 7, Name = "Found" } };
@@ -24,7 +26,7 @@ namespace Sparcpoint.Tests.Controllers
         public async Task Search_ReturnsMatchingProducts()
         {
             var repo = new FakeSearchRepo();
-            var controller = new ProductsController(null, repo);
+            var controller = new ProductsController(repo);
 
             var dto = new ProductSearchDto { Name = "Test", Metadata = new Dictionary<string, string> { { "SKU", "123" } }, Categories = new List<string> { "Tools" } };
             var result = await controller.Search(dto) as OkObjectResult;

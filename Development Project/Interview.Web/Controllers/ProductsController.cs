@@ -1,8 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
-using Sparcpoint.SqlServer.Abstractions;
 using Sparcpoint.Core.Models;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using Sparcpoint.Application.Repositories;
 
 namespace Interview.Web.Controllers
 {
@@ -10,13 +10,9 @@ namespace Interview.Web.Controllers
     [Route("api/v1/[controller]")]
     public class ProductsController : ControllerBase
     {
-        private readonly ISqlExecutor _sqlExecutor;
-
-        private readonly Sparcpoint.Application.Repositories.IProductRepository _productRepository;
-
-        public ProductsController(ISqlExecutor sqlExecutor = null, Sparcpoint.Application.Repositories.IProductRepository productRepository = null)
+        private readonly IProductRepository _productRepository;
+        public ProductsController(IProductRepository productRepository = null)
         {
-            _sqlExecutor = sqlExecutor;
             _productRepository = productRepository;
         }
 
@@ -49,10 +45,19 @@ namespace Interview.Web.Controllers
         }
 
         [HttpGet("{id}")]
-        public IActionResult GetById(int id)
+        public async Task<IActionResult> GetById(int id)
         {
-            var response = new ProductResponseDto { Id = id, Name = "(not persisted in this demo)" };
-            return Ok(response);
+            if (id <= 0)
+                return BadRequest();
+
+            if (_productRepository == null)
+                return StatusCode(500, "Product repository not configured.");
+
+            var product = await _productRepository.GetByIdAsync(id);
+            if (product == null)
+                return NotFound();
+
+            return Ok(product);
         }
 
         [HttpPost("search")]
