@@ -1,13 +1,13 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using Sparcpoint.Abstract.Repositories;
+using Sparcpoint.Abstract.Services;
+using Sparcpoint.Implementations.Repositories;
+using Sparcpoint.Implementations.Services;
+using Sparcpoint.SqlServer.Abstractions;
 
 namespace Interview.Web
 {
@@ -23,7 +23,24 @@ namespace Interview.Web
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            string connectionString = Configuration.GetConnectionString("DefaultConnection");
+
             services.AddControllers();
+
+            services.AddAutoMapper(typeof(Startup));
+
+            services.AddSingleton<ISqlExecutor>(new SqlServerExecutor(connectionString));
+            services.Configure<SqlServerOptions>(Configuration.GetSection("SqlServerOptions"));
+
+            // Services
+            services.AddScoped<IProductService, ProductService>();
+            services.AddScoped<IInventoryService, InventoryService>();
+
+
+            //Repositories
+            services.AddScoped<IProductRepository, ProductRepository>();
+            services.AddScoped<IInventoryRepository, InventoryRepository>();
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

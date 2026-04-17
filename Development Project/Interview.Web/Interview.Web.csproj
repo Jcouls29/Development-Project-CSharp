@@ -4,4 +4,13 @@
     <TargetFramework>net8.0</TargetFramework>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="13.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Sparcpoint.Core\Sparcpoint.Core.csproj" />
+    <ProjectReference Include="..\Sparcpoint.SqlServer.Abstractions\Sparcpoint.SqlServer.Abstractions.csproj" />
+  </ItemGroup>
+
 </Project>
