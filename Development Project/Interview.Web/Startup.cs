@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
+using Interview.Web.Repositories.Products;
+using Interview.Web.Services.Products;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -26,6 +28,8 @@ namespace Interview.Web
         {
             string connectionString = Configuration.GetConnectionString("Inventory");
             services.AddScoped<ISqlExecutor>(_ => new SqlServerExecutor(connectionString));
+            services.AddScoped<IProductRepository, ProductRepository>();
+            services.AddScoped<IProductService, ProductService>();
             services.AddControllers();
         }
 
