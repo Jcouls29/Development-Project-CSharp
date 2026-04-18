@@ -192,6 +192,9 @@ publish/
 # in these scripts will be unencrypted
 PublishScripts/
 
+# Local development environment secrets
+dev.env
+
 # NuGet Packages
 *.nupkg
 # NuGet Symbol Packages
