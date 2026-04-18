@@ -242,13 +242,15 @@ AND (
 
         private static async Task PopulateMetadataAsync(DbConnection connection, DbTransaction transaction, List<ProductSearchResultModel> products)
         {
-            var productById = products.ToDictionary(x => x.ProductId);
+            var metadataMap = products.ToDictionary(x => x.ProductId, _ => new List<ProductMetadataModel>());
             using var command = CreateCommand(connection, transaction, @"
 SELECT pa.[InstanceId], pa.[Key], pa.[Value]
 FROM [Instances].[ProductAttributes] pa
+WHERE pa.[InstanceId] IN ({PRODUCT_ID_PARAMS})
 ORDER BY pa.[InstanceId];");
 
-            var metadataMap = products.ToDictionary(x => x.ProductId, _ => new List<ProductMetadataModel>());
+            AddIdListParameters(command, products.Select(x => x.ProductId), "@ProductId", "{PRODUCT_ID_PARAMS}");
+
             using var reader = await command.ExecuteReaderAsync();
             while (await reader.ReadAsync())
             {
@@ -276,7 +278,10 @@ ORDER BY pa.[InstanceId];");
             using var command = CreateCommand(connection, transaction, @"
 SELECT pc.[InstanceId], pc.[CategoryInstanceId]
 FROM [Instances].[ProductCategories] pc
+WHERE pc.[InstanceId] IN ({PRODUCT_ID_PARAMS})
 ORDER BY pc.[InstanceId];");
+
+            AddIdListParameters(command, products.Select(x => x.ProductId), "@ProductId", "{PRODUCT_ID_PARAMS}");
 
             var categoryMap = products.ToDictionary(x => x.ProductId, _ => new HashSet<int>());
             using var reader = await command.ExecuteReaderAsync();
@@ -312,6 +317,21 @@ ORDER BY pc.[InstanceId];");
             {
                 return new List<string> { value };
             }
+        }
+
+        private static void AddIdListParameters(DbCommand command, IEnumerable<int> ids, string parameterPrefix, string placeholder)
+        {
+            var idList = ids.Distinct().ToList();
+            var parameterNames = new List<string>(idList.Count);
+
+            for (int i = 0; i < idList.Count; i++)
+            {
+                string parameterName = $"{parameterPrefix}{i}";
+                parameterNames.Add(parameterName);
+                AddParameter(command, parameterName, DbType.Int32, idList[i]);
+            }
+
+            command.CommandText = command.CommandText.Replace(placeholder, string.Join(", ", parameterNames));
         }
     }
 }
