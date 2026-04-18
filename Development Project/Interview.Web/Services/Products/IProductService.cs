@@ -8,5 +8,8 @@ namespace Interview.Web.Services.Products
     {
         Task<int> AddProductAsync(CreateProductRequest request);
         Task<IReadOnlyList<SearchProductItemResponse>> SearchProductsAsync(string searchText, string metadataKey, string metadataValue, string categoryIdsCsv);
+        Task<AdjustInventoryResponse> AddInventoryAsync(int productId, AdjustInventoryRequest request);
+        Task<AdjustInventoryResponse> RemoveInventoryAsync(int productId, AdjustInventoryRequest request);
+        Task<decimal> GetInventoryCountAsync(int productId);
     }
 }

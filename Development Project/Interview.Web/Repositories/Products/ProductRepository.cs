@@ -74,6 +74,73 @@ namespace Interview.Web.Repositories.Products
             });
         }
 
+        public async Task<ProductInventoryAdjustmentResultModel> AddInventoryTransactionAsync(ProductInventoryAdjustmentModel adjustment)
+        {
+            if (adjustment == null)
+            {
+                throw new ArgumentNullException(nameof(adjustment));
+            }
+
+            return await _sqlExecutor.ExecuteAsync<ProductInventoryAdjustmentResultModel>(async (connection, transaction) =>
+            {
+                var dbConnection = connection as DbConnection;
+                var dbTransaction = transaction as DbTransaction;
+                if (dbConnection == null || dbTransaction == null)
+                {
+                    throw new InvalidOperationException("Expected database connection and transaction.");
+                }
+
+                await EnsureProductsExistAsync(dbConnection, dbTransaction, new[] { adjustment.ProductId });
+
+                int transactionId;
+                using (var command = CreateCommand(dbConnection, dbTransaction, @"
+INSERT INTO [Transactions].[InventoryTransactions] ([ProductInstanceId], [Quantity], [CompletedTimestamp], [TypeCategory])
+VALUES (@ProductInstanceId, @Quantity, SYSUTCDATETIME(), @TypeCategory);
+SELECT CAST(SCOPE_IDENTITY() AS INT);"))
+                {
+                    AddParameter(command, "@ProductInstanceId", DbType.Int32, adjustment.ProductId);
+                    AddParameter(command, "@Quantity", DbType.Decimal, adjustment.Quantity);
+                    AddParameter(command, "@TypeCategory", DbType.String, adjustment.TypeCategory);
+
+                    object result = await command.ExecuteScalarAsync();
+                    if (result == null || result == DBNull.Value)
+                    {
+                        throw new InvalidOperationException("Failed to create inventory transaction.");
+                    }
+
+                    transactionId = Convert.ToInt32(result);
+                }
+
+                decimal currentQuantity = await GetInventoryCountInternalAsync(dbConnection, dbTransaction, adjustment.ProductId);
+                return new ProductInventoryAdjustmentResultModel
+                {
+                    TransactionId = transactionId,
+                    CurrentQuantity = currentQuantity
+                };
+            });
+        }
+
+        public async Task<decimal> GetInventoryCountAsync(int productId)
+        {
+            if (productId <= 0)
+            {
+                throw new ArgumentException("productId must be a positive integer.", nameof(productId));
+            }
+
+            return await _sqlExecutor.ExecuteAsync<decimal>(async (connection, transaction) =>
+            {
+                var dbConnection = connection as DbConnection;
+                var dbTransaction = transaction as DbTransaction;
+                if (dbConnection == null || dbTransaction == null)
+                {
+                    throw new InvalidOperationException("Expected database connection and transaction.");
+                }
+
+                await EnsureProductsExistAsync(dbConnection, dbTransaction, new[] { productId });
+                return await GetInventoryCountInternalAsync(dbConnection, dbTransaction, productId);
+            });
+        }
+
         private static async Task EnsureCategoriesExistAsync(DbConnection connection, DbTransaction transaction, IReadOnlyList<int> categoryIds)
         {
             foreach (int categoryId in categoryIds)
@@ -86,6 +153,22 @@ namespace Interview.Web.Repositories.Products
                 if (exists == null)
                 {
                     throw new ArgumentException($"Category id '{categoryId}' does not exist.", nameof(categoryIds));
+                }
+            }
+        }
+
+        private static async Task EnsureProductsExistAsync(DbConnection connection, DbTransaction transaction, IEnumerable<int> productIds)
+        {
+            foreach (int productId in productIds.Distinct())
+            {
+                using var command = CreateCommand(connection, transaction,
+                    "SELECT TOP 1 1 FROM [Instances].[Products] WHERE [InstanceId] = @ProductId;");
+                AddParameter(command, "@ProductId", DbType.Int32, productId);
+
+                object exists = await command.ExecuteScalarAsync();
+                if (exists == null)
+                {
+                    throw new ArgumentException($"Product id '{productId}' does not exist.", nameof(productIds));
                 }
             }
         }
@@ -332,6 +415,24 @@ ORDER BY pc.[InstanceId];");
             }
 
             command.CommandText = command.CommandText.Replace(placeholder, string.Join(", ", parameterNames));
+        }
+
+        private static async Task<decimal> GetInventoryCountInternalAsync(DbConnection connection, DbTransaction transaction, int productId)
+        {
+            using var command = CreateCommand(connection, transaction, @"
+SELECT ISNULL(SUM([Quantity]), 0)
+FROM [Transactions].[InventoryTransactions]
+WHERE [ProductInstanceId] = @ProductInstanceId
+    AND [CompletedTimestamp] IS NOT NULL;");
+
+            AddParameter(command, "@ProductInstanceId", DbType.Int32, productId);
+            object result = await command.ExecuteScalarAsync();
+            if (result == null || result == DBNull.Value)
+            {
+                return 0m;
+            }
+
+            return Convert.ToDecimal(result);
         }
     }
 }

@@ -8,5 +8,7 @@ namespace Interview.Web.Repositories.Products
     {
         Task<int> AddAsync(ProductCreateModel product);
         Task<IReadOnlyList<ProductSearchResultModel>> SearchAsync(ProductSearchRequestModel request);
+        Task<ProductInventoryAdjustmentResultModel> AddInventoryTransactionAsync(ProductInventoryAdjustmentModel adjustment);
+        Task<decimal> GetInventoryCountAsync(int productId);
     }
 }

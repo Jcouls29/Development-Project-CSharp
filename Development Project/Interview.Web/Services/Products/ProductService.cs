@@ -83,6 +83,26 @@ namespace Interview.Web.Services.Products
                 .ToList();
         }
 
+        public async Task<AdjustInventoryResponse> AddInventoryAsync(int productId, AdjustInventoryRequest request)
+        {
+            return await AdjustInventoryAsync(productId, request, 1m, "add");
+        }
+
+        public async Task<AdjustInventoryResponse> RemoveInventoryAsync(int productId, AdjustInventoryRequest request)
+        {
+            return await AdjustInventoryAsync(productId, request, -1m, "remove");
+        }
+
+        public async Task<decimal> GetInventoryCountAsync(int productId)
+        {
+            if (productId <= 0)
+            {
+                throw new ProductValidationException("productId must be a positive integer.");
+            }
+
+            return await _productRepository.GetInventoryCountAsync(productId);
+        }
+
         private static string ValidateRequiredText(string value, int maxLength, string fieldName)
         {
             if (string.IsNullOrWhiteSpace(value))
@@ -215,6 +235,39 @@ namespace Interview.Web.Services.Products
             }
 
             return ids.Distinct().ToList();
+        }
+
+        private async Task<AdjustInventoryResponse> AdjustInventoryAsync(int productId, AdjustInventoryRequest request, decimal quantitySign, string defaultTypeCategory)
+        {
+            if (productId <= 0)
+            {
+                throw new ProductValidationException("productId must be a positive integer.");
+            }
+
+            if (request == null)
+            {
+                throw new ProductValidationException("Request is required.");
+            }
+
+            if (request.Quantity <= 0)
+            {
+                throw new ProductValidationException("Quantity must be greater than zero.");
+            }
+
+            string typeCategory = NormalizeOptionalText(request.TypeCategory, 32, nameof(request.TypeCategory)) ?? defaultTypeCategory;
+            var adjustment = new ProductInventoryAdjustmentModel
+            {
+                ProductId = productId,
+                Quantity = request.Quantity * quantitySign,
+                TypeCategory = typeCategory
+            };
+
+            var result = await _productRepository.AddInventoryTransactionAsync(adjustment);
+            return new AdjustInventoryResponse
+            {
+                TransactionId = result.TransactionId,
+                CurrentQuantity = result.CurrentQuantity
+            };
         }
     }
 }

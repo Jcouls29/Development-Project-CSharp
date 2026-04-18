@@ -38,4 +38,17 @@ namespace Interview.Web.Models.Products
         public IReadOnlyList<ProductMetadataModel> Metadata { get; set; } = Array.Empty<ProductMetadataModel>();
         public IReadOnlyList<int> CategoryIds { get; set; } = Array.Empty<int>();
     }
+
+    public class ProductInventoryAdjustmentModel
+    {
+        public int ProductId { get; set; }
+        public decimal Quantity { get; set; }
+        public string TypeCategory { get; set; }
+    }
+
+    public class ProductInventoryAdjustmentResultModel
+    {
+        public int TransactionId { get; set; }
+        public decimal CurrentQuantity { get; set; }
+    }
 }

@@ -62,5 +62,63 @@ namespace Interview.Web.Controllers
                 return BadRequest(new { message = ex.Message });
             }
         }
+
+        [HttpPost("{productId:int}/inventory/add")]
+        public async Task<IActionResult> AddInventory(int productId, [FromBody] AdjustInventoryRequest request)
+        {
+            try
+            {
+                var result = await _productService.AddInventoryAsync(productId, request);
+                return Ok(result);
+            }
+            catch (ProductValidationException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
+        [HttpPost("{productId:int}/inventory/remove")]
+        public async Task<IActionResult> RemoveInventory(int productId, [FromBody] AdjustInventoryRequest request)
+        {
+            try
+            {
+                var result = await _productService.RemoveInventoryAsync(productId, request);
+                return Ok(result);
+            }
+            catch (ProductValidationException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
+        [HttpGet("{productId:int}/inventory/count")]
+        public async Task<IActionResult> GetInventoryCount(int productId)
+        {
+            try
+            {
+                decimal quantity = await _productService.GetInventoryCountAsync(productId);
+                return Ok(new ProductInventoryCountResponse
+                {
+                    ProductId = productId,
+                    Quantity = quantity
+                });
+            }
+            catch (ProductValidationException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
     }
 }
