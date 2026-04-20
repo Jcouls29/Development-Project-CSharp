@@ -52,7 +52,7 @@ namespace Interview.Web.Controllers
         }
 
         /** Get Product Endpoint
-         * Example Request: GET /api/v1/products?filter=Name:Test,Color:Azult,Largo:10CM
+         * Example Request: GET /api/v1/products?filter=Name:Test,Color:Blue,Length:10CM
          */
         [HttpGet]
         public async Task<IActionResult> GetProducts(string filter)

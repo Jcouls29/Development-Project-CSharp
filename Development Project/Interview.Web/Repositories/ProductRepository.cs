@@ -102,6 +102,14 @@ namespace Sparcpoint.Implementations.Repositories
                     query += queryProvider.WhereClause;
                     command.CommandText = query;
                     command.Transaction = trans;
+
+                    foreach (var parameter in queryProvider.Parameters)
+                    {
+                        var dbParameter = command.CreateParameter();
+                        dbParameter.ParameterName = parameter.Key;
+                        dbParameter.Value = parameter.Value;
+                        command.Parameters.Add(dbParameter);
+                    }
                     var result = command.ExecuteReader();
                     while (result.Read())
                     {
