@@ -1,0 +1,15 @@
+meta {
+  name: Get Product Count
+  type: http
+  seq: 4
+}
+
+get {
+  url: https://localhost:44387/api/v1/products/count
+  body: none
+  auth: inherit
+}
+
+settings {
+  encodeUrl: true
+}

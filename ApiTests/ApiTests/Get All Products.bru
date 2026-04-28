@@ -1,0 +1,15 @@
+meta {
+  name: Get All Products
+  type: http
+  seq: 1
+}
+
+get {
+  url: https://localhost:44387/api/v1/products
+  body: none
+  auth: inherit
+}
+
+settings {
+  encodeUrl: true
+}

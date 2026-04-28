@@ -1,0 +1,16 @@
+meta {
+  name: Get Product By ID
+  type: http
+  seq: 3
+}
+
+get {
+  url: https://localhost:44387/api/v1/products/4
+  body: none
+  auth: inherit
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
