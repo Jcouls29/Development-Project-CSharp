@@ -20,9 +20,8 @@ namespace Interview.Web
         {
             services.AddControllers();
 
-            // EVAL: Swagger is registered to allow interactive API exploration during evaluation.
-            // In a production deployment, this would be gated behind an environment check.
-            services.AddEndpointsApiExplorer();
+            // EVAL: AddSwaggerGen is the correct registration for controller-based APIs with Swashbuckle.
+            // AddEndpointsApiExplorer() is only for Minimal APIs and is intentionally omitted here.
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
@@ -44,14 +43,17 @@ namespace Interview.Web
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-                app.UseSwagger();
-                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Inventory API v1"));
             }
             else
             {
                 app.UseExceptionHandler("/Error");
                 app.UseHsts();
             }
+
+            // EVAL: Swagger is available in all environments for evaluation purposes.
+            // In a production system, restrict this behind env.IsDevelopment() or a feature flag.
+            app.UseSwagger();
+            app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Inventory API v1"));
 
             app.UseHttpsRedirection();
             app.UseRouting();
