@@ -25,6 +25,27 @@ namespace Interview.Web.Controllers
         /// by supplying ParentCategoryIds. Hierarchy is stored as an adjacency list.
         /// Returns 400 if any ParentCategoryId does not reference an existing category.
         /// </summary>
+        /// <remarks>
+        /// Example (root category):
+        ///
+        ///     POST /api/v1/categories
+        ///     {
+        ///         "name": "Electronics",
+        ///         "description": "Electronic devices and accessories",
+        ///         "parentCategoryIds": [],
+        ///         "attributes": {}
+        ///     }
+        ///
+        /// To nest under an existing category supply its ID in parentCategoryIds:
+        ///
+        ///     {
+        ///         "name": "Smartphones",
+        ///         "description": "Mobile phones and accessories",
+        ///         "parentCategoryIds": [1],
+        ///         "attributes": {}
+        ///     }
+        ///
+        /// </remarks>
         [HttpPost]
         [ProducesResponseType(typeof(int), 201)]
         [ProducesResponseType(400)]

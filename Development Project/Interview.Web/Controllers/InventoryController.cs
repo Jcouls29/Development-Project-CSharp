@@ -24,6 +24,18 @@ namespace Interview.Web.Controllers
         /// <summary>
         /// Adds stock for a single product. Returns the new TransactionId.
         /// </summary>
+        /// <remarks>
+        /// Example:
+        ///
+        ///     POST /api/v1/inventory/1/add
+        ///     {
+        ///         "quantity": 50,
+        ///         "typeCategory": "PURCHASE"
+        ///     }
+        ///
+        /// typeCategory is optional. Common values: PURCHASE, RETURN, ADJUSTMENT
+        ///
+        /// </remarks>
         [HttpPost("{productId:int}/add")]
         [ProducesResponseType(typeof(int), 201)]
         [ProducesResponseType(400)]
@@ -39,6 +51,16 @@ namespace Interview.Web.Controllers
         /// Adds stock for multiple products in a single atomic operation.
         /// All items succeed or all roll back.
         /// </summary>
+        /// <remarks>
+        /// Example:
+        ///
+        ///     POST /api/v1/inventory/batch/add
+        ///     [
+        ///         { "productInstanceId": 1, "quantity": 100, "typeCategory": "PURCHASE" },
+        ///         { "productInstanceId": 2, "quantity": 75, "typeCategory": "PURCHASE" }
+        ///     ]
+        ///
+        /// </remarks>
         [HttpPost("batch/add")]
         [ProducesResponseType(204)]
         [ProducesResponseType(400)]
@@ -51,6 +73,18 @@ namespace Interview.Web.Controllers
         /// <summary>
         /// Removes stock for a single product. Returns the new TransactionId.
         /// </summary>
+        /// <remarks>
+        /// Example:
+        ///
+        ///     POST /api/v1/inventory/1/remove
+        ///     {
+        ///         "quantity": 5,
+        ///         "typeCategory": "SALE"
+        ///     }
+        ///
+        /// typeCategory is optional. Common values: SALE, DAMAGE, ADJUSTMENT
+        ///
+        /// </remarks>
         [HttpPost("{productId:int}/remove")]
         [ProducesResponseType(typeof(int), 201)]
         [ProducesResponseType(400)]
@@ -65,6 +99,16 @@ namespace Interview.Web.Controllers
         /// <summary>
         /// Removes stock for multiple products in a single atomic operation.
         /// </summary>
+        /// <remarks>
+        /// Example:
+        ///
+        ///     POST /api/v1/inventory/batch/remove
+        ///     [
+        ///         { "productInstanceId": 1, "quantity": 10, "typeCategory": "SALE" },
+        ///         { "productInstanceId": 2, "quantity": 5, "typeCategory": "DAMAGE" }
+        ///     ]
+        ///
+        /// </remarks>
         [HttpPost("batch/remove")]
         [ProducesResponseType(204)]
         [ProducesResponseType(400)]

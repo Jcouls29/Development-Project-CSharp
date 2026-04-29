@@ -5,6 +5,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Sparcpoint.Inventory.SqlServer;
+using System;
 
 namespace Interview.Web
 {
@@ -35,6 +36,9 @@ namespace Interview.Web
                     Title = "Inventory Management API",
                     Version = "v1"
                 });
+                var xmlFile = $"{System.Reflection.Assembly.GetExecutingAssembly().GetName().Name}.xml";
+                var xmlPath = System.IO.Path.Combine(AppContext.BaseDirectory, xmlFile);
+                c.IncludeXmlComments(xmlPath);
             });
 
             // EVAL: All inventory repositories are wired via a single extension method.

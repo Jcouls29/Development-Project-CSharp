@@ -26,6 +26,24 @@ namespace Interview.Web.Controllers
         /// Adds a new product with its metadata and category assignments.
         /// Products cannot be deleted once added (by design per requirements).
         /// </summary>
+        /// <remarks>
+        /// Example:
+        ///
+        ///     POST /api/v1/products
+        ///     {
+        ///         "name": "iPhone 15 Pro",
+        ///         "description": "Apple flagship smartphone",
+        ///         "productImageUris": "https://example.com/iphone15.jpg",
+        ///         "validSkus": "IPH15PRO-128,IPH15PRO-256",
+        ///         "attributes": {
+        ///             "Brand": "Apple",
+        ///             "Color": "Black",
+        ///             "SKU": "IPH15PRO-128"
+        ///         },
+        ///         "categoryIds": [1]
+        ///     }
+        ///
+        /// </remarks>
         [HttpPost]
         [ProducesResponseType(typeof(int), 201)]
         [ProducesResponseType(400)]
