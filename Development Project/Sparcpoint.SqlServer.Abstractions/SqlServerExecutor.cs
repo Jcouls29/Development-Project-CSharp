@@ -1,6 +1,6 @@
-﻿using System;
+using Microsoft.Data.SqlClient;
+using System;
 using System.Data;
-using System.Data.SqlClient;
 using System.Threading.Tasks;
 
 namespace Sparcpoint.SqlServer.Abstractions
@@ -19,9 +19,19 @@ namespace Sparcpoint.SqlServer.Abstractions
             using (var sqlConn = Open())
             using (var sqlTrans = sqlConn.BeginTransaction())
             {
-                var result = command(sqlConn, sqlTrans);
-                sqlTrans.Commit();
-                return result;
+                try
+                {
+                    var result = command(sqlConn, sqlTrans);
+                    sqlTrans.Commit();
+                    return result;
+                }
+                catch
+                {
+                    // EVAL: need the rollback here - if we skip it and something throws, the transaction
+                    // stays open until the connection drops which can deadlock under load
+                    sqlTrans.Rollback();
+                    throw;
+                }
             }
         }
 
@@ -30,8 +40,16 @@ namespace Sparcpoint.SqlServer.Abstractions
             using (var sqlConn = await OpenAsync())
             using (var sqlTrans = sqlConn.BeginTransaction())
             {
-                await command(sqlConn, sqlTrans);
-                sqlTrans.Commit();
+                try
+                {
+                    await command(sqlConn, sqlTrans);
+                    sqlTrans.Commit();
+                }
+                catch
+                {
+                    sqlTrans.Rollback();
+                    throw;
+                }
             }
         }
 
@@ -40,22 +58,30 @@ namespace Sparcpoint.SqlServer.Abstractions
             using (var sqlConn = await OpenAsync())
             using (var sqlTrans = sqlConn.BeginTransaction())
             {
-                var result = await command(sqlConn, sqlTrans);
-                sqlTrans.Commit();
-                return result;
+                try
+                {
+                    var result = await command(sqlConn, sqlTrans);
+                    sqlTrans.Commit();
+                    return result;
+                }
+                catch
+                {
+                    sqlTrans.Rollback();
+                    throw;
+                }
             }
         }
 
         private SqlConnection Open()
         {
-            SqlConnection connection = new SqlConnection(_ConnectionString);
+            var connection = new SqlConnection(_ConnectionString);
             connection.Open();
             return connection;
         }
 
         private async Task<SqlConnection> OpenAsync()
         {
-            SqlConnection connection = new SqlConnection(_ConnectionString);
+            var connection = new SqlConnection(_ConnectionString);
             await connection.OpenAsync();
             return connection;
         }

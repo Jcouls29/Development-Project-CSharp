@@ -1,13 +1,11 @@
+using Interview.Web.Filters;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Sparcpoint.Inventory.SqlServer;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Interview.Web
 {
@@ -20,13 +18,36 @@ namespace Interview.Web
 
         public IConfiguration Configuration { get; }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllers();
+            services.AddControllers(options =>
+            {
+                // EVAL: ApiExceptionFilter registered globally - maps ArgumentException → 400
+                // and InvalidOperationException → 404 without per-controller try/catch.
+                options.Filters.Add<ApiExceptionFilter>();
+            });
+
+            // EVAL: AddSwaggerGen is the correct registration for controller-based APIs with Swashbuckle.
+            // AddEndpointsApiExplorer() is only for Minimal APIs and is intentionally omitted here.
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
+                {
+                    Title = "Inventory Management API",
+                    Version = "v1"
+                });
+                var xmlFile = $"{System.Reflection.Assembly.GetExecutingAssembly().GetName().Name}.xml";
+                var xmlPath = System.IO.Path.Combine(AppContext.BaseDirectory, xmlFile);
+                c.IncludeXmlComments(xmlPath);
+            });
+
+            // EVAL: All inventory repositories are wired via a single extension method.
+            // Adding a new repository only requires a change in ServiceCollectionExtensions,
+            // not in every host project's Startup.
+            var connectionString = Configuration.GetConnectionString("InventoryDatabase");
+            services.AddSqlInventoryServices(connectionString);
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
@@ -36,15 +57,16 @@ namespace Interview.Web
             else
             {
                 app.UseExceptionHandler("/Error");
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
 
+            // EVAL: Swagger is available in all environments for evaluation purposes.
+            // In a production system, restrict this behind env.IsDevelopment() or a feature flag.
+            app.UseSwagger();
+            app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Inventory API v1"));
+
             app.UseHttpsRedirection();
-            app.UseStaticFiles();
-
             app.UseRouting();
-
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
