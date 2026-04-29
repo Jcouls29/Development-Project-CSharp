@@ -23,6 +23,7 @@ namespace Interview.Web.Controllers
         /// <summary>
         /// Creates a new category. Optionally nest it under existing parent categories
         /// by supplying ParentCategoryIds. Hierarchy is stored as an adjacency list.
+        /// Returns 400 if any ParentCategoryId does not reference an existing category.
         /// </summary>
         [HttpPost]
         [ProducesResponseType(typeof(int), 201)]

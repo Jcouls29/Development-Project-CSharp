@@ -1,10 +1,16 @@
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace Sparcpoint.Inventory.Abstractions
 {
     public class CreateCategoryRequest
     {
+        [Required]
+        [MaxLength(64)]
         public string Name { get; set; }
+
+        [Required]
+        [MaxLength(256)]
         public string Description { get; set; }
 
         /// <summary>

@@ -10,6 +10,6 @@ namespace Sparcpoint.Inventory.Abstractions
     {
         public string Name { get; set; }
         public IDictionary<string, string> Attributes { get; set; }
-        public IEnumerable<int> CategoryIds { get; set; }
+        public int[] CategoryIds { get; set; }
     }
 }

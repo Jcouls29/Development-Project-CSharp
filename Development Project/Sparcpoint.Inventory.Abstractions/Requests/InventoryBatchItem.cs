@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace Sparcpoint.Inventory.Abstractions
 {
     /// <summary>
@@ -6,6 +8,8 @@ namespace Sparcpoint.Inventory.Abstractions
     public class InventoryBatchItem
     {
         public int ProductInstanceId { get; set; }
+
+        [Range(0.001, double.MaxValue, ErrorMessage = "Quantity must be greater than zero.")]
         public decimal Quantity { get; set; }
         public string TypeCategory { get; set; }
     }

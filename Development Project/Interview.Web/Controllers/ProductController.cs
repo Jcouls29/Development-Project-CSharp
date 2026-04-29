@@ -33,7 +33,9 @@ namespace Interview.Web.Controllers
         public async Task<IActionResult> AddProduct([FromBody] CreateProductRequest request)
         {
             var productId = await _Products.AddAsync(request);
-            return CreatedAtAction(nameof(SearchProducts), new { }, productId);
+            // EVAL: Returning 201 with the new ID. A full REST implementation would point
+            // to a GET /products/{id} endpoint; that endpoint is out of scope for this assignment.
+            return StatusCode(201, productId);
         }
 
         /// <summary>

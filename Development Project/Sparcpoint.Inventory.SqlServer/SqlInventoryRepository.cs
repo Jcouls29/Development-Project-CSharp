@@ -84,6 +84,10 @@ namespace Sparcpoint.Inventory.SqlServer
 
         public async Task<decimal> GetCountAsync(int productInstanceId)
         {
+            // EVAL: CompletedTimestamp IS NOT NULL is the filter for "committed" transactions.
+            // All transactions inserted by this repository set CompletedTimestamp = SYSUTCDATETIME() immediately,
+            // so the filter is effectively "all transactions". The column is preserved to support a future
+            // "pending transaction" workflow where a transaction is created but not yet confirmed.
             return await _Executor.ExecuteAsync(async (conn, tx) =>
                 await conn.ExecuteScalarAsync<decimal>(@"
                     SELECT ISNULL(SUM([Quantity]), 0)
@@ -151,6 +155,19 @@ namespace Sparcpoint.Inventory.SqlServer
             IDbConnection conn, IDbTransaction tx,
             int productInstanceId, decimal quantity, string typeCategory)
         {
+            // EVAL: Guard against FK violation (FK_InventoryTransactions_Products) by checking
+            // product existence within the same transaction before the INSERT. This produces
+            // a clear 400 instead of letting SQL Server throw a 547 FK error as a 500.
+            // Called by AddAsync, RemoveAsync, AddBatchAsync, and RemoveBatchAsync — one check covers all paths.
+            var productExists = await conn.ExecuteScalarAsync<int>(
+                "SELECT COUNT(1) FROM [Instances].[Products] WHERE [InstanceId] = @Id",
+                new { Id = productInstanceId }, tx);
+
+            if (productExists == 0)
+                throw new ArgumentException(
+                    $"Product with InstanceId {productInstanceId} does not exist.",
+                    nameof(productInstanceId));
+
             return await conn.ExecuteScalarAsync<int>(@"
                 INSERT INTO [Transactions].[InventoryTransactions]
                     ([ProductInstanceId], [Quantity], [TypeCategory], [CompletedTimestamp])

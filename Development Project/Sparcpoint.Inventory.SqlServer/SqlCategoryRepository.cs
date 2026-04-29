@@ -34,12 +34,27 @@ namespace Sparcpoint.Inventory.SqlServer
                 // Link to parent categories for hierarchy support
                 if (request.ParentCategoryIds != null)
                 {
-                    foreach (var parentId in request.ParentCategoryIds)
+                    var parentIds = request.ParentCategoryIds.ToList();
+                    if (parentIds.Count > 0)
                     {
-                        await conn.ExecuteAsync(@"
-                            INSERT INTO [Instances].[CategoryCategories] ([InstanceId], [CategoryInstanceId])
-                            VALUES (@InstanceId, @CategoryInstanceId)",
-                            new { InstanceId = categoryId, CategoryInstanceId = parentId }, tx);
+                        // EVAL: Validate all parent IDs exist before inserting to produce a clear
+                        // 400 instead of letting the FK violation surface as a 500.
+                        var existingCount = await conn.ExecuteScalarAsync<int>(
+                            "SELECT COUNT(*) FROM [Instances].[Categories] WHERE [InstanceId] IN @Ids",
+                            new { Ids = parentIds }, tx);
+
+                        if (existingCount != parentIds.Count)
+                            throw new ArgumentException(
+                                "One or more ParentCategoryIds do not reference existing categories.",
+                                nameof(request.ParentCategoryIds));
+
+                        foreach (var parentId in parentIds)
+                        {
+                            await conn.ExecuteAsync(@"
+                                INSERT INTO [Instances].[CategoryCategories] ([InstanceId], [CategoryInstanceId])
+                                VALUES (@InstanceId, @CategoryInstanceId)",
+                                new { InstanceId = categoryId, CategoryInstanceId = parentId }, tx);
+                        }
                     }
                 }
 

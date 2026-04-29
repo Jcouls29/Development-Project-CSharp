@@ -1,3 +1,4 @@
+using Interview.Web.Filters;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -18,7 +19,12 @@ namespace Interview.Web
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllers();
+            services.AddControllers(options =>
+            {
+                // EVAL: ApiExceptionFilter registered globally — maps ArgumentException → 400
+                // and InvalidOperationException → 404 without per-controller try/catch.
+                options.Filters.Add<ApiExceptionFilter>();
+            });
 
             // EVAL: AddSwaggerGen is the correct registration for controller-based APIs with Swashbuckle.
             // AddEndpointsApiExplorer() is only for Minimal APIs and is intentionally omitted here.

@@ -61,12 +61,27 @@ namespace Sparcpoint.Inventory.SqlServer
                 // Link product to categories
                 if (request.CategoryIds != null)
                 {
-                    foreach (var categoryId in request.CategoryIds)
+                    var categoryIds = request.CategoryIds.ToList();
+                    if (categoryIds.Count > 0)
                     {
-                        await conn.ExecuteAsync(@"
-                            INSERT INTO [Instances].[ProductCategories] ([InstanceId], [CategoryInstanceId])
-                            VALUES (@InstanceId, @CategoryInstanceId)",
-                            new { InstanceId = productId, CategoryInstanceId = categoryId }, tx);
+                        // EVAL: Validate all category IDs exist before inserting to produce a 400
+                        // instead of FK_ProductCategories_Categories bubbling up as a 500.
+                        var existingCount = await conn.ExecuteScalarAsync<int>(
+                            "SELECT COUNT(*) FROM [Instances].[Categories] WHERE [InstanceId] IN @Ids",
+                            new { Ids = categoryIds }, tx);
+
+                        if (existingCount != categoryIds.Count)
+                            throw new ArgumentException(
+                                "One or more CategoryIds do not reference existing categories.",
+                                nameof(request.CategoryIds));
+
+                        foreach (var categoryId in categoryIds)
+                        {
+                            await conn.ExecuteAsync(@"
+                                INSERT INTO [Instances].[ProductCategories] ([InstanceId], [CategoryInstanceId])
+                                VALUES (@InstanceId, @CategoryInstanceId)",
+                                new { InstanceId = productId, CategoryInstanceId = categoryId }, tx);
+                        }
                     }
                 }
 
@@ -124,6 +139,9 @@ namespace Sparcpoint.Inventory.SqlServer
                     parameters.Add("CategoryIds", filter.CategoryIds);
                 }
 
+                // EVAL: With no filter criteria, this query returns the full product catalog.
+                // For large catalogs, a caller should supply at least one filter or use pagination.
+                // Pagination (TOP/OFFSET-FETCH) is the recommended extension point here.
                 var products = (await conn.QueryAsync<Product>(sql.ToString(), parameters, tx)).ToList();
 
                 // Load attributes and category links for all returned products in two bulk queries

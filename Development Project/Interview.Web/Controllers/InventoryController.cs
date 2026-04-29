@@ -78,21 +78,15 @@ namespace Interview.Web.Controllers
         /// Deletes a specific transaction, effectively undoing its inventory effect.
         /// EVAL: Deleting the row is the undo mechanism — cleaner than a compensating transaction
         /// because it leaves no audit noise for a user-initiated correction.
+        /// Returns 404 if the transaction does not exist (handled by ApiExceptionFilter).
         /// </summary>
         [HttpDelete("transactions/{transactionId:int}")]
         [ProducesResponseType(204)]
         [ProducesResponseType(404)]
         public async Task<IActionResult> DeleteTransaction([FromRoute] int transactionId)
         {
-            try
-            {
-                await _Inventory.DeleteTransactionAsync(transactionId);
-                return NoContent();
-            }
-            catch (InvalidOperationException)
-            {
-                return NotFound();
-            }
+            await _Inventory.DeleteTransactionAsync(transactionId);
+            return NoContent();
         }
 
         /// <summary>
@@ -137,18 +131,4 @@ namespace Interview.Web.Controllers
         }
     }
 
-    /// <summary>
-    /// Request body for a single-product inventory adjustment.
-    /// </summary>
-    public class InventoryAdjustRequest
-    {
-        /// <summary>Must be a positive value regardless of operation direction.</summary>
-        public decimal Quantity { get; set; }
-
-        /// <summary>
-        /// Optional classification (e.g. "SALE", "RETURN", "ADJUSTMENT").
-        /// Maps to Transactions.InventoryTransactions.TypeCategory.
-        /// </summary>
-        public string TypeCategory { get; set; }
-    }
 }
