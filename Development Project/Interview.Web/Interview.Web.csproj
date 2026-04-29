@@ -4,4 +4,16 @@
     <TargetFramework>net8.0</TargetFramework>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Moq" Version="4.20.72" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="10.1.7" />
+    <PackageReference Include="Swashbuckle.AspNetCore.Swagger" Version="10.1.7" />
+    <PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" Version="10.1.7" />
+    <PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" Version="10.1.7" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Sparcpoint.Core\Sparcpoint.Core.csproj" />
+  </ItemGroup>
+
 </Project>
