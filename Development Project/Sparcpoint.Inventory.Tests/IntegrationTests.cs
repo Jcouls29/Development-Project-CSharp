@@ -1,6 +1,7 @@
 using Sparcpoint.Inventory.Abstractions;
 using Sparcpoint.Inventory.SqlServer;
 using Sparcpoint.SqlServer.Abstractions;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Transactions;
@@ -23,8 +24,11 @@ namespace Sparcpoint.Inventory.Tests
     [Trait("Category", "Integration")]
     public class IntegrationTests
     {
-        private const string ConnectionString =
-            "Server=(localdb)\\MSSQLLocalDB;Database=SparcpointInventory;Trusted_Connection=True;TrustServerCertificate=True;";
+        // EVAL: connection string pulled from env var so CI/CD or other environments can override it
+        // without touching the code - falls back to LocalDB for local dev
+        private static readonly string ConnectionString =
+            Environment.GetEnvironmentVariable("INVENTORY_TEST_DB")
+            ?? "Server=(localdb)\\MSSQLLocalDB;Database=SparcpointInventory;Trusted_Connection=True;TrustServerCertificate=True;";
 
         // -----------------------------------------------------------------------------------------
         // Test 1: Create a product with a known attribute, then verify SearchAsync finds it
