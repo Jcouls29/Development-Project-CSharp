@@ -10,9 +10,8 @@ using System.Threading.Tasks;
 namespace Sparcpoint.Inventory.SqlServer
 {
     /// <summary>
-    /// EVAL: Dapper is chosen over EF Core deliberately — the schema uses EAV (ProductAttributes)
-    /// and dynamic WHERE clause composition that benefit from explicit SQL control.
-    /// Dapper gives full visibility into every query sent to the database.
+    /// EVAL: went with Dapper instead of EF Core because the EAV schema and dynamic WHERE building
+    /// would get messy with an ORM - easier to just write the SQL directly
     /// </summary>
     public class SqlProductRepository : IProductRepository
     {
@@ -45,8 +44,7 @@ namespace Sparcpoint.Inventory.SqlServer
                     }, tx);
 
                 // Insert arbitrary metadata attributes
-                // EVAL: Iterated inserts here are acceptable for write operations.
-                // For bulk product imports, a TVP (Table-Valued Parameter) would be more efficient.
+                // EVAL: row-by-row inserts are fine for normal writes - for bulk imports a TVP would be faster
                 if (request.Attributes != null)
                 {
                     foreach (var attr in request.Attributes)
@@ -64,8 +62,8 @@ namespace Sparcpoint.Inventory.SqlServer
                     var categoryIds = request.CategoryIds.ToList();
                     if (categoryIds.Count > 0)
                     {
-                        // EVAL: Validate all category IDs exist before inserting to produce a 400
-                        // instead of FK_ProductCategories_Categories bubbling up as a 500.
+                        // EVAL: validate category IDs before inserting so we return a 400 instead of
+                        // letting the FK violation (FK_ProductCategories_Categories) blow up as a 500
                         var existingCount = await conn.ExecuteScalarAsync<int>(
                             "SELECT COUNT(*) FROM [Instances].[Categories] WHERE [InstanceId] IN @Ids",
                             new { Ids = categoryIds }, tx);
@@ -93,56 +91,88 @@ namespace Sparcpoint.Inventory.SqlServer
         {
             return await _Executor.ExecuteAsync(async (conn, tx) =>
             {
-                var sql = new StringBuilder(@"
-                    SELECT p.[InstanceId], p.[Name], p.[Description], p.[ProductImageUris], p.[ValidSkus], p.[CreatedTimestamp]
-                    FROM [Instances].[Products] p
-                    WHERE 1=1");
+                // EVAL: SqlServerQueryProvider handles WHERE and ORDER BY - SELECT/FROM is hardcoded
+                // because the provider has no API for those clauses, it just adds to a base query.
+                // Name LIKE uses Where() + AddParameter() because WhereEquals generates "=" not LIKE.
+                // CategoryIds and EAV filters use raw Where() with composed subquery strings because
+                // the provider's WhereExists formats as "{col} EXISTS {expr}" which isn't valid SQL here.
+                // GetNextParameterName() keeps parameter names unique across the whole query and
+                // AddParameter() registers each value so provider.Parameters has the full bag for Dapper.
+                var provider = SqlServerQueryProvider.Empty;
 
-                var parameters = new DynamicParameters();
-
-                // Name filter: partial match
+                // Name filter: partial match (LIKE, not equality WhereEquals does not apply)
                 if (!string.IsNullOrWhiteSpace(filter?.Name))
                 {
-                    sql.Append(" AND p.[Name] LIKE @Name");
-                    parameters.Add("Name", $"%{filter.Name}%");
+                    provider.Where("p.[Name] LIKE @Name");
+                    provider.AddParameter("Name", $"%{filter.Name}%");
                 }
 
-                // EVAL: Each attribute filter becomes an EXISTS subquery rather than a JOIN.
-                // Reason: a JOIN on EAV tables causes row multiplication — one product with
-                // N attributes matching M filter criteria would produce N*M rows before DISTINCT.
-                // EXISTS is cleaner and more predictable in its query plan.
+                // EVAL: each attribute filter is an EXISTS subquery, not a JOIN - joining on EAV tables
+                // causes row multiplication (N attributes * M filter criteria before DISTINCT), EXISTS
+                // is cleaner and has a more predictable query plan.
+                // Key and val get different numeric suffixes from GetNextParameterName() - that's on
+                // purpose so every param name is globally unique. The table alias uses just the key's
+                // suffix (via Substring) as the per-iteration discriminator, val suffix only shows up
+                // as a param name so there's no conflict.
                 if (filter?.Attributes != null)
                 {
-                    int attrIndex = 0;
                     foreach (var attr in filter.Attributes)
                     {
-                        var keyParam = $"AttrKey{attrIndex}";
-                        var valParam = $"AttrVal{attrIndex}";
-                        sql.Append($@" AND EXISTS (
-                            SELECT 1 FROM [Instances].[ProductAttributes] pa{attrIndex}
-                            WHERE pa{attrIndex}.[InstanceId] = p.[InstanceId]
-                              AND pa{attrIndex}.[Key] = @{keyParam}
-                              AND pa{attrIndex}.[Value] = @{valParam})");
-                        parameters.Add(keyParam, attr.Key);
-                        parameters.Add(valParam, attr.Value);
-                        attrIndex++;
+                        var keyParam = provider.GetNextParameterName("AttrKey");  // e.g. "AttrKey0"
+                        var valParam = provider.GetNextParameterName("AttrVal");  // e.g. "AttrVal1"
+                        var alias = keyParam.Substring("AttrKey".Length);         // e.g. "0" - unique per iteration
+                        provider.Where($@"EXISTS (
+                            SELECT 1 FROM [Instances].[ProductAttributes] pa{alias}
+                            WHERE pa{alias}.[InstanceId] = p.[InstanceId]
+                              AND pa{alias}.[Key] = @{keyParam}
+                              AND pa{alias}.[Value] = @{valParam})");
+                        provider.AddParameter(keyParam, attr.Key);
+                        provider.AddParameter(valParam, attr.Value);
                     }
                 }
 
-                // Category filter: product must belong to at least one of the specified categories
+                // Category filter: product must belong to at least one of the specified categories.
+                // The IN list is passed as a parameter; Dapper expands int[] to an IN clause natively.
                 if (filter?.CategoryIds != null && filter.CategoryIds.Any())
                 {
-                    sql.Append(@" AND EXISTS (
+                    provider.Where(@"EXISTS (
                         SELECT 1 FROM [Instances].[ProductCategories] pc
                         WHERE pc.[InstanceId] = p.[InstanceId]
                           AND pc.[CategoryInstanceId] IN @CategoryIds)");
-                    parameters.Add("CategoryIds", filter.CategoryIds);
+                    provider.AddParameter("CategoryIds", filter.CategoryIds);
                 }
 
-                // EVAL: With no filter criteria, this query returns the full product catalog.
-                // For large catalogs, a caller should supply at least one filter or use pagination.
-                // Pagination (TOP/OFFSET-FETCH) is the recommended extension point here.
-                var products = (await conn.QueryAsync<Product>(sql.ToString(), parameters, tx)).ToList();
+                // ORDER BY via the provider so the clause is managed consistently
+                provider.OrderByAscending("[Name]");
+
+                var sqlBase = @"
+                    SELECT p.[InstanceId], p.[Name], p.[Description], p.[ProductImageUris], p.[ValidSkus], p.[CreatedTimestamp]
+                    FROM [Instances].[Products] p";
+
+                var sqlBuilder = new StringBuilder(sqlBase);
+                sqlBuilder.Append($" {provider.WhereClause}");
+                sqlBuilder.Append($" {provider.OrderByClause}");
+
+                // EVAL: OFFSET-FETCH needs ORDER BY which is guaranteed above. Pagination only kicks in
+                // when both Page and PageSize are supplied - if only one is given we ignore it and return
+                // everything. PageSize is clamped to 200 instead of throwing because that's friendlier
+                // for clients that pass a huge value - request stays valid and the DB is protected.
+                if (filter?.Page != null && filter?.PageSize != null)
+                {
+                    // EVAL: Page < 1 produces a negative OFFSET which is a SQL error, so we throw
+                    // instead of clamping - this is always a caller bug, not just an oversized value
+                    if (filter.Page < 1)
+                        throw new ArgumentOutOfRangeException(nameof(filter.Page), "Page must be >= 1.");
+
+                    var pageSize = Math.Min(filter.PageSize.Value, 200);
+                    provider.AddParameter("Page", filter.Page.Value);
+                    provider.AddParameter("PageSize", pageSize);
+                    sqlBuilder.Append(" OFFSET (@Page - 1) * @PageSize ROWS FETCH NEXT @PageSize ROWS ONLY");
+                }
+
+                // provider.Parameters returns a defensive copy (Dictionary<string, object>).
+                // Dapper accepts IDictionary<string, object> directly - no DynamicParameters wrapper needed.
+                var products = (await conn.QueryAsync<Product>(sqlBuilder.ToString(), provider.Parameters, tx)).ToList();
 
                 // Load attributes and category links for all returned products in two bulk queries
                 // to avoid N+1 queries

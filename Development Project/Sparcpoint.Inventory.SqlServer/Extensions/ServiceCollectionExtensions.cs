@@ -6,9 +6,8 @@ using System;
 namespace Sparcpoint.Inventory.SqlServer
 {
     /// <summary>
-    /// EVAL: Extension method pattern keeps Startup.cs clean and makes the inventory
-    /// feature a single line of registration that any host project can call.
-    /// New repositories added in the future only require changes here.
+    /// EVAL: keeps Startup.cs clean - the whole inventory feature is one line from any host project.
+    /// New repositories just get added here, nothing else to touch.
     /// </summary>
     public static class ServiceCollectionExtensions
     {

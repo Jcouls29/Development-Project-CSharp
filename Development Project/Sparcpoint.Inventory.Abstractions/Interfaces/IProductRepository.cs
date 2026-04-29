@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 namespace Sparcpoint.Inventory.Abstractions
 {
     /// <summary>
-    /// EVAL: Repository pattern — isolates data access behind a clean interface,
+    /// EVAL: Repository pattern - isolates data access behind a clean interface,
     /// allowing SQL Server to be swapped for another store without touching callers.
     /// </summary>
     public interface IProductRepository

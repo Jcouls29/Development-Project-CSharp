@@ -8,9 +8,8 @@ using Xunit;
 
 namespace Sparcpoint.Inventory.Tests
 {
-    // EVAL: Unit tests use Moq to isolate repositories from a real SQL Server instance.
-    // These tests validate guard clauses and request validation.
-    // Integration tests (hitting a real DB) would be the next layer.
+    // EVAL: using Moq to keep repos isolated from a real SQL Server instance - these just cover
+    // guard clauses and input validation, integration tests handle actual query correctness
     public class SqlProductRepositoryTests
     {
         [Fact]

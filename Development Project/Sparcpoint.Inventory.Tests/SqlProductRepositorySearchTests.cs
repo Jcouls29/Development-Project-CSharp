@@ -10,9 +10,8 @@ using Xunit;
 
 namespace Sparcpoint.Inventory.Tests
 {
-    // EVAL: These tests verify that SearchAsync delegates to the executor and
-    // correctly passes filter state. SQL execution is mocked — integration tests
-    // would be the next layer to verify actual query correctness against the DB.
+    // EVAL: these verify SearchAsync delegates to the executor and passes filter state correctly -
+    // SQL is mocked here, integration tests handle actual query correctness against the DB
     public class SqlProductRepositorySearchTests
     {
         [Fact]

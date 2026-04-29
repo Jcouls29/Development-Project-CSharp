@@ -18,7 +18,7 @@ namespace Sparcpoint.Inventory.Abstractions
         public string ValidSkus { get; set; }
         public DateTime CreatedTimestamp { get; set; }
 
-        // EVAL: Arbitrary metadata — loaded separately after the main product query
+        // EVAL: Arbitrary metadata - loaded separately after the main product query
         // to avoid a Cartesian join explosion on multi-attribute products.
         public List<ProductAttribute> Attributes { get; set; } = new List<ProductAttribute>();
         public List<int> CategoryIds { get; set; } = new List<int>();

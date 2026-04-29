@@ -14,7 +14,7 @@ namespace Sparcpoint.Inventory.Abstractions
         public string Description { get; set; }
 
         /// <summary>
-        /// Parent category IDs — supports hierarchical categorization.
+        /// Parent category IDs supports hierarchical categorization.
         /// Stored in Instances.CategoryCategories.
         /// </summary>
         public IEnumerable<int> ParentCategoryIds { get; set; } = new List<int>();

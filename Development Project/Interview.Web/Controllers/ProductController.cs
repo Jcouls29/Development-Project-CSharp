@@ -9,9 +9,8 @@ namespace Interview.Web.Controllers
     /// <summary>
     /// Manages product catalog operations: creating and searching products.
     /// </summary>
-    // EVAL: [ApiController] enables automatic model validation (400 on invalid requests)
-    // and removes the need for explicit [FromBody] on complex POST parameters.
-    // ControllerBase is used instead of Controller — no Razor View support needed for a pure API.
+    // EVAL: [ApiController] gives us automatic model validation (400 on bad requests) and drops the
+    // need for explicit [FromBody] on POST params. ControllerBase because there's no Razor views here.
     [ApiController]
     [Route("api/v1/products")]
     public class ProductController : ControllerBase
@@ -33,8 +32,8 @@ namespace Interview.Web.Controllers
         public async Task<IActionResult> AddProduct([FromBody] CreateProductRequest request)
         {
             var productId = await _Products.AddAsync(request);
-            // EVAL: Returning 201 with the new ID. A full REST implementation would point
-            // to a GET /products/{id} endpoint; that endpoint is out of scope for this assignment.
+            // EVAL: returning 201 with the new ID - a full REST impl would return a Location header
+            // pointing to GET /products/{id} but that's out of scope here
             return StatusCode(201, productId);
         }
 
@@ -43,25 +42,32 @@ namespace Interview.Web.Controllers
         /// All supplied fields are combined with AND semantics.
         /// </summary>
         /// <param name="name">Optional partial name match (case-insensitive LIKE).</param>
-        /// <param name="categoryIds">Optional category IDs — product must belong to at least one.</param>
+        /// <param name="categoryIds">Optional category IDs - product must belong to at least one.</param>
         /// <param name="attributeKey">Optional metadata key to filter by.</param>
         /// <param name="attributeValue">Optional metadata value to filter by (paired with attributeKey).</param>
+        /// <param name="page">Optional 1-based page number. Requires pageSize to activate pagination.</param>
+        /// <param name="pageSize">Optional page size (max 200). Requires page to activate pagination.</param>
         [HttpGet("search")]
         [ProducesResponseType(typeof(IEnumerable<Product>), 200)]
+        [ProducesResponseType(400)]
         public async Task<IActionResult> SearchProducts(
             [FromQuery] string name = null,
             [FromQuery] int[] categoryIds = null,
             [FromQuery] string attributeKey = null,
-            [FromQuery] string attributeValue = null)
+            [FromQuery] string attributeValue = null,
+            [FromQuery] int? page = null,
+            [FromQuery] int? pageSize = null)
         {
             var filter = new ProductSearchFilter
             {
                 Name = name,
-                CategoryIds = categoryIds?.Length > 0 ? categoryIds : null
+                CategoryIds = categoryIds?.Length > 0 ? categoryIds : null,
+                Page = page,
+                PageSize = pageSize
             };
 
-            // EVAL: Single key/value attribute filter via query string for simplicity.
-            // A production API would use a POST body for richer multi-attribute searches.
+            // EVAL: single key/value attribute filter via query string for simplicity - a proper
+            // production API would take a POST body for richer multi-attribute searches
             if (!string.IsNullOrWhiteSpace(attributeKey) && !string.IsNullOrWhiteSpace(attributeValue))
             {
                 filter.Attributes = new Dictionary<string, string>

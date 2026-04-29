@@ -37,8 +37,8 @@ namespace Sparcpoint.Inventory.SqlServer
                     var parentIds = request.ParentCategoryIds.ToList();
                     if (parentIds.Count > 0)
                     {
-                        // EVAL: Validate all parent IDs exist before inserting to produce a clear
-                        // 400 instead of letting the FK violation surface as a 500.
+                        // EVAL: validate parent IDs before inserting so we return a 400 instead of
+                        // letting the FK violation blow up as a 500
                         var existingCount = await conn.ExecuteScalarAsync<int>(
                             "SELECT COUNT(*) FROM [Instances].[Categories] WHERE [InstanceId] IN @Ids",
                             new { Ids = parentIds }, tx);

@@ -74,9 +74,9 @@ namespace Sparcpoint.Inventory.Tests
         public async Task GetAllAsync_DelegatesToExecutor()
         {
             var mockExecutor = new Mock<ISqlExecutor>();
-            // EVAL: The setup type must match the inferred T in ExecuteAsync<T>.
-            // GetAllAsync calls .ToList() internally, so T = List<Category>, not IEnumerable<Category>.
-            // Using IEnumerable<Category> causes Moq to miss the setup and return null.
+            // EVAL: setup type must match the actual T in ExecuteAsync<T> - GetAllAsync calls .ToList()
+            // internally so T is List<Category> not IEnumerable<Category>, using the wrong one makes
+            // Moq miss the setup and return null
             mockExecutor
                 .Setup(e => e.ExecuteAsync(It.IsAny<Func<IDbConnection, IDbTransaction, Task<System.Collections.Generic.List<Category>>>>()))
                 .ReturnsAsync(new System.Collections.Generic.List<Category>());

@@ -21,7 +21,7 @@ namespace Interview.Web
         {
             services.AddControllers(options =>
             {
-                // EVAL: ApiExceptionFilter registered globally — maps ArgumentException → 400
+                // EVAL: ApiExceptionFilter registered globally - maps ArgumentException → 400
                 // and InvalidOperationException → 404 without per-controller try/catch.
                 options.Filters.Add<ApiExceptionFilter>();
             });

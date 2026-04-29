@@ -32,7 +32,7 @@ namespace Sparcpoint.Inventory.SqlServer
         {
             if (items == null) throw new ArgumentNullException(nameof(items));
 
-            // EVAL: All batch items share a single transaction — either all succeed or all roll back.
+            // EVAL: all batch items run in one transaction - all succeed or all roll back
             await _Executor.ExecuteAsync(async (conn, tx) =>
             {
                 foreach (var item in items)
@@ -49,7 +49,7 @@ namespace Sparcpoint.Inventory.SqlServer
             if (quantity <= 0)
                 throw new ArgumentOutOfRangeException(nameof(quantity), "Quantity to remove must be positive.");
 
-            // Store removals as negative quantities — net SUM gives the true on-hand count.
+            // Store removals as negative quantities - net SUM gives the true on-hand count.
             return await _Executor.ExecuteAsync(async (conn, tx) =>
                 await InsertTransactionAsync(conn, tx, productInstanceId, -quantity, typeCategory));
         }
@@ -84,10 +84,9 @@ namespace Sparcpoint.Inventory.SqlServer
 
         public async Task<decimal> GetCountAsync(int productInstanceId)
         {
-            // EVAL: CompletedTimestamp IS NOT NULL is the filter for "committed" transactions.
-            // All transactions inserted by this repository set CompletedTimestamp = SYSUTCDATETIME() immediately,
-            // so the filter is effectively "all transactions". The column is preserved to support a future
-            // "pending transaction" workflow where a transaction is created but not yet confirmed.
+            // EVAL: CompletedTimestamp IS NOT NULL filters for committed transactions - right now
+            // every insert sets it immediately so this hits everything, but the column is there
+            // to support a future pending transaction workflow if we ever need it
             return await _Executor.ExecuteAsync(async (conn, tx) =>
                 await conn.ExecuteScalarAsync<decimal>(@"
                     SELECT ISNULL(SUM([Quantity]), 0)
@@ -101,53 +100,62 @@ namespace Sparcpoint.Inventory.SqlServer
         {
             return await _Executor.ExecuteAsync(async (conn, tx) =>
             {
-                var sql = new StringBuilder(@"
+                // EVAL: SqlServerQueryProvider handles dynamic WHERE - SELECT/FROM/JOIN/GROUP BY are
+                // hardcoded because the provider has no API for those. Same filter approach as
+                // SqlProductRepository.SearchAsync: Name LIKE uses Where() + AddParameter(), EAV
+                // attributes use composed EXISTS subqueries with GetNextParameterName() for unique
+                // param names, CategoryIds uses a raw Where() with an IN list that Dapper expands natively.
+                var provider = SqlServerQueryProvider.Empty;
+
+                if (!string.IsNullOrWhiteSpace(filter?.Name))
+                {
+                    provider.Where("p.[Name] LIKE @Name");
+                    provider.AddParameter("Name", $"%{filter.Name}%");
+                }
+
+                if (filter?.Attributes != null)
+                {
+                    foreach (var attr in filter.Attributes)
+                    {
+                        var keyParam = provider.GetNextParameterName("AttrKey");  // e.g. "AttrKey0"
+                        var valParam = provider.GetNextParameterName("AttrVal");  // e.g. "AttrVal1"
+                        var alias = keyParam.Substring("AttrKey".Length);         // e.g. "0"
+                        provider.Where($@"EXISTS (
+                            SELECT 1 FROM [Instances].[ProductAttributes] pa{alias}
+                            WHERE pa{alias}.[InstanceId] = p.[InstanceId]
+                              AND pa{alias}.[Key] = @{keyParam} AND pa{alias}.[Value] = @{valParam})");
+                        provider.AddParameter(keyParam, attr.Key);
+                        provider.AddParameter(valParam, attr.Value);
+                    }
+                }
+
+                if (filter?.CategoryIds != null && filter.CategoryIds.Any())
+                {
+                    provider.Where(@"EXISTS (
+                        SELECT 1 FROM [Instances].[ProductCategories] pc
+                        WHERE pc.[InstanceId] = p.[InstanceId]
+                          AND pc.[CategoryInstanceId] IN @CategoryIds)");
+                    provider.AddParameter("CategoryIds", filter.CategoryIds);
+                }
+
+                // EVAL: "[Name]" without the "p." alias - SanitizeColumnName rejects "p.[Name]"
+                // (unbracketed prefix + bracketed name), and it's unambiguous anyway since it's the only [Name] in the SELECT
+                provider.OrderByAscending("[Name]");
+
+                var sqlBuilder = new StringBuilder(@"
                     SELECT p.[InstanceId]              AS ProductInstanceId,
                            p.[Name]                   AS ProductName,
                            ISNULL(SUM(t.[Quantity]), 0) AS TotalQuantity
                     FROM [Instances].[Products] p
                     LEFT JOIN [Transactions].[InventoryTransactions] t
                            ON t.[ProductInstanceId] = p.[InstanceId]
-                          AND t.[CompletedTimestamp] IS NOT NULL
-                    WHERE 1=1");
+                          AND t.[CompletedTimestamp] IS NOT NULL");
 
-                var parameters = new DynamicParameters();
+                sqlBuilder.Append($" {provider.WhereClause}");
+                sqlBuilder.Append(" GROUP BY p.[InstanceId], p.[Name]");
+                sqlBuilder.Append($" {provider.OrderByClause}");
 
-                if (!string.IsNullOrWhiteSpace(filter?.Name))
-                {
-                    sql.Append(" AND p.[Name] LIKE @Name");
-                    parameters.Add("Name", $"%{filter.Name}%");
-                }
-
-                if (filter?.Attributes != null)
-                {
-                    int idx = 0;
-                    foreach (var attr in filter.Attributes)
-                    {
-                        var k = $"AttrKey{idx}";
-                        var v = $"AttrVal{idx}";
-                        sql.Append($@" AND EXISTS (
-                            SELECT 1 FROM [Instances].[ProductAttributes] pa{idx}
-                            WHERE pa{idx}.[InstanceId] = p.[InstanceId]
-                              AND pa{idx}.[Key] = @{k} AND pa{idx}.[Value] = @{v})");
-                        parameters.Add(k, attr.Key);
-                        parameters.Add(v, attr.Value);
-                        idx++;
-                    }
-                }
-
-                if (filter?.CategoryIds != null && filter.CategoryIds.Any())
-                {
-                    sql.Append(@" AND EXISTS (
-                        SELECT 1 FROM [Instances].[ProductCategories] pc
-                        WHERE pc.[InstanceId] = p.[InstanceId]
-                          AND pc.[CategoryInstanceId] IN @CategoryIds)");
-                    parameters.Add("CategoryIds", filter.CategoryIds);
-                }
-
-                sql.Append(" GROUP BY p.[InstanceId], p.[Name] ORDER BY p.[Name]");
-
-                return await conn.QueryAsync<ProductInventoryCount>(sql.ToString(), parameters, tx);
+                return await conn.QueryAsync<ProductInventoryCount>(sqlBuilder.ToString(), provider.Parameters, tx);
             });
         }
 
@@ -155,10 +163,9 @@ namespace Sparcpoint.Inventory.SqlServer
             IDbConnection conn, IDbTransaction tx,
             int productInstanceId, decimal quantity, string typeCategory)
         {
-            // EVAL: Guard against FK violation (FK_InventoryTransactions_Products) by checking
-            // product existence within the same transaction before the INSERT. This produces
-            // a clear 400 instead of letting SQL Server throw a 547 FK error as a 500.
-            // Called by AddAsync, RemoveAsync, AddBatchAsync, and RemoveBatchAsync — one check covers all paths.
+            // EVAL: check product existence inside the same transaction before the INSERT so we get a
+            // clean 400 instead of a 547 FK error surfacing as a 500 - this helper is shared by
+            // AddAsync, RemoveAsync, AddBatchAsync, and RemoveBatchAsync so one check covers all paths
             var productExists = await conn.ExecuteScalarAsync<int>(
                 "SELECT COUNT(1) FROM [Instances].[Products] WHERE [InstanceId] = @Id",
                 new { Id = productInstanceId }, tx);

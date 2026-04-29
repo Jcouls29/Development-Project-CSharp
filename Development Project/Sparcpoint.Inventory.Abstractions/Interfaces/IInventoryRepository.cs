@@ -12,7 +12,7 @@ namespace Sparcpoint.Inventory.Abstractions
         Task<int> AddAsync(int productInstanceId, decimal quantity, string typeCategory = null);
 
         /// <summary>
-        /// Bulk add — all items processed within a single transaction.
+        /// Bulk add - all items processed within a single transaction.
         /// </summary>
         Task AddBatchAsync(IEnumerable<InventoryBatchItem> items);
 
@@ -23,12 +23,12 @@ namespace Sparcpoint.Inventory.Abstractions
         Task<int> RemoveAsync(int productInstanceId, decimal quantity, string typeCategory = null);
 
         /// <summary>
-        /// Bulk remove — all items processed within a single transaction.
+        /// Bulk remove - all items processed within a single transaction.
         /// </summary>
         Task RemoveBatchAsync(IEnumerable<InventoryBatchItem> items);
 
         /// <summary>
-        /// EVAL: "Undo" mechanism — deleting the transaction row reverses its effect
+        /// EVAL: "Undo" mechanism - deleting the transaction row reverses its effect
         /// on inventory count without requiring a compensating transaction.
         /// </summary>
         Task DeleteTransactionAsync(int transactionId);

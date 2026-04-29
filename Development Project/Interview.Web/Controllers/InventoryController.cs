@@ -76,9 +76,9 @@ namespace Interview.Web.Controllers
 
         /// <summary>
         /// Deletes a specific transaction, effectively undoing its inventory effect.
-        /// EVAL: Deleting the row is the undo mechanism — cleaner than a compensating transaction
-        /// because it leaves no audit noise for a user-initiated correction.
-        /// Returns 404 if the transaction does not exist (handled by ApiExceptionFilter).
+        /// EVAL: deleting the row is the undo mechanism - cleaner than a compensating transaction
+        /// since it leaves no audit noise for a user correction. Returns 404 if the transaction
+        /// doesn't exist, caught by ApiExceptionFilter.
         /// </summary>
         [HttpDelete("transactions/{transactionId:int}")]
         [ProducesResponseType(204)]

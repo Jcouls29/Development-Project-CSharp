@@ -96,7 +96,7 @@ namespace Sparcpoint.Inventory.Tests
 
             var repo = new SqlInventoryRepository(mockExecutor.Object);
 
-            // EVAL: Empty batch is valid — no-op, no transactions inserted.
+            // EVAL: empty batch is valid - just a no-op, nothing gets inserted
             var exception = await Record.ExceptionAsync(() =>
                 repo.AddBatchAsync(new List<InventoryBatchItem>()));
 

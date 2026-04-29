@@ -6,22 +6,11 @@ using System;
 namespace Interview.Web.Filters
 {
     /// <summary>
-    /// EVAL: Global exception filter centralizes HTTP status mapping for domain exceptions.
-    /// Without this, any unhandled exception thrown by a repository bubbles up as a 500.
-    /// Adding it once here keeps every controller clean — no per-endpoint try/catch boilerplate.
-    ///
-    /// Mapping rationale:
-    ///   ArgumentException (incl. ArgumentNullException,
-    ///                       ArgumentOutOfRangeException) → 400 Bad Request  (invalid caller input;
-    ///       ArgumentOutOfRangeException is a subclass of ArgumentException so the same case arm
-    ///       handles it automatically — no separate branch needed)
-    ///   InvalidOperationException                       → 404 Not Found    (entity not found)
-    ///   SqlException error 547 (FK violation)           → 400 Bad Request  (TOCTOU fallback —
-    ///       repositories pre-validate FKs but a concurrent delete between the check and the
-    ///       INSERT can still produce a 547; we catch it here so it never surfaces as a 500)
-    ///
-    /// To add a new mapping (e.g. ConflictException → 409), extend the switch here
-    /// without touching any controller.
+    /// EVAL: maps exceptions to HTTP codes in one place so controllers don't need try/catch blocks
+    /// everywhere. ArgumentException (including Null and OutOfRange subclasses) becomes 400,
+    /// InvalidOperationException becomes 404, and SQL FK violations (error 547) also get caught
+    /// as 400 as a TOCTOU fallback - repos pre-validate FKs but a concurrent delete between
+    /// check and INSERT can still produce a 547. To add a new mapping just extend the switch here.
     /// </summary>
     public class ApiExceptionFilter : IActionFilter
     {

@@ -27,8 +27,8 @@ namespace Sparcpoint.SqlServer.Abstractions
                 }
                 catch
                 {
-                    // EVAL: Rollback is critical — without this, an exception leaves the transaction
-                    // open until the connection is disposed, which can cause deadlocks under load.
+                    // EVAL: need the rollback here - if we skip it and something throws, the transaction
+                    // stays open until the connection drops which can deadlock under load
                     sqlTrans.Rollback();
                     throw;
                 }
