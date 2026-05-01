@@ -1,0 +1,39 @@
+meta {
+  name: Add Product (Duplicate)
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{baseUrl}}/api/v1/products
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "name": "Widget A",
+    "description": "A small red widget",
+    "productImageUris": "",
+    "validSkus": "SKU-001",
+    "attributes": {
+      "Color": "Red",
+      "Brand": "Acme"
+    },
+    "categoryIds": [{{categoryId}}]
+  }
+}
+
+assert {
+  res.status: eq 201
+  res.body.instanceId: isDefined
+}
+
+tests {
+  test("returns 201 even for duplicate name", function() {
+    expect(res.status).to.equal(201);
+  });
+  test("returns the same instanceId as the original", function() {
+    expect(res.body.instanceId).to.equal(bru.getVar("productId"));
+  });
+}

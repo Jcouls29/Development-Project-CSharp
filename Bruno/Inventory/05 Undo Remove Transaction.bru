@@ -1,0 +1,21 @@
+meta {
+  name: Undo Remove Transaction
+  type: http
+  seq: 5
+}
+
+delete {
+  url: {{baseUrl}}/api/v1/inventory/transactions/{{removeTransactionId}}
+  body: none
+  auth: none
+}
+
+assert {
+  res.status: eq 204
+}
+
+tests {
+  test("returns 204 No Content", function() {
+    expect(res.status).to.equal(204);
+  });
+}

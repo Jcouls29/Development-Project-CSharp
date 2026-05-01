@@ -1,0 +1,37 @@
+meta {
+  name: Add Inventory
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/api/v1/inventory/add
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "productInstanceId": {{productId}},
+    "quantity": 10
+  }
+}
+
+assert {
+  res.status: eq 200
+  res.body.transactionId: isDefined
+}
+
+vars:post-response {
+  transactionId: res.body.transactionId
+}
+
+tests {
+  test("returns 200 OK", function() {
+    expect(res.status).to.equal(200);
+  });
+  test("returns a numeric transactionId", function() {
+    expect(res.body.transactionId).to.be.a("number");
+    expect(res.body.transactionId).to.be.greaterThan(0);
+  });
+}

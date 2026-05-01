@@ -1,0 +1,39 @@
+meta {
+  name: Add Inventory Batch
+  type: http
+  seq: 7
+}
+
+post {
+  url: {{baseUrl}}/api/v1/inventory/add/batch
+  body: json
+  auth: none
+}
+
+body:json {
+  [
+    { "productInstanceId": {{productId}}, "quantity": 5 },
+    { "productInstanceId": {{productId}}, "quantity": 5 }
+  ]
+}
+
+assert {
+  res.status: eq 200
+  res.body.transactionIds: isDefined
+}
+
+tests {
+  test("returns 200 OK", function() {
+    expect(res.status).to.equal(200);
+  });
+  test("returns two transactionIds", function() {
+    expect(res.body.transactionIds).to.be.an("array");
+    expect(res.body.transactionIds).to.have.lengthOf(2);
+  });
+  test("all transactionIds are positive numbers", function() {
+    res.body.transactionIds.forEach(id => {
+      expect(id).to.be.a("number");
+      expect(id).to.be.greaterThan(0);
+    });
+  });
+}

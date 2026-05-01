@@ -1,0 +1,32 @@
+meta {
+  name: Search by Name
+  type: http
+  seq: 6
+}
+
+post {
+  url: {{baseUrl}}/api/v1/products/search
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "name": "Widget"
+  }
+}
+
+assert {
+  res.status: eq 200
+}
+
+tests {
+  test("returns 200 OK", function() {
+    expect(res.status).to.equal(200);
+  });
+  test("all results contain 'Widget' in the name", function() {
+    res.body.forEach(p => {
+      expect(p.name.toLowerCase()).to.include("widget");
+    });
+  });
+}
