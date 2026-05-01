@@ -4,6 +4,9 @@ using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Sparcpoint.Core.Abstract;
+using Sparcpoint.Inventory.Database.Data;
+using Sparcpoint.SqlServer.Abstractions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,6 +27,15 @@ namespace Interview.Web
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+
+            // Register ISqlExecutor and repository
+            // Pull connection string from: ConnectionStrings:DefaultConnection or SqlServer:ConnectionString
+            var connectionString = Configuration.GetConnectionString("DefaultConnection")
+                                   ?? Configuration["SqlServer:ConnectionString"]
+                                   ?? throw new InvalidOperationException("Connection string not configured.");
+
+            services.AddSingleton<ISqlExecutor>(_ => new SqlServerExecutor(connectionString));
+            services.AddScoped<IProductRepository, ProductRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
