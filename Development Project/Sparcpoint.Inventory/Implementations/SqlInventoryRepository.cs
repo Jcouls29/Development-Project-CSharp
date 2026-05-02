@@ -22,8 +22,10 @@ namespace Sparcpoint.Inventory.Implementations
         public async Task<int> AddAsync(InventoryAdjustmentRequest request)
         {
             PreConditions.ParameterNotNull(request, nameof(request));
+            PreConditions.IntGreaterThanZero(request.ProductInstanceId, nameof(request.ProductInstanceId));
             if (request.Quantity <= 0)
                 throw new ArgumentException("Quantity must be greater than zero.", nameof(request));
+            PreConditions.StringMaxLength(request.TypeCategory, nameof(request.TypeCategory), 32);
 
             return await _Executor.ExecuteAsync<int>(async (conn, trans) =>
             {
@@ -47,8 +49,10 @@ namespace Sparcpoint.Inventory.Implementations
         public async Task<int> RemoveAsync(InventoryAdjustmentRequest request)
         {
             PreConditions.ParameterNotNull(request, nameof(request));
+            PreConditions.IntGreaterThanZero(request.ProductInstanceId, nameof(request.ProductInstanceId));
             if (request.Quantity <= 0)
                 throw new ArgumentException("Quantity must be greater than zero.", nameof(request));
+            PreConditions.StringMaxLength(request.TypeCategory, nameof(request.TypeCategory), 32);
 
             return await _Executor.ExecuteAsync<int>(async (conn, trans) =>
             {
@@ -79,8 +83,12 @@ namespace Sparcpoint.Inventory.Implementations
                 throw new ArgumentException("At least one request must be provided.", nameof(requests));
 
             foreach (var item in items)
+            {
+                PreConditions.IntGreaterThanZero(item.ProductInstanceId, nameof(item.ProductInstanceId));
                 if (item.Quantity <= 0)
                     throw new ArgumentException($"Quantity must be greater than zero for ProductInstanceId {item.ProductInstanceId}.", nameof(requests));
+                PreConditions.StringMaxLength(item.TypeCategory, nameof(item.TypeCategory), 32);
+            }
 
             return await ExecuteBatchAsync(items, isRemoval: false);
         }
@@ -93,8 +101,12 @@ namespace Sparcpoint.Inventory.Implementations
                 throw new ArgumentException("At least one request must be provided.", nameof(requests));
 
             foreach (var item in items)
+            {
+                PreConditions.IntGreaterThanZero(item.ProductInstanceId, nameof(item.ProductInstanceId));
                 if (item.Quantity <= 0)
                     throw new ArgumentException($"Quantity must be greater than zero for ProductInstanceId {item.ProductInstanceId}.", nameof(requests));
+                PreConditions.StringMaxLength(item.TypeCategory, nameof(item.TypeCategory), 32);
+            }
 
             return await ExecuteBatchAsync(items, isRemoval: true);
         }
@@ -149,6 +161,8 @@ namespace Sparcpoint.Inventory.Implementations
 
         public async Task RemoveTransactionAsync(int transactionId)
         {
+            PreConditions.IntGreaterThanZero(transactionId, nameof(transactionId));
+
             await _Executor.ExecuteAsync(async (conn, trans) =>
             {
                 const string sql = @"

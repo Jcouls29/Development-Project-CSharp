@@ -23,7 +23,20 @@ namespace Sparcpoint.Inventory.Implementations
         {
             PreConditions.ParameterNotNull(request, nameof(request));
             PreConditions.StringNotNullOrWhitespace(request.Name, nameof(request.Name));
+            PreConditions.StringMaxLength(request.Name, nameof(request.Name), 256);
             PreConditions.StringNotNullOrWhitespace(request.Description, nameof(request.Description));
+            PreConditions.StringMaxLength(request.Description, nameof(request.Description), 256);
+
+            if (request.Attributes != null)
+                foreach (var attr in request.Attributes)
+                {
+                    PreConditions.StringMaxLength(attr.Key, "Attribute key", 64);
+                    PreConditions.StringMaxLength(attr.Value, "Attribute value", 512);
+                }
+
+            if (request.CategoryIds != null)
+                foreach (var id in request.CategoryIds)
+                    PreConditions.IntGreaterThanZero(id, "CategoryId");
 
             return await _Executor.ExecuteAsync<int>(async (conn, trans) =>
             {

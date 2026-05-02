@@ -23,7 +23,13 @@ namespace Sparcpoint.Inventory.Implementations
         {
             PreConditions.ParameterNotNull(request, nameof(request));
             PreConditions.StringNotNullOrWhitespace(request.Name, nameof(request.Name));
+            PreConditions.StringMaxLength(request.Name, nameof(request.Name), 64);
             PreConditions.StringNotNullOrWhitespace(request.Description, nameof(request.Description));
+            PreConditions.StringMaxLength(request.Description, nameof(request.Description), 256);
+
+            if (request.ParentCategoryIds != null)
+                foreach (var id in request.ParentCategoryIds)
+                    PreConditions.IntGreaterThanZero(id, "ParentCategoryId");
 
             return await _Executor.ExecuteAsync<int>(async (conn, trans) =>
             {
