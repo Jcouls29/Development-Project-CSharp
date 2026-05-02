@@ -361,3 +361,10 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+
+# Local CLI and sandbox artifacts
+.dotnet/
+.sandbox-appdata/
+.sandbox-localappdata/
+.sandbox-nuget/
+NuGet/

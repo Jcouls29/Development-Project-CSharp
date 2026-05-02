@@ -1,6 +1,4 @@
-﻿using Dapper;
 using System;
-using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Threading.Tasks;
@@ -10,6 +8,7 @@ namespace Sparcpoint.SqlServer.Abstractions
     public class TransactionSqlServerExecutor : ISqlExecutor
     {
         private readonly SqlTransaction _Transaction;
+
         public TransactionSqlServerExecutor(SqlTransaction transaction)
         {
             _Transaction = transaction ?? throw new ArgumentNullException(nameof(transaction));
