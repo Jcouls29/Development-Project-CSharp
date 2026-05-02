@@ -99,3 +99,19 @@ The test fails if any of these are breached:
 | 95th percentile response time | < 1000ms |
 | HTTP error rate | < 5% |
 | Hard errors (non-2xx) | < 50 total |
+
+## Known Limitations
+
+The test uses a single fixed `PRODUCT_ID` and `CATEGORY_ID`. All virtual users target the same product for inventory inserts, which creates artificial lock contention that would not occur in real usage where writes are spread across many products. Results are therefore **pessimistic for write-heavy scenarios** and do not reflect a realistic traffic distribution.
+
+To get more representative results, replace the single constants with random selection across multiple IDs:
+
+```js
+const PRODUCT_IDS  = [1, 2, 3, 4, 5];
+const CATEGORY_IDS = [1, 2, 3];
+
+const PRODUCT_ID  = PRODUCT_IDS[Math.floor(Math.random() * PRODUCT_IDS.length)];
+const CATEGORY_ID = CATEGORY_IDS[Math.floor(Math.random() * CATEGORY_IDS.length)];
+```
+
+Populate the arrays with IDs that exist in your database before running.
