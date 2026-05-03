@@ -1,0 +1,35 @@
+meta {
+  name: Add Inventory - Invalid Product ID
+  type: http
+  seq: 10
+}
+
+post {
+  url: {{baseUrl}}/api/v1/inventory/add
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "productInstanceId": 99999,
+    "quantity": 10
+  }
+}
+
+assert {
+  res.status: eq 400
+  res.body.title: eq "Invalid request"
+}
+
+tests {
+  test("returns 400 Bad Request for non-existent product", function() {
+    expect(res.status).to.equal(400);
+  });
+  test("returns problem details title", function() {
+    expect(res.body.title).to.equal("Invalid request");
+  });
+  test("error message identifies the missing product ID", function() {
+    expect(res.body.detail).to.include("99999");
+  });
+}

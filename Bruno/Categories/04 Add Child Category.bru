@@ -1,0 +1,41 @@
+meta {
+  name: Add Child Category
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{baseUrl}}/api/v1/categories
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "name": "Smartphones",
+    "description": "Smartphones and mobile devices",
+    "parentCategoryIds": [{{categoryId}}]
+  }
+}
+
+assert {
+  res.status: eq 201
+  res.body.instanceId: isDefined
+}
+
+vars:post-response {
+  childCategoryId: res.body.instanceId
+}
+
+tests {
+  test("returns 201 Created", function() {
+    expect(res.status).to.equal(201);
+  });
+  test("returns a numeric instanceId", function() {
+    expect(res.body.instanceId).to.be.a("number");
+    expect(res.body.instanceId).to.be.greaterThan(0);
+  });
+  test("child instanceId is different from parent", function() {
+    expect(res.body.instanceId).to.not.equal(bru.getVar("categoryId"));
+  });
+}

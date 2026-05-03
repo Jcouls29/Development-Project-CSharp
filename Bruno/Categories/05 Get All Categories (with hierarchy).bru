@@ -1,0 +1,40 @@
+meta {
+  name: Get All Categories (with hierarchy)
+  type: http
+  seq: 5
+}
+
+get {
+  url: {{baseUrl}}/api/v1/categories
+  body: none
+  auth: none
+}
+
+assert {
+  res.status: eq 200
+}
+
+tests {
+  test("returns 200 OK", function() {
+    expect(res.status).to.equal(200);
+  });
+  test("returns an array", function() {
+    expect(res.body).to.be.an("array");
+  });
+  test("every category has a parentCategoryIds array", function() {
+    res.body.forEach(c => {
+      expect(c.parentCategoryIds).to.be.an("array");
+    });
+  });
+  test("Electronics has no parents (top-level category)", function() {
+    const electronics = res.body.find(c => c.name === "Electronics");
+    expect(electronics).to.not.be.undefined;
+    expect(electronics.parentCategoryIds).to.be.an("array");
+    expect(electronics.parentCategoryIds).to.have.lengthOf(0);
+  });
+  test("Smartphones has Electronics as a parent", function() {
+    const smartphones = res.body.find(c => c.name === "Smartphones");
+    expect(smartphones).to.not.be.undefined;
+    expect(smartphones.parentCategoryIds).to.include(bru.getVar("categoryId"));
+  });
+}

@@ -1,0 +1,28 @@
+meta {
+  name: Get Count by Product
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}/api/v1/inventory/count/{{productId}}
+  body: none
+  auth: none
+}
+
+assert {
+  res.status: eq 200
+  res.body.count: isDefined
+}
+
+tests {
+  test("returns 200 OK", function() {
+    expect(res.status).to.equal(200);
+  });
+  test("count is 10 after adding 10 units", function() {
+    expect(res.body.count).to.equal(10);
+  });
+  test("productInstanceId matches", function() {
+    expect(res.body.productInstanceId).to.equal(bru.getVar("productId"));
+  });
+}

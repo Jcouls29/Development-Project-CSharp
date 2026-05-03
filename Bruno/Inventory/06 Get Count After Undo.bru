@@ -1,0 +1,24 @@
+meta {
+  name: Get Count After Undo
+  type: http
+  seq: 6
+}
+
+get {
+  url: {{baseUrl}}/api/v1/inventory/count/{{productId}}
+  body: none
+  auth: none
+}
+
+assert {
+  res.status: eq 200
+}
+
+tests {
+  test("returns 200 OK", function() {
+    expect(res.status).to.equal(200);
+  });
+  test("count is back to 10 after undoing the remove", function() {
+    expect(res.body.count).to.equal(10);
+  });
+}

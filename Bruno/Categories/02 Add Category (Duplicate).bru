@@ -1,0 +1,33 @@
+meta {
+  name: Add Category (Duplicate)
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{baseUrl}}/api/v1/categories
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "name": "Electronics",
+    "description": "Electronic devices and components",
+    "parentCategoryIds": []
+  }
+}
+
+assert {
+  res.status: eq 201
+  res.body.instanceId: isDefined
+}
+
+tests {
+  test("returns 201 even for duplicate name", function() {
+    expect(res.status).to.equal(201);
+  });
+  test("returns the same instanceId as the original", function() {
+    expect(res.body.instanceId).to.equal(bru.getVar("categoryId"));
+  });
+}

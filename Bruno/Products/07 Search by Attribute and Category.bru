@@ -1,0 +1,51 @@
+meta {
+  name: Search by Attribute and Category
+  type: http
+  seq: 7
+}
+
+post {
+  url: {{baseUrl}}/api/v1/products/search
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "attributes": {
+      "Color": "Red",
+      "Brand": "Acme"
+    },
+    "categoryIds": [{{categoryId}}]
+  }
+}
+
+assert {
+  res.status: eq 200
+}
+
+tests {
+  test("returns 200 OK", function() {
+    expect(res.status).to.equal(200);
+  });
+  test("returns an array", function() {
+    expect(res.body).to.be.an("array");
+  });
+  test("Widget A is in results", function() {
+    const found = res.body.some(p => p.name === "Widget A");
+    expect(found).to.be.true;
+  });
+  test("all results belong to the requested category", function() {
+    res.body.forEach(p => {
+      const inCategory = p.categoryIds && p.categoryIds.includes(bru.getVar("categoryId"));
+      expect(inCategory).to.be.true;
+    });
+  });
+  test("all results have Color=Red attribute", function() {
+    res.body.forEach(p => {
+      const colorAttr = p.attributes && p.attributes.find(a => a.key === "Color");
+      expect(colorAttr).to.not.be.undefined;
+      expect(colorAttr.value).to.equal("Red");
+    });
+  });
+}
