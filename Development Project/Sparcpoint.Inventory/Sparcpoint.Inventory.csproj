@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <RootNamespace>Sparcpoint.Inventory</RootNamespace>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <NoWarn>$(NoWarn);1591</NoWarn>
+    <Description>Domain models and service abstractions for the Sparcpoint Inventory System</Description>
+  </PropertyGroup>
+
+  <!-- EVAL: This library has zero external dependencies by design.
+       Domain models and interfaces should not depend on infrastructure (SQL, HTTP, etc.).
+       This enables reuse across different front-end APIs and data stores. -->
+  <ItemGroup>
+    <ProjectReference Include="..\Sparcpoint.Core\Sparcpoint.Core.csproj" />
+  </ItemGroup>
+
+</Project>

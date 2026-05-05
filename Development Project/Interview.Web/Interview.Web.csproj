@@ -2,6 +2,25 @@
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
+    <!-- EVAL: Enabling XML documentation for Swagger/OpenAPI schema generation -->
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <NoWarn>$(NoWarn);1591</NoWarn>
   </PropertyGroup>
+
+  <!-- EVAL: Project references to shared libraries for separation of concerns -->
+  <ItemGroup>
+    <ProjectReference Include="..\Sparcpoint.Core\Sparcpoint.Core.csproj" />
+    <ProjectReference Include="..\Sparcpoint.Inventory\Sparcpoint.Inventory.csproj" />
+    <ProjectReference Include="..\Sparcpoint.Inventory.SqlServer\Sparcpoint.Inventory.SqlServer.csproj" />
+    <ProjectReference Include="..\Sparcpoint.SqlServer.Abstractions\Sparcpoint.SqlServer.Abstractions.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- TD: Dapper is already referenced transitively via SqlServer.Abstractions,
+         but explicit reference here ensures version consistency across the solution -->
+    <PackageReference Include="AspNetCore.HealthChecks.SqlServer" Version="8.0.2" />
+    <PackageReference Include="Dapper" Version="2.0.78" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
+  </ItemGroup>
 
 </Project>

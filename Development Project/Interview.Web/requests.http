@@ -1,0 +1,201 @@
+### Sparcpoint Inventory API - Sample Requests
+### Use with VS Code REST Client extension or JetBrains HTTP Client
+### Assumes the API is running on https://localhost:5001
+
+@baseUrl = https://localhost:5001/api/v1
+
+
+### ===========================
+### PRODUCTS
+### ===========================
+
+### 1. Get all products (no filters)
+GET {{baseUrl}}/products HTTP/1.1
+Accept: application/json
+
+###
+
+### 2. Search products by name
+GET {{baseUrl}}/products?name=Galaxy HTTP/1.1
+Accept: application/json
+
+###
+
+### 3. Search products by category
+GET {{baseUrl}}/products?categoryIds=1 HTTP/1.1
+Accept: application/json
+
+###
+
+### 4. Search products by metadata (Brand = Nike)
+GET {{baseUrl}}/products?attributes[Brand]=Nike HTTP/1.1
+Accept: application/json
+
+###
+
+### 5. Search products with multiple filters (Electronics + Samsung)
+GET {{baseUrl}}/products?categoryIds=1&attributes[Brand]=Samsung HTTP/1.1
+Accept: application/json
+
+###
+
+### 6. Search with pagination
+GET {{baseUrl}}/products?skip=0&take=2 HTTP/1.1
+Accept: application/json
+
+###
+
+### 7. Get a single product by ID
+GET {{baseUrl}}/products/1 HTTP/1.1
+Accept: application/json
+
+###
+
+### 8. Get a product that doesn't exist (expect 404)
+GET {{baseUrl}}/products/99999 HTTP/1.1
+Accept: application/json
+
+###
+
+### 9. Create a new product
+POST {{baseUrl}}/products HTTP/1.1
+Content-Type: application/json
+Accept: application/json
+
+{
+    "name": "Bose QuietComfort 45",
+    "description": "Wireless noise-cancelling headphones",
+    "imageUris": [
+        "https://example.com/images/bose-qc45.jpg"
+    ],
+    "skus": [
+        "866724-0100",
+        "866724-0200"
+    ],
+    "attributes": {
+        "Brand": "Bose",
+        "Color": "Black",
+        "Connectivity": "Bluetooth 5.1",
+        "PackageUnit": "Each"
+    },
+    "categoryIds": [1]
+}
+
+###
+
+### 10. Create a product with validation error (missing name - expect 400)
+POST {{baseUrl}}/products HTTP/1.1
+Content-Type: application/json
+Accept: application/json
+
+{
+    "description": "Product with no name"
+}
+
+
+### ===========================
+### INVENTORY
+### ===========================
+
+###
+
+### 11. Add inventory for a single product
+POST {{baseUrl}}/inventory HTTP/1.1
+Content-Type: application/json
+Accept: application/json
+
+{
+    "items": [
+        {
+            "productInstanceId": 1,
+            "quantity": 25,
+            "typeCategory": "Purchase"
+        }
+    ]
+}
+
+###
+
+### 12. Add inventory for multiple products (bulk)
+POST {{baseUrl}}/inventory HTTP/1.1
+Content-Type: application/json
+Accept: application/json
+
+{
+    "items": [
+        {
+            "productInstanceId": 1,
+            "quantity": 10,
+            "typeCategory": "Purchase"
+        },
+        {
+            "productInstanceId": 2,
+            "quantity": 5,
+            "typeCategory": "Purchase"
+        },
+        {
+            "productInstanceId": 3,
+            "quantity": 20,
+            "typeCategory": "Purchase"
+        }
+    ]
+}
+
+###
+
+### 13. Remove inventory from a product
+POST {{baseUrl}}/inventory/remove HTTP/1.1
+Content-Type: application/json
+Accept: application/json
+
+{
+    "items": [
+        {
+            "productInstanceId": 1,
+            "quantity": 3,
+            "typeCategory": "Sale"
+        }
+    ]
+}
+
+###
+
+### 14. Get inventory count by product ID
+GET {{baseUrl}}/inventory/count?productId=1 HTTP/1.1
+Accept: application/json
+
+###
+
+### 15. Get inventory count by metadata (all Samsung products)
+GET {{baseUrl}}/inventory/count?metadataKey=Brand&metadataValue=Samsung HTTP/1.1
+Accept: application/json
+
+###
+
+### 16. Get inventory count by metadata (all Nike products)
+GET {{baseUrl}}/inventory/count?metadataKey=Brand&metadataValue=Nike HTTP/1.1
+Accept: application/json
+
+###
+
+### 17. Get inventory count for non-existent product (expect 404)
+GET {{baseUrl}}/inventory/count?productId=99999 HTTP/1.1
+Accept: application/json
+
+###
+
+### 18. Get inventory count with missing params (expect 400)
+GET {{baseUrl}}/inventory/count HTTP/1.1
+Accept: application/json
+
+###
+
+### 19. Undo a transaction (replace 1 with actual transaction ID from add/remove response)
+DELETE {{baseUrl}}/inventory/transactions/1 HTTP/1.1
+Accept: application/json
+
+###
+
+### 20. Undo a transaction that doesn't exist (expect 404)
+DELETE {{baseUrl}}/inventory/transactions/99999 HTTP/1.1
+Accept: application/json

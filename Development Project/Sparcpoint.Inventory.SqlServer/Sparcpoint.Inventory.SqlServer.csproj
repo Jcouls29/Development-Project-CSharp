@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <RootNamespace>Sparcpoint.Inventory.SqlServer</RootNamespace>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <NoWarn>$(NoWarn);1591</NoWarn>
+    <Description>SQL Server implementation of Sparcpoint Inventory repositories</Description>
+  </PropertyGroup>
+
+  <!-- EVAL: This assembly bridges the domain (Sparcpoint.Inventory) with
+       infrastructure (Sparcpoint.SqlServer.Abstractions). Domain interfaces
+       defined in Sparcpoint.Inventory are implemented here using SQL Server + Dapper.
+       This separation means a different data store (e.g., PostgreSQL, CosmosDB) would
+       only require a new implementation assembly, not changes to the domain or web layer. -->
+  <ItemGroup>
+    <ProjectReference Include="..\Sparcpoint.Inventory\Sparcpoint.Inventory.csproj" />
+    <ProjectReference Include="..\Sparcpoint.SqlServer.Abstractions\Sparcpoint.SqlServer.Abstractions.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Dapper" Version="2.0.78" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<RunSettings>
+  <DataCollectionRunSettings>
+    <DataCollectors>
+      <DataCollector friendlyName="XPlat code coverage">
+        <Configuration>
+          <Format>cobertura</Format>
+          <!-- Exclude scaffolding assemblies we did not write -->
+          <!-- Exclude SqlServer repos: use Dapper static extensions on IDbConnection,
+               which cannot be mocked. These require integration tests with a real DB.
+               The repository contract is fully tested via InMemory fakes. -->
+          <Exclude>[Sparcpoint.Core]*,[Sparcpoint.SqlServer.Abstractions]*,[Sparcpoint.Inventory.SqlServer]*</Exclude>
+          <!-- Exclude Program.cs bootstrap (single line, not testable in isolation) -->
+          <ExcludeByAttribute>ExcludeFromCodeCoverage</ExcludeByAttribute>
+        </Configuration>
+      </DataCollector>
+    </DataCollectors>
+  </DataCollectionRunSettings>
+</RunSettings>
