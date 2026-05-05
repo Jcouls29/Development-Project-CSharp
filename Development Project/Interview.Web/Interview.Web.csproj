@@ -4,4 +4,10 @@
     <TargetFramework>net8.0</TargetFramework>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Sparcpoint.Inventory\Sparcpoint.Inventory.csproj" />
+    <ProjectReference Include="..\Sparcpoint.Inventory.SqlServer\Sparcpoint.Inventory.SqlServer.csproj" />
+    <ProjectReference Include="..\Sparcpoint.SqlServer.Abstractions\Sparcpoint.SqlServer.Abstractions.csproj" />
+  </ItemGroup>
+
 </Project>
