@@ -11,7 +11,11 @@ namespace Sparcpoint.SqlServer.Abstractions
             => _Backer.Add(clause);
 
         public void Add(string tableName, string abbv, string onClause)
-            => _Backer.Add($"JOIN {tableName} {abbv} ON {onClause}");
+        {
+            tableName = SqlServerValidation.SanitizeTableName(tableName);
+            abbv = SqlServerValidation.SanitizeTableName(abbv);
+            _Backer.Add($"JOIN {tableName} {abbv} ON {onClause}");
+        }
 
         public override string ToString()
         {

@@ -2,6 +2,17 @@
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <NoWarn>$(NoWarn);1591</NoWarn>
   </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Sparcpoint.Inventory.Abstractions\Sparcpoint.Inventory.Abstractions.csproj" />
+    <ProjectReference Include="..\Sparcpoint.Inventory.SqlServer\Sparcpoint.Inventory.SqlServer.csproj" />
+  </ItemGroup>
 
 </Project>
