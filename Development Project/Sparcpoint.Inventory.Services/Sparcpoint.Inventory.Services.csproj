@@ -1,0 +1,15 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="FluentValidation" Version="11.9.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Sparcpoint.Inventory.Models\Sparcpoint.Inventory.Models.csproj" />
+    <ProjectReference Include="..\Sparcpoint.Inventory.Repositories\Sparcpoint.Inventory.Repositories.csproj" />
+  </ItemGroup>
+</Project>
