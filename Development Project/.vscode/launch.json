@@ -1,0 +1,24 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Launch Interview.Web",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "build Interview.Web",
+      "program": "${workspaceFolder}/Interview.Web/bin/Debug/net8.0/Interview.Web.dll",
+      "args": [],
+      "cwd": "${workspaceFolder}/Interview.Web",
+      "stopAtEntry": false,
+      "env": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "serverReadyAction": {
+        "action": "openExternally",
+        "pattern": "\\bNow listening on:\\s+(https?://\\S+)"
+      },
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen"
+    }
+  ]
+}

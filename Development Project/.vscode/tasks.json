@@ -1,0 +1,22 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "restore Interview.Web",
+      "type": "shell",
+      "command": "dotnet restore \"${workspaceFolder}/Interview.Web/Interview.Web.csproj\"",
+      "problemMatcher": "$msCompile",
+      "group": "build"
+    },
+    {
+      "label": "build Interview.Web",
+      "type": "shell",
+      "command": "dotnet build \"${workspaceFolder}/Interview.Web/Interview.Web.csproj\" --configuration Debug",
+      "problemMatcher": "$msCompile",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
+    }
+  ]
+}
