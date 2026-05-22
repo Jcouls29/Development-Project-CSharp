@@ -2,6 +2,20 @@
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Dapper" Version="2.1.79" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Sparcpoint.Inventory.Models\Sparcpoint.Inventory.Models.csproj" />
+    <ProjectReference Include="..\Sparcpoint.Inventory.Services\Sparcpoint.Inventory.Services.csproj" />
+    <ProjectReference Include="..\Sparcpoint.Inventory.Repositories\Sparcpoint.Inventory.Repositories.csproj" />
+    <ProjectReference Include="..\Sparcpoint.SqlServer.Abstractions\Sparcpoint.SqlServer.Abstractions.csproj" />
+  </ItemGroup>
 
 </Project>

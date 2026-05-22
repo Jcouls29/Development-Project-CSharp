@@ -1,13 +1,8 @@
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using Sparcpoint.Inventory.Repositories.Implementations;
+using Sparcpoint.Inventory.Repositories.Interfaces;
+using Sparcpoint.Inventory.Services.Implementations;
+using Sparcpoint.Inventory.Services.Interfaces;
+using Sparcpoint.SqlServer.Abstractions;
 
 namespace Interview.Web
 {
@@ -20,18 +15,51 @@ namespace Interview.Web
 
         public IConfiguration Configuration { get; }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
+        // EVAL: Configure dependency injection for all layers
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+
+            // EVAL: Register ISqlExecutor with connection string from configuration
+            var connectionString = Configuration.GetConnectionString("InventoryDatabase");
+            services.AddSingleton<ISqlExecutor>(sp => new SqlServerExecutor(connectionString));
+
+            // EVAL: Register repositories (scoped for per-request lifecycle)
+            services.AddScoped<IProductRepository, ProductRepository>();
+            services.AddScoped<ICategoryRepository, CategoryRepository>();
+            services.AddScoped<IInventoryRepository, InventoryRepository>();
+
+            // EVAL: Register services
+            services.AddScoped<IProductService, ProductService>();
+            services.AddScoped<ICategoryService, CategoryService>();
+            services.AddScoped<IInventoryService, InventoryService>();
+
+            // EVAL: Add Swagger for API documentation
+            services.AddEndpointsApiExplorer();
+            services.AddSwaggerGen(options =>
+            {
+                options.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
+                {
+                    Title = "Inventory Management API",
+                    Version = "v1",
+                    Description = "RESTful API for managing products, categories, and inventory transactions"
+                });
+            });
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+
+                // EVAL: Enable Swagger UI in development
+                app.UseSwagger();
+                app.UseSwaggerUI(c =>
+                {
+                    c.SwaggerEndpoint("/swagger/v1/swagger.json", "Inventory API V1");
+                    c.RoutePrefix = string.Empty; // Swagger at root
+                });
             }
             else
             {
