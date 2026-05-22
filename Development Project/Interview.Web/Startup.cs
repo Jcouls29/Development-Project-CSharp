@@ -8,6 +8,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Interview.Web.Data;
+using Interview.Web.Services;
+using Microsoft.EntityFrameworkCore;
+using System.Text.Json.Serialization;
 
 namespace Interview.Web
 {
@@ -23,7 +27,19 @@ namespace Interview.Web
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllers();
+            services.AddControllers()
+                .AddJsonOptions(options =>
+                {
+                    options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+                });
+
+            // Configure ApplicationDbContext - uses DefaultConnection from configuration
+            services.AddDbContext<ApplicationDbContext>(options =>
+                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+
+            services.AddScoped<IProductService, ProductService>();
+            services.AddScoped<IInventoryTransactionService, InventoryTransactionService>();
+            services.AddScoped<IInventoryService, InventoryService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
