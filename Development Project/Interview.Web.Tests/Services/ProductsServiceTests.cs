@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Interview.Web.Models;
@@ -19,8 +20,7 @@ public class ProductsServiceTests
         _sut = new ProductsService(_repositoryMock.Object);
     }
 
-    // EVAL: These tests will fail until Milestone 2 implements the real logic.
-    // They exist now so the interfaces are locked in and any breaking change is caught immediately.
+    #region SearchAsync
 
     [Fact]
     public async Task SearchAsync_WithNoFilters_ReturnsAllProducts()
@@ -45,8 +45,12 @@ public class ProductsServiceTests
         _repositoryMock.Verify(r => r.SearchAsync(request), Times.Once);
     }
 
+    #endregion
+
+    #region CreateAsync
+
     [Fact]
-    public async Task CreateAsync_DelegatesToRepository()
+    public async Task CreateAsync_ValidRequest_DelegatesToRepository()
     {
         var request = new CreateProductRequest { Name = "Widget", Description = "A widget" };
         _repositoryMock.Setup(r => r.CreateAsync(request)).ReturnsAsync(1);
@@ -56,4 +60,52 @@ public class ProductsServiceTests
         Assert.Equal(1, id);
         _repositoryMock.Verify(r => r.CreateAsync(request), Times.Once);
     }
+
+    [Fact]
+    public async Task CreateAsync_NullRequest_ThrowsArgumentNullException()
+    {
+        await Assert.ThrowsAsync<ArgumentNullException>(() => _sut.CreateAsync(null));
+    }
+
+    [Fact]
+    public async Task CreateAsync_NullName_ThrowsArgumentException()
+    {
+        var request = new CreateProductRequest { Name = null, Description = "A widget" };
+
+        await Assert.ThrowsAsync<ArgumentException>(() => _sut.CreateAsync(request));
+    }
+
+    [Fact]
+    public async Task CreateAsync_WhitespaceName_ThrowsArgumentException()
+    {
+        var request = new CreateProductRequest { Name = "   ", Description = "A widget" };
+
+        await Assert.ThrowsAsync<ArgumentException>(() => _sut.CreateAsync(request));
+    }
+
+    [Fact]
+    public async Task CreateAsync_NameExceeds256Chars_ThrowsArgumentException()
+    {
+        var request = new CreateProductRequest
+        {
+            Name = new string('a', 257),
+            Description = "A widget"
+        };
+
+        await Assert.ThrowsAsync<ArgumentException>(() => _sut.CreateAsync(request));
+    }
+
+    [Fact]
+    public async Task CreateAsync_DescriptionExceeds256Chars_ThrowsArgumentException()
+    {
+        var request = new CreateProductRequest
+        {
+            Name = "Widget",
+            Description = new string('a', 257)
+        };
+
+        await Assert.ThrowsAsync<ArgumentException>(() => _sut.CreateAsync(request));
+    }
+
+    #endregion
 }
