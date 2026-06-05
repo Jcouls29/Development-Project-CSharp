@@ -34,6 +34,8 @@ public class Startup
         // which is appropriate for database-backed services.
         services.AddScoped<IProductRepository, ProductRepository>();
         services.AddScoped<IProductsService, ProductsService>();
+        services.AddScoped<IInventoryRepository, InventoryRepository>();
+        services.AddScoped<IInventoryService, InventoryService>();
     }
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
