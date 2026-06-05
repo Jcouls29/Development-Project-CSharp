@@ -25,7 +25,7 @@ public class ProductsServiceTests
     [Fact]
     public async Task SearchAsync_WithNoFilters_ReturnsAllProducts()
     {
-        var expected = new List<Product> { new Product { InstanceId = 1, Name = "Widget" } };
+        var expected = new List<ProductResponse> { new ProductResponse { InstanceId = 1, Name = "Widget" } };
         _repositoryMock.Setup(r => r.SearchAsync(It.IsAny<ProductSearchRequest>()))
             .ReturnsAsync(expected);
 
@@ -38,7 +38,7 @@ public class ProductsServiceTests
     public async Task SearchAsync_DelegatesToRepository()
     {
         var request = new ProductSearchRequest { Name = "Widget" };
-        _repositoryMock.Setup(r => r.SearchAsync(request)).ReturnsAsync(new List<Product>());
+        _repositoryMock.Setup(r => r.SearchAsync(request)).ReturnsAsync(new List<ProductResponse>());
 
         await _sut.SearchAsync(request);
 

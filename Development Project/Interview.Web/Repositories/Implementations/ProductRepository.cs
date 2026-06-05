@@ -76,6 +76,100 @@ public class ProductRepository : IProductRepository
         });
     }
 
-    public Task<IEnumerable<Product>> SearchAsync(ProductSearchRequest request)
-        => throw new NotImplementedException();
+    public async Task<IEnumerable<ProductResponse>> SearchAsync(ProductSearchRequest request)
+    {
+        return await _sqlExecutor.ExecuteAsync(async (conn, trans) =>
+        {
+            // EVAL: SqlServerQueryProvider builds the WHERE clause dynamically based on which
+            // filters are provided. If no filters are set, WhereClause returns an empty string
+            // and the query returns all products — no special branch needed.
+            var query = SqlServerQueryProvider.Empty;
+            query.SetTargetTableAlias("p");
+
+            if (!string.IsNullOrWhiteSpace(request?.Name))
+                query.WhereEquals("Name", "Name", request.Name);
+
+            if (!string.IsNullOrWhiteSpace(request?.Description))
+                query.WhereEquals("Description", "Description", request.Description);
+
+            // EVAL: EXISTS subquery for attribute filtering is more efficient than a JOIN because
+            // it short-circuits on the first matching row rather than multiplying result rows
+            // when a product has multiple attributes.
+            if (!string.IsNullOrWhiteSpace(request?.AttributeKey) && !string.IsNullOrWhiteSpace(request?.AttributeValue))
+            {
+                query.Where($@"EXISTS (
+                    SELECT 1 FROM Instances.ProductAttributes pa
+                    WHERE pa.InstanceId = p.InstanceId
+                    AND pa.[Key] = @AttributeKey
+                    AND pa.[Value] = @AttributeValue)");
+
+                query.AddParameter("@AttributeKey", request.AttributeKey);
+                query.AddParameter("@AttributeValue", request.AttributeValue);
+            }
+
+            // EVAL: IN subquery for category filtering lets us match products belonging to
+            // any of the requested categories without duplicating product rows via JOIN.
+            if (request?.CategoryIds != null && request.CategoryIds.Any())
+            {
+                var categoryIdList = string.Join(",", request.CategoryIds);
+                query.WhereIn("InstanceId", $"(SELECT InstanceId FROM Instances.ProductCategories WHERE CategoryInstanceId IN ({categoryIdList}))");
+            }
+
+            var sql = $"SELECT * FROM Instances.Products p {query.WhereClause}";
+
+            var products = await conn.QueryAsync<Product>(sql, query.Parameters, trans);
+
+            // Load attributes for each product and map to ProductResponse
+            var responses = new List<ProductResponse>();
+            foreach (var product in products)
+            {
+                var attributes = await LoadAttributesAsync(conn, trans, product.InstanceId);
+                responses.Add(MapToResponse(product, attributes));
+            }
+
+            return responses;
+        });
+    }
+
+    private static async Task<Dictionary<string, string>> LoadAttributesAsync(
+        System.Data.IDbConnection conn,
+        System.Data.IDbTransaction trans,
+        int instanceId)
+    {
+        const string sql = @"
+            SELECT [Key], [Value]
+            FROM Instances.ProductAttributes
+            WHERE InstanceId = @InstanceId";
+
+        var rows = await conn.QueryAsync<(string Key, string Value)>(sql, new { InstanceId = instanceId }, trans);
+        return rows.ToDictionary(r => r.Key, r => r.Value);
+    }
+
+    // EVAL: Mapping from the internal Product DB model to the public ProductResponse keeps
+    // the database schema decoupled from the API contract. If the DB changes, only this
+    // method needs updating — controllers and services stay untouched.
+    private static ProductResponse MapToResponse(Product product, Dictionary<string, string> attributes)
+    {
+        return new ProductResponse
+        {
+            InstanceId = product.InstanceId,
+            Name = product.Name,
+            Description = product.Description,
+            ValidSkus = SplitCsv(product.ValidSkus),
+            ProductImageUris = SplitCsv(product.ProductImageUris),
+            CreatedTimestamp = product.CreatedTimestamp,
+            Attributes = attributes
+        };
+    }
+
+    // EVAL: Comma-separated strings stored in the DB are split back into arrays for the API
+    // response. Empty or null strings return an empty array rather than an array with one
+    // empty element, which would be misleading to API consumers.
+    private static string[] SplitCsv(string value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+            return Array.Empty<string>();
+
+        return value.Split(',', StringSplitOptions.RemoveEmptyEntries);
+    }
 }

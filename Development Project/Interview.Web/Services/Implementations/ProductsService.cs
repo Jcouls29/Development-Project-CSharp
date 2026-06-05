@@ -32,7 +32,7 @@ public class ProductsService : IProductsService
         return await _productRepository.CreateAsync(request);
     }
 
-    public async Task<IEnumerable<Product>> SearchAsync(ProductSearchRequest request)
+    public async Task<IEnumerable<ProductResponse>> SearchAsync(ProductSearchRequest request)
     {
         // EVAL: Passing null or empty request returns all products — no special branch needed
         // because the repository builds WHERE clauses only for non-null fields.

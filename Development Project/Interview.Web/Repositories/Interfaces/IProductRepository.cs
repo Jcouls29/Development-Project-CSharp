@@ -7,5 +7,5 @@ namespace Interview.Web.Repositories.Interfaces;
 public interface IProductRepository
 {
     Task<int> CreateAsync(CreateProductRequest request);
-    Task<IEnumerable<Product>> SearchAsync(ProductSearchRequest request);
+    Task<IEnumerable<ProductResponse>> SearchAsync(ProductSearchRequest request);
 }
