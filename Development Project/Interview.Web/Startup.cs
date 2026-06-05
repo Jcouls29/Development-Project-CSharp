@@ -23,7 +23,14 @@ public class Startup
     public void ConfigureServices(IServiceCollection services)
     {
         services.AddControllers();
-        services.AddSwaggerGen();
+        services.AddSwaggerGen(c =>
+        {
+            // EVAL: Including the XML documentation file allows Swagger UI to display
+            // the summary and remarks from /// comments on each controller action.
+            var xmlFile = $"{System.Reflection.Assembly.GetExecutingAssembly().GetName().Name}.xml";
+            var xmlPath = System.IO.Path.Combine(System.AppContext.BaseDirectory, xmlFile);
+            c.IncludeXmlComments(xmlPath);
+        });
 
         // EVAL: SqlServerOptions is bound from appsettings.json so the connection string
         // is configurable per environment without code changes (Open/Closed principle).
