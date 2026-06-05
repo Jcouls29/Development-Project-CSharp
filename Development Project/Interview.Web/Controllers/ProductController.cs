@@ -35,7 +35,7 @@ public class ProductController : ControllerBase
         var id = await _productsService.CreateAsync(request);
         // EVAL: 201 Created with a Location header is the correct REST response for a successful
         // POST. CreatedAtAction wires the Location header to the GET endpoint automatically.
-        return CreatedAtAction(nameof(GetProducts), new { id }, new { InstanceId = id });
+        return CreatedAtAction(nameof(GetProducts), null, new { InstanceId = id });
     }
 
     /// <summary>
