@@ -18,8 +18,7 @@ public class ProductsService : IProductsService
 
     public async Task<int> CreateAsync(CreateProductRequest request)
     {
-        // EVAL: PreConditions from Sparcpoint.Core centralizes guard clause logic so every
-        // service can validate inputs consistently without duplicating null/whitespace checks.
+        // EVAL: PreConditions from Sparcpoint.Core keeps guard clauses consistent across services.
         PreConditions.ParameterNotNull(request, nameof(request));
         PreConditions.StringNotNullOrWhitespace(request.Name, nameof(request.Name));
 
@@ -34,8 +33,8 @@ public class ProductsService : IProductsService
 
     public async Task<IEnumerable<ProductResponse>> SearchAsync(ProductSearchRequest request)
     {
-        // EVAL: Passing null or empty request returns all products — no special branch needed
-        // because the repository builds WHERE clauses only for non-null fields.
+        // EVAL: Empty request returns all products — the repository only adds WHERE clauses
+        // for fields that have values, so no special "get all" branch is needed.
         return await _productRepository.SearchAsync(request);
     }
 }

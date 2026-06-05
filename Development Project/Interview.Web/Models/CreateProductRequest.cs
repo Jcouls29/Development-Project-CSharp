@@ -9,8 +9,7 @@ public class CreateProductRequest
     public string[] ValidSkus { get; set; }
     public string[] ProductImageUris { get; set; }
 
-    // EVAL: Arbitrary key/value pairs map directly to Instances.ProductAttributes rows.
-    // This satisfies the requirement for products to support arbitrary metadata without schema changes.
+    // EVAL: Key/value pairs map to Instances.ProductAttributes rows — one row per entry.
     public Dictionary<string, string> Attributes { get; set; }
 
     public int[] CategoryIds { get; set; }

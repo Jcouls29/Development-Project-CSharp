@@ -25,20 +25,17 @@ public class Startup
         services.AddControllers();
         services.AddSwaggerGen(c =>
         {
-            // EVAL: Including the XML documentation file allows Swagger UI to display
-            // the summary and remarks from /// comments on each controller action.
+            // EVAL: Wires /// XML comments to Swagger UI so endpoint docs appear at runtime.
             var xmlFile = $"{System.Reflection.Assembly.GetExecutingAssembly().GetName().Name}.xml";
             var xmlPath = System.IO.Path.Combine(System.AppContext.BaseDirectory, xmlFile);
             c.IncludeXmlComments(xmlPath);
         });
 
-        // EVAL: SqlServerOptions is bound from appsettings.json so the connection string
-        // is configurable per environment without code changes (Open/Closed principle).
+        // EVAL: Connection string is config-driven — no code changes needed per environment.
         var sqlOptions = Configuration.GetSection("SqlServer").Get<SqlServerOptions>();
         services.AddSingleton<ISqlExecutor>(new SqlServerExecutor(sqlOptions.ConnectionString));
 
-        // EVAL: Scoped lifetime for repository and service means one instance per HTTP request,
-        // which is appropriate for database-backed services.
+        // EVAL: Scoped gives each request its own instance — right for DB-backed services.
         services.AddScoped<IProductRepository, ProductRepository>();
         services.AddScoped<IProductsService, ProductsService>();
         services.AddScoped<IInventoryRepository, InventoryRepository>();

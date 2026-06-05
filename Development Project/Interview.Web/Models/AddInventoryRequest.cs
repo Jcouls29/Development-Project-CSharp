@@ -4,11 +4,9 @@ public class AddInventoryRequest
 {
     public int ProductInstanceId { get; set; }
 
-    // EVAL: Quantity is decimal to match DECIMAL(19,6) in the DB, supporting fractional
-    // units such as products sold by weight or volume rather than whole units only.
+    // EVAL: Decimal matches DECIMAL(19,6) in the DB — supports fractional units (weight, volume).
     public decimal Quantity { get; set; }
 
-    // EVAL: TypeCategory is optional and allows callers to label the transaction type
-    // (e.g. "RECEIVE", "ADJUSTMENT") for reporting without changing the schema.
+    // EVAL: Optional label for the transaction type e.g. "RECEIVE", "SALE", "ADJUSTMENT".
     public string TypeCategory { get; set; }
 }

@@ -39,9 +39,8 @@ public class InventoryRepository : IInventoryRepository
     {
         await _sqlExecutor.ExecuteAsync(async (conn, trans) =>
         {
-            // EVAL: Deleting the transaction row is the "undo" mechanism per the spec requirement
-            // that individual transactions should be able to be removed. The inventory count
-            // query only sums active rows so removing a row immediately corrects the count.
+            // EVAL: Hard delete is the undo mechanism — removing the row immediately
+            // corrects the inventory count since the SUM query only touches existing rows.
             const string sql = @"
                 DELETE FROM Transactions.InventoryTransactions
                 WHERE TransactionId = @TransactionId";
@@ -54,8 +53,7 @@ public class InventoryRepository : IInventoryRepository
     {
         return await _sqlExecutor.ExecuteAsync(async (conn, trans) =>
         {
-            // EVAL: ISNULL(..., 0) guards against NULL being returned when no transactions exist
-            // for a product, which would cause Dapper to return 0m rather than throw.
+            // EVAL: ISNULL guards against SUM returning NULL on an empty set.
             const string baseSelect = @"
                 SELECT ISNULL(SUM(t.Quantity), 0)
                 FROM Transactions.InventoryTransactions t";
@@ -66,9 +64,8 @@ public class InventoryRepository : IInventoryRepository
             if (request.ProductInstanceId.HasValue)
                 query.WhereEquals("ProductInstanceId", "ProductInstanceId", request.ProductInstanceId.Value);
 
-            // EVAL: Attribute-based count joins back to ProductAttributes so callers can ask
-            // "how many units do I have across all products with color=red" without knowing
-            // the specific product IDs.
+            // EVAL: EXISTS lets callers aggregate stock across all products sharing an attribute
+            // (e.g. total units of all red products) without needing to know their IDs.
             if (!string.IsNullOrWhiteSpace(request.AttributeKey) && !string.IsNullOrWhiteSpace(request.AttributeValue))
             {
                 query.Where($@"EXISTS (

@@ -19,13 +19,12 @@ public class InventoryService : IInventoryService
     {
         PreConditions.ParameterNotNull(request, nameof(request));
 
-        // EVAL: ProductInstanceId must be a positive integer — zero or negative values
-        // cannot reference a valid auto-incremented database identity.
+        // EVAL: Identity columns start at 1 — zero or negative can't reference a real row.
         if (request.ProductInstanceId <= 0)
             throw new System.ArgumentException("ProductInstanceId must be a positive integer.", nameof(request.ProductInstanceId));
 
-        // EVAL: Quantity of zero has no effect on inventory and is most likely a caller error.
-        // Negative quantities are valid for removals so we only reject zero.
+        // EVAL: Zero quantity has no effect and is almost always a caller mistake.
+        // Negatives are allowed — that's how stock removal is recorded.
         if (request.Quantity == 0)
             throw new System.ArgumentException("Quantity cannot be zero.", nameof(request.Quantity));
 
@@ -34,7 +33,7 @@ public class InventoryService : IInventoryService
 
     public async Task RemoveTransactionAsync(int transactionId)
     {
-        // EVAL: TransactionId must be positive — same reasoning as ProductInstanceId above.
+        // EVAL: Same positive-integer rule as ProductInstanceId.
         if (transactionId <= 0)
             throw new System.ArgumentException("TransactionId must be a positive integer.", nameof(transactionId));
 

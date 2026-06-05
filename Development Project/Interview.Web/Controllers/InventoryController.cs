@@ -16,38 +16,32 @@ public class InventoryController : ControllerBase
         _inventoryService = inventoryService;
     }
 
-    /// <summary>
-    /// Add an inventory transaction for a product.
-    /// </summary>
+    /// <summary>Add an inventory transaction.</summary>
     /// <remarks>
-    /// Use a positive Quantity to add stock and a negative Quantity to remove stock.
-    /// Each call creates a new transaction row which can be individually undone via DELETE.
-    /// The optional TypeCategory field can label the transaction (e.g. "RECEIVE", "SALE", "ADJUSTMENT").
+    /// Positive Quantity adds stock, negative removes it.
+    /// Each call creates a transaction row that can be undone individually via DELETE.
+    /// TypeCategory is optional — use it to label the transaction e.g. "RECEIVE", "SALE".
     /// </remarks>
-    /// <param name="request">The product ID, quantity, and optional type category.</param>
-    /// <returns>The TransactionId of the newly created transaction.</returns>
-    /// <response code="200">Transaction created successfully.</response>
-    /// <response code="400">Validation failed — quantity cannot be zero, product ID must be positive.</response>
+    /// <param name="request">ProductInstanceId, Quantity, and optional TypeCategory.</param>
+    /// <returns>The TransactionId of the new transaction.</returns>
+    /// <response code="200">Transaction created.</response>
+    /// <response code="400">Quantity cannot be zero. ProductInstanceId must be positive.</response>
     [HttpPost]
     [ProducesResponseType(typeof(object), 200)]
     [ProducesResponseType(400)]
     public async Task<IActionResult> AddInventory([FromBody] AddInventoryRequest request)
     {
         var transactionId = await _inventoryService.AddAsync(request);
-        // EVAL: Returning the TransactionId gives the caller a handle to reference this
-        // specific transaction if they need to undo it via DELETE later.
+        // EVAL: Returning the TransactionId lets the caller reference this transaction for DELETE.
         return Ok(new { TransactionId = transactionId });
     }
 
-    /// <summary>
-    /// Remove (undo) an inventory transaction by its ID.
-    /// </summary>
+    /// <summary>Remove (undo) a transaction.</summary>
     /// <remarks>
-    /// Deleting a transaction permanently removes it and immediately corrects the inventory count.
-    /// This is the undo mechanism — the transaction row is deleted rather than flagged.
+    /// Permanently deletes the transaction row. The inventory count updates immediately.
     /// </remarks>
-    /// <param name="transactionId">The ID of the transaction to remove.</param>
-    /// <response code="204">Transaction removed successfully.</response>
+    /// <param name="transactionId">The transaction to remove.</param>
+    /// <response code="204">Transaction removed.</response>
     /// <response code="400">TransactionId must be a positive integer.</response>
     [HttpDelete("{transactionId}")]
     [ProducesResponseType(204)]
@@ -55,23 +49,19 @@ public class InventoryController : ControllerBase
     public async Task<IActionResult> RemoveTransaction(int transactionId)
     {
         await _inventoryService.RemoveTransactionAsync(transactionId);
-        // EVAL: 204 No Content is the correct REST response for a successful DELETE
-        // that returns no body.
+        // EVAL: 204 No Content — correct response for a DELETE with no body.
         return NoContent();
     }
 
-    /// <summary>
-    /// Retrieve the total inventory count for a product or set of products.
-    /// </summary>
+    /// <summary>Get total inventory count.</summary>
     /// <remarks>
-    /// Filter by ProductInstanceId to get the count for a specific product.
-    /// Filter by AttributeKey and AttributeValue to aggregate inventory across all products
-    /// sharing that metadata (e.g. all products where color=red).
-    /// Omitting all filters returns the total inventory count across every product.
+    /// Filter by ProductInstanceId for a single product, or by AttributeKey/AttributeValue
+    /// to aggregate across all products with that metadata (e.g. all red products).
+    /// No filters returns the total across everything.
     /// </remarks>
-    /// <param name="request">Optional filters: ProductInstanceId, AttributeKey, AttributeValue.</param>
-    /// <returns>The total inventory count matching the filters.</returns>
-    /// <response code="200">Returns the inventory count.</response>
+    /// <param name="request">ProductInstanceId, AttributeKey, AttributeValue — all optional.</param>
+    /// <returns>Total inventory count.</returns>
+    /// <response code="200">Returns the count.</response>
     [HttpGet("count")]
     [ProducesResponseType(typeof(object), 200)]
     public async Task<IActionResult> GetCount([FromQuery] InventoryCountRequest request)
