@@ -10,14 +10,15 @@
   "profiles": {
     "IIS Express": {
       "commandName": "IISExpress",
+      "launchUrl": "https://localhost:5001/swagger",
       "launchBrowser": true,
-      "launchUrl": "api/v1/products",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
     "Interview.Web": {
       "commandName": "Project",
+      "launchUrl": "https://localhost:5001/swagger",
       "launchBrowser": true,
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
